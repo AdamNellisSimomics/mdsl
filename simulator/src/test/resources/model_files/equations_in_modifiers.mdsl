@@ -1,0 +1,43 @@
+
+# An example of using equations in reaction rate modifiers
+
+initial tree { simulation }
+
+species a contained simulation = 1 units
+species b contained simulation = 2 units
+species c contained simulation = 3 units
+species d contained simulation = 4 units
+species e contained simulation = 5 units
+species f contained simulation = 6 units
+species g contained simulation = 7 units
+species h contained simulation = 8 units
+species i contained simulation = 9 units
+species j contained simulation = 10 units
+species k contained simulation = 1 units
+species l contained simulation = 1 units
+
+parameter z = 99 units
+parameter y = 98 units
+parameter x = 97 units
+
+a contained simulation modifier z => c contained simulation modifier y
+
+b contained simulation modifier x + y => c contained simulation
+
+c contained simulation modifier (h contained simulation - a contained simulation) / (x * b contained simulation) + y <=> d contained simulation modifier (a contained simulation * x + b contained simulation * y) / (z - c contained simulation) 
+
+e contained simulation modifier 2 * b contained simulation + 3.4 => b contained simulation
+
+f contained simulation modifier a contained simulation + 3 * b contained simulation + 2 / z - 2.345 => b contained simulation
+
+g contained simulation modifier (a contained simulation + 3) * (b contained simulation + 2) / (z - 2.345) => b contained simulation
+
+h contained simulation modifier -3 * (b contained simulation - 12) => b contained simulation
+
+i contained simulation modifier 3 * -(b contained simulation - 12) => b contained simulation
+
+j contained simulation modifier a contained simulation * y => b contained simulation
+
+k contained simulation modifier 53.7 => b contained simulation
+
+l contained simulation modifier (12 + 3)*2 => b contained simulation

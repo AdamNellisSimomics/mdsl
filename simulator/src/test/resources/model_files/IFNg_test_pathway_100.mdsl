@@ -1,0 +1,120 @@
+#IFNg test pathway
+initial tree {spleen{1 redpulp_macrophage}}
+
+# make_IL-1 
+# make_IL-12# make_IL-6 
+
+# make_TNFa 
+# make_ACTIVATE
+# make_NO
+# make_socs1
+# make_NOS2_activator
+
+species  IFNg               around redpulp_macrophage = 100 units
+species  IFNg_receptor      on redpulp_macrophage = 10 units
+species  IFNg_bound         under redpulp_macrophage = 0 units
+species  Jak1               contained redpulp_macrophage = 0 units # see socs1_Jak1
+species  Trans_IFNg1        under redpulp_macrophage = 0 units
+species  Jak2               contained redpulp_macrophage = 20 units
+species  Trans_IFNg2        under redpulp_macrophage = 0 units
+species  STAT1_inactive     contained redpulp_macrophage = 20 units
+species  STAT1              contained redpulp_macrophage = 0 units
+species  IRF1_inactive      contained redpulp_macrophage = 1 units
+species  IRF1               contained redpulp_macrophage = 0 units
+species  socs1              contained redpulp_macrophage = 0 units
+species  NOS2_activator     contained redpulp_macrophage = 0 units
+species  NOS2_gene          contained redpulp_macrophage = 1 units
+species  NOS2_producing     contained redpulp_macrophage = 0 units
+species  NO                 contained redpulp_macrophage = 0 units
+species  ACTIVATE           contained redpulp_macrophage = 0 units
+species  activated_inactive contained redpulp_macrophage = 1 units
+species  activated          contained redpulp_macrophage = 0 units
+species  IL-1               around redpulp_macrophage = 0 units
+species  IL-6               around redpulp_macrophage = 0 units
+species  IL-12              around redpulp_macrophage = 0 units
+species  TNFa               around redpulp_macrophage = 0 units
+species  socs1_Jak1         contained redpulp_macrophage = 20 units
+ 
+
+parameter IFNg_on                       = 1 units
+parameter IFNg_off                      = 100 units
+parameter Jak1_IFNg_on                  = 1 units
+parameter Jak1_IFNg_off                 = 100 units
+parameter Jak2_Trans_IFNg1_on           = 1 units
+parameter Jak2_Trans_IFNg1_off          = 100 units
+parameter Trans_IFNg2_STAT1_on          = 1 units
+parameter STAT1_disassociation_rate     = 100 units #new
+parameter STAT1_IRF1_inactive_on        = 10 units
+parameter STAT1_IRF1_inactive_off       = 0.25 units
+parameter NOS2_on                       = 10 units
+parameter NOS2_off                      = 0.25 units
+parameter activation_rate               = 10 units
+parameter un_activation_rate            = 0.25 units
+
+
+parameter make_socs1                    = 100 units
+parameter socs1_decay                   = 200 units                                   #new
+parameter socs1_Jak1_on                 = 100 units
+parameter socs1_Jak1_off                = 1 units
+
+
+parameter make_NOS2_activator           = 100 units
+parameter NOS2_activator_decay          = 100 units                                   #new
+parameter make_ACTIVATE                 = 100 units
+parameter ACTIVATE_decay                = 100 units                                   #new
+
+
+parameter make_IL-1                     = 100 units
+parameter make_IL-6                     = 100 units
+parameter make_IL-12                    = 100 units
+parameter make_TNFa                     = 100 units
+parameter make_NO                       = 100 units
+
+parameter NO_decay                      = 1 units     #new
+parameter IL-1_decay                    = 1 units                                   #new
+parameter IL-6_decay                    = 1 units                                   #new
+parameter IL-12_decay                   = 1 units                                   #new
+parameter TNFa_decay                    = 1 units                                   #new
+
+#on surface reaction
+IFNg around redpulp_macrophage binds IFNg_receptor on redpulp_macrophage modifier IFNg_on <=> IFNg_bound under redpulp_macrophage modifier IFNg_off   
+
+#redpulp_macrophage UNDER surface reactions
+
+#Decisions - lets straight line the process for now, hack , multipath can be added later.
+#IFNg
+IFNg_bound under redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier Jak1_IFNg_on <=> Trans_IFNg1 under redpulp_macrophage modifier Jak1_IFNg_off # once Jak1 binds the ligand is stuck bound to the receptor
+Trans_IFNg1 under redpulp_macrophage binds Jak2 contained redpulp_macrophage modifier Jak2_Trans_IFNg1_on <=> Trans_IFNg2 under redpulp_macrophage modifier Jak2_Trans_IFNg1_off
+Trans_IFNg2 under redpulp_macrophage binds STAT1_inactive contained redpulp_macrophage modifier Trans_IFNg2_STAT1_on => STAT1 contained redpulp_macrophage and IFNg_bound under redpulp_macrophage
+
+
+#IFNg pathway to activation
+STAT1 contained redpulp_macrophage modifier STAT1_disassociation_rate => STAT1_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Jak2 contained redpulp_macrophage #new
+STAT1 contained redpulp_macrophage binds IRF1_inactive contained redpulp_macrophage modifier STAT1_IRF1_inactive_on <=> IRF1 contained redpulp_macrophage modifier STAT1_IRF1_inactive_off
+gene IRF1 contained redpulp_macrophage modifier make_socs1 => socs1 contained redpulp_macrophage
+gene IRF1 contained redpulp_macrophage modifier make_NOS2_activator => NOS2_activator contained redpulp_macrophage
+NOS2_activator contained redpulp_macrophage binds NOS2_gene contained redpulp_macrophage modifier NOS2_on <=> NOS2_producing contained redpulp_macrophage modifier NOS2_off
+#NO production  
+gene NOS2_producing contained redpulp_macrophage modifier make_NO => NO contained redpulp_macrophage
+#activation hack
+gene NOS2_producing contained redpulp_macrophage modifier make_ACTIVATE => ACTIVATE contained redpulp_macrophage
+gene IRF1 contained redpulp_macrophage modifier make_ACTIVATE => ACTIVATE contained redpulp_macrophage
+ACTIVATE contained redpulp_macrophage binds activated_inactive contained redpulp_macrophage modifier activation_rate <=> activated contained redpulp_macrophage modifier un_activation_rate
+#cytokine production from activated hack
+gene activated contained redpulp_macrophage modifier make_IL-1 => IL-1 around redpulp_macrophage
+gene activated contained redpulp_macrophage modifier make_IL-6 => IL-6 around redpulp_macrophage
+gene activated contained redpulp_macrophage modifier make_IL-12 => IL-12 around redpulp_macrophage
+gene activated contained redpulp_macrophage modifier make_TNFa => TNFa around redpulp_macrophage
+
+#Decay
+NO contained redpulp_macrophage modifier NO_decay => decay                       #new
+IL-1 around redpulp_macrophage modifier IL-1_decay => decay                      #new
+IL-6 around redpulp_macrophage modifier IL-6_decay => decay                      #new
+IL-12 around redpulp_macrophage modifier IL-12_decay => decay                    #new
+TNFa around redpulp_macrophage modifier TNFa_decay => decay                      #new
+ACTIVATE contained redpulp_macrophage modifier ACTIVATE_decay => decay                    #new
+socs1 contained redpulp_macrophage modifier socs1_decay => decay                      #new
+NOS2_activator contained redpulp_macrophage modifier NOS2_activator_decay => decay                      #new
+ 
+
+socs1 contained redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier socs1_Jak1_on <=> socs1_Jak1 contained redpulp_macrophage modifier socs1_Jak1_off

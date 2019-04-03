@@ -1,0 +1,27 @@
+initial tree {spleen}
+
+species Th0_exp      contained spleen = 1000 units
+species Th1I_exp     contained spleen = 0 units
+species Th2_exp      contained spleen = 0 units
+
+parameter Th0_exp_Th1I_rate  = 6 units #per hour
+parameter Th0_exp_Th2_rate   = 4 units #per hour
+
+#should have a combined rate of 10 per th0_exp per hour
+
+#ln(2)/lambda is ln(2)/10 = 0.06931471805
+
+#at 0.069 hours th0_exp should fall to 500
+#at 0.14 hours 250
+#at 0.21 hours 125
+#at 0.28 hours 62
+#at 0.35 hours 31
+#at 0.42 hours 16
+#at 0.49 hours 8
+#at 0.56 hours 4
+#at 0.63 hours 2
+#at 0.70 hours 1
+#at 0.77 hours 0
+ 
+Th0_exp contained spleen modifier Th0_exp_Th1I_rate => Th1I_exp contained spleen
+Th0_exp contained spleen modifier Th0_exp_Th2_rate => Th2_exp contained spleen

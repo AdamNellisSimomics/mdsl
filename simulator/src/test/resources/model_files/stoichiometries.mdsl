@@ -1,0 +1,18 @@
+
+# Test of how we calculate propensities of reactions with stoichiometries greater than 1.
+
+initial tree {simulation}
+
+species a contained simulation = 11 units
+species b contained simulation = 13 units
+species c contained simulation = 17 units
+species d contained simulation = 19 units
+species e contained simulation = 23 units
+species x contained simulation = 0 units
+
+2 a contained simulation modifier 1 => x contained simulation
+3 b contained simulation modifier 1 => x contained simulation
+5 a contained simulation binds 7 b contained simulation modifier 1 => x contained simulation
+
+c contained simulation modifier 1 => x contained simulation
+d contained simulation binds e contained simulation modifier 1 => x contained simulation

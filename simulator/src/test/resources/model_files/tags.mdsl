@@ -1,0 +1,13 @@
+#
+# Test of tags.
+#
+
+initial tree {simulation}
+
+species a contained simulation = 1 units [tag1]
+species b contained simulation = 2 units [tag2 tag3]
+species c contained simulation = 3 units [tag1 tag2]
+species d contained simulation = 4 units ['tag1 tag2' tag3]
+species e contained simulation = 5 units [tag_1 tag2-3]
+species f contained simulation = 6 units
+species g contained simulation = 7 units [tag_4]

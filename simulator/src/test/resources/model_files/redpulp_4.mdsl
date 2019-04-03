@@ -1,0 +1,478 @@
+#IFNg test pathway
+initial tree {spleen{4 redpulp_macrophage}}
+# Using 50 took around 1 hour
+# Used 4 for continuous testing
+
+# make_IL-1 
+# make_IL-12# make_IL-6 
+
+# make_TNFa 0000
+# make_ACTIVATE
+# make_NO
+# make_socs1
+# make_NOS2_activator
+
+#Inputs
+species LPS                 around redpulp_macrophage = 20 unit #who makes LPS?? TODO
+
+species IL-10               around redpulp_macrophage = 20 unit #TURN ON
+species IFNg                around redpulp_macrophage = 20 unit #TURN ON
+species IL-4                around redpulp_macrophage = 20 unit #TURN ON  
+parameter repression_of_signalling                    = 50 units
+species  IL-6               around redpulp_macrophage = 20 units
+
+species amastigote          contained redpulp_macrophage = 6 unit #TURN ON
+species iron                contained redpulp_macrophage = 24 unit #TURN ON #conserved species. Iron + amastigote = constant
+
+species NFkb_reporter       contained redpulp_macrophage = 0 unit
+species IL-10_reporter      contained spleen = 0 unit
+species TNFa                around redpulp_macrophage = 0 unit #TURN ON
+species IL-1                around redpulp_macrophage = 0 units
+species TGFb                around redpulp_macrophage = 0 unit #TURN ON
+
+species  IFNg_receptor      on redpulp_macrophage = 10 units
+species  IFNg_bound         under redpulp_macrophage = 0 units
+species  Jak1               contained redpulp_macrophage = 20 units # see socs1_Jak1
+species  Trans_IFNg1        under redpulp_macrophage = 0 units
+species  Jak2               contained redpulp_macrophage = 20 units
+species  Trans_IFNg2        under redpulp_macrophage = 0 units
+species  STAT1_inactive     contained redpulp_macrophage = 20 units
+species  STAT1              contained redpulp_macrophage = 0 units
+species  IRF1_inactive      contained redpulp_macrophage = 1 units
+species  IRF1               contained redpulp_macrophage = 0 units
+species  socs1              contained redpulp_macrophage = 0 units
+species  NOS2_activator     contained redpulp_macrophage = 0 units
+species  NOS2_gene          contained redpulp_macrophage = 1 units
+species  NOS2_producing     contained redpulp_macrophage = 0 units
+species  NO                 contained redpulp_macrophage = 0 units
+species  ACTIVATE           contained redpulp_macrophage = 0 units
+species  activated_inactive contained redpulp_macrophage = 1 units
+species  activated          contained redpulp_macrophage = 0 units
+
+species  IL-12              around redpulp_macrophage = 0 units
+species  socs1_Jak1         contained redpulp_macrophage = 0 units
+
+species IL-6_receptor       on redpulp_macrophage = 10 units
+species IL-6_bound          under redpulp_macrophage = 0 units
+species Trans_IL-6_1        under redpulp_macrophage = 0 units
+species Trans_IL-6_2        under redpulp_macrophage = 0 units
+
+
+species IL-4_receptor                    on redpulp_macrophage = 10 unit        #from IL-4
+species IL-4_bound                       under redpulp_macrophage = 0 unit      #from IL-4
+species Trans_IL-4_1                     under redpulp_macrophage = 0 unit      #from IL-4
+species Jak3                             contained redpulp_macrophage = 20 unit #from IL-4
+species Trans_IL-4_2                     under redpulp_macrophage = 0 unit      #from IL-4
+species STAT6_inactive                   contained redpulp_macrophage = 20 unit #from IL-4
+species STAT6                            contained redpulp_macrophage = 0 unit  #from IL-4
+species 4madeupgene_inactive             contained redpulp_macrophage = 1 unit  #from IL-4
+species 4madeupgene                      contained redpulp_macrophage = 0 unit  #from IL-4
+species socs3                            contained redpulp_macrophage = 0 unit  #from IL-4
+species ALTERNATIVELY_ACTIVATE           contained redpulp_macrophage = 0 unit  #from IL-4
+species alternatively_activated_inactive contained redpulp_macrophage = 1 unit  #from IL-4
+species alternatively_activated          contained redpulp_macrophage = 0 unit  #from IL-4
+species socs3_Jak1                       contained redpulp_macrophage = 0 unit #from IL-4 NEW NEW jak1 comes from soc1_jak1
+
+species IL-10_receptor                   on redpulp_macrophage = 10 unit        
+species IL-10_bound                      under redpulp_macrophage = 0 unit      
+species Trans_IL-10_1                    under redpulp_macrophage = 0 unit      
+species Tyk2                             contained redpulp_macrophage = 20 unit 
+species Trans_IL-10_2                    under redpulp_macrophage = 0 unit      
+species STAT3_inactive                   contained redpulp_macrophage = 20 unit 
+species STAT3                            contained redpulp_macrophage = 0 unit  
+species 10madeupgene_inactive            contained redpulp_macrophage = 1 unit  
+species 10madeupgene                     contained redpulp_macrophage = 0 unit  
+species DEACTIVATE                       contained redpulp_macrophage = 0 unit
+species deactivated_inactive             contained redpulp_macrophage = 1 unit
+species deactivated                      contained redpulp_macrophage = 0 unit
+
+species SHP1                             contained redpulp_macrophage = 0 unit
+species dead_amastigote_antigen          contained redpulp_macrophage = 0 unit
+
+species MHCI                             on redpulp_macrophage = 0 unit
+species MHCII                            on redpulp_macrophage = 0 unit
+species constitutional                   contained redpulp_macrophage = 1 unit #gene, always on
+species CD1d                             on redpulp_macrophage = 0 unit
+
+species IL-1_receptor                    on redpulp_macrophage = 10 unit
+species IL-1_bound                       under redpulp_macrophage = 0 unit
+species TNFa_receptor                    on redpulp_macrophage = 10 unit
+species TNFa_bound                       under redpulp_macrophage = 0 unit
+
+species LPS_receptor                     on redpulp_macrophage = 10 unit
+species LPS_bound                        under redpulp_macrophage = 0 unit
+species pre_IKK                          contained redpulp_macrophage = 50 unit
+species IKK                              contained redpulp_macrophage = 0 unit
+species NFkb_activator_sequestered       contained redpulp_macrophage = 5 unit #NFkb activator is conserved
+species NFkb_activator                   contained redpulp_macrophage = 0 unit
+species NFkb_inactive                    contained redpulp_macrophage = 1 unit
+species NFkb                             contained redpulp_macrophage = 0 unit
+species NFkb_sequesterer                 contained redpulp_macrophage = 10 unit
+
+species TGFb_receptor                    on redpulp_macrophage = 10 unit       
+species TGFb_bound                       under redpulp_macrophage = 0 unit     
+species SMAD2                            contained redpulp_macrophage = 20 unit     
+species Trans_TGFb_1                     under redpulp_macrophage = 0 unit
+species SMAD3                            contained redpulp_macrophage = 20 unit     
+species Trans_TGFb_2                     under redpulp_macrophage = 0 unit
+species SMAD4_inactive                   contained redpulp_macrophage = 20 unit 
+species SMAD4                            contained redpulp_macrophage = 0 unit 
+species SMAD7                            contained redpulp_macrophage = 0 unit 
+species TGFbmadeupgene_inactive          contained redpulp_macrophage = 1 unit
+species TGFbmadeupgene                   contained redpulp_macrophage = 0 unit
+species TGFb_reporter                    contained redpulp_macrophage = 0 unit
+
+parameter MHCI_production                 = 0.5 unit #only when in activated state
+parameter MHCII_production                = 0.5 unit #only when in activated state
+parameter CD1d_production                 = 0.5 unit #only when in activated state
+parameter constitutional_MHCII_production = 0.05 unit #much slower for constitutional
+parameter constitutional_CD1d_production_alive  = 0.0001 unit #this enables a small level of detection at all times through CD1d
+parameter constitutional_CD1d_production_dead  = 0.05 unit
+
+parameter MHCI_decay                      = 0.7/18 unit
+parameter MHCII_decay                     = 0.7/18 unit
+parameter CD1d_decay                      = 0.7/18 unit
+
+parameter SHP1_remove_Jak                 = 5 unit
+parameter SHP1_remove_STAT                = 5 unit
+parameter make_SHP1                       = 1 unit #Should perhaps be 2 parameters? 1 for amastigote and 1 for TGFb
+parameter SHP1_decay                      = 1 unit
+parameter active_amastigote_killing      = 0.7/(24*50) unit
+parameter passive_amastigote_death       = 0.7/(24*100) unit
+parameter amastigote_reproduction        = 0.7/(24*55) unit # interesting use of species for half life in parameter?
+parameter dead_amastigote_antigen_decay   = 0.7/(24*20) unit
+
+parameter make_SMAD7                        = 100 unit
+parameter SMAD7_decay                       = repression_of_signalling unit
+parameter make_TGFb_reporter                = 100 unit
+parameter TGFb_reporter_decay               = 1 units
+
+parameter SMAD7_remove_SMAD2                = 5 unit
+parameter SMAD7_remove_SMAD3                = 5 unit
+parameter SMAD7_remove_SMAD4                = 5 unit
+
+parameter IL-10_on                        = 1 unit   
+parameter IL-10_off                       = 100 unit 
+parameter Jak1_IL-10_on                   = 1 unit   
+parameter Jak1_IL-10_off                  = 100 unit 
+parameter Tyk2_Trans_IL-10_on             = 1 unit   
+parameter Tyk2_Trans_IL-10_off            = 100 unit 
+parameter Trans_IL-10_2_STAT3_on          = 1 unit   
+parameter STAT3_disassociation_rate       = 100 unit 
+parameter STAT3_10madeupgene_inactive_on  = 10 unit  
+parameter STAT3_10madeupgene_inactive_off = 0.25 unit
+parameter deactivation_rate               = 10 unit   
+parameter un_deactivation_rate            = 0.25 unit 
+
+parameter TGFb_on                           = 1 unit
+parameter TGFb_off                          = 100 unit
+parameter SMAD2_TGFb_on                     = 1 unit
+parameter SMAD2_TGFb_off                    = 100 unit
+parameter SMAD3_Trans_TGFb_1_on             = 1 unit
+parameter SMAD3_Trans_TGFb_2_off            = 100 unit
+parameter Trans_TGFb_2_SMAD4_on             = 1 unit
+parameter SMAD4_disassociation_rate         = 100 unit 
+parameter SMAD4_TGFbmadeupgene_inactive_on  = 10 unit
+parameter SMAD4_TGFbmadeupgene_inactive_off = 0.25 unit
+
+parameter IL-1_on                         = 1 unit
+parameter IL-1_off                        = 100 unit
+parameter TNFa_on                         = 1 unit
+parameter TNFa_off                        = 100 unit
+parameter LPS_on                          = 1 unit
+parameter LPS_off                         = 100 unit
+parameter pre_IKK_IL-1_on                 = 1 unit
+parameter pre_IKK_LPS_on                  = 1 unit
+parameter pre_IKK_TNFa_on                 = 1 unit   
+parameter IKK_NFkb_release_NFkb           = 1 unit 
+parameter IKK_decay                       = 0.1 unit   
+parameter NFkb_activation_on              = 10 unit
+parameter NFkb_activation_off             = 0.25 unit
+parameter make_NFkb_sequesterer           = 10 unit    #speed is important relative to other pathway factors for determining extent of exhaustion
+parameter NFkb_sequesterer_decay          = 1 unit
+parameter make_pre_IKK                    = 1 unit
+parameter pre_IKK_decay                   = 0.02 unit
+parameter make_NFkb_reporter              = 100 unit
+parameter NFkb_reporter_decay             = 2 unit
+parameter NFkb_activator_sequestration    = 200 unit
+#parameter NFkb_activator_DEsequestration  = 1 unit made irreversible - too close to the gene, too leaky.
+
+parameter make_DEACTIVATE                = 100 unit
+parameter DEACTIVATE_decay               = 100 unit
+parameter TGFb_make_DEACTIVATE           = 100 unit
+
+
+parameter IL-4_on                        = 1 unit   #from IL-4
+parameter IL-4_off                       = 100 unit   #from IL-4
+parameter Jak1_IL-4_on                   = 1 unit   #from IL-4
+parameter Jak1_IL-4_off                  = 100 unit   #from IL-4
+parameter Jak3_Trans_IL-4_on             = 1 unit   #from IL-4
+parameter Jak3_Trans_IL-4_off            = 100 unit   #from IL-4
+parameter Trans_IL-4_2_STAT6_on          = 1 unit   #from IL-4
+parameter STAT6_disassociation_rate      = 100 unit #NEWNEW FROM IL-4
+parameter STAT6_4madeupgene_inactive_on  = 10 unit   #from IL-4
+parameter STAT6_4madeupgene_inactive_off = 0.25 unit   #from IL-4
+parameter alternative_activation_rate    = 10 unit   #from IL-4
+parameter un_alternative_activation_rate = 0.25 unit   #from IL-4
+
+
+parameter make_socs3                    = 100 unit   #from IL-4 was 100
+parameter socs3_decay                   = repression_of_signalling units  #was 200                                 #new
+parameter socs3_Jak1_on                 = 100 units
+parameter socs3_Jak1_off                = 1 units
+
+
+parameter make_ALTERNATIVELY_ACTIVATE   = 100 unit   #from IL-4 
+parameter ALTERNATIVELY_ACTIVATE_decay  = 100 unit   #from IL-4  NEW NEW
+
+parameter IL-6_on                       = 1 units
+parameter IL-6_off                      = 100 units
+parameter Jak1_IL-6_on                  = 1 units
+parameter Jak1_IL-6_off                 = 100 units
+parameter Jak2_Trans_IL-6_on            = 1 units
+parameter Jak2_Trans_IL-6_off           = 100 units
+parameter Trans_IL-6_2_STAT1_on         = 1 units
+
+
+
+parameter IFNg_on                       = 1 units
+parameter IFNg_off                      = 100 units #previously 100 before i started experimenting with scale
+parameter Jak1_IFNg_on                  = 1 units
+parameter Jak1_IFNg_off                 = 100 units
+parameter Jak2_Trans_IFNg1_on           = 1 units
+parameter Jak2_Trans_IFNg1_off          = 100 units
+parameter Trans_IFNg2_STAT1_on          = 1 units
+parameter STAT1_disassociation_rate     = 100 units #new
+parameter STAT1_IRF1_inactive_on        = 10 units
+parameter STAT1_IRF1_inactive_off       = 0.25 units
+parameter NOS2_on                       = 10 units
+parameter NOS2_off                      = 0.25 units
+parameter activation_rate               = 10 units
+parameter un_activation_rate            = 0.25 units
+
+parameter make_socs1                    = 100 units # was 100
+parameter socs1_decay                   = repression_of_signalling units  # was 200                                 #new
+parameter socs1_Jak1_on                 = 100 units
+parameter socs1_Jak1_off                = 1 units
+
+
+parameter make_NOS2_activator           = 100 units
+parameter NOS2_activator_decay          = 100 units                                   #new
+parameter make_ACTIVATE                 = 100 units
+parameter ACTIVATE_decay                = 100 units                                   #new
+
+
+parameter make_IL-1                     = 30 units
+parameter make_IL-6                     = 30 units
+parameter make_IL-12                    = 30 units
+parameter make_TNFa                     = 30 units
+parameter make_NO                       = 75 units
+# hack hack hack 
+parameter make_IL-10_reporter           = 50 unit
+# hack hack hack change IL-10 production to 100. Made in IL-4 and IL-10 pathways. IL-4 correct IL-10 needs the reporter line adjusting
+parameter make_IL-10                    = 30 unit   #from IL-4
+parameter make_TGFb                     = 30 unit   #from IL-4
+
+
+parameter NO_decay                      = 1.5 units     #new
+parameter IL-1_decay                    = 1.5 units                                   #new
+parameter IL-6_decay                    = 1.5 units                                   #new
+parameter IL-12_decay                   = 1.5 units                                   #new
+parameter TNFa_decay                    = 1.5 units                                   #new 
+parameter IL-4_decay                    = 1.5 units #new from IL-4 hack hack hack
+parameter IL-10_decay                   = 1.5 units #new from IL-4
+parameter IL-10_reporter_decay          = 1.5 units #New - prevents IL-10 autocatalytically looping TODO take this out later
+parameter TGFb_decay                    = 1.5 units #new from IL-4
+
+
+#on surface reaction
+IFNg around redpulp_macrophage binds IFNg_receptor on redpulp_macrophage modifier IFNg_on <=> IFNg_bound under redpulp_macrophage modifier IFNg_off   
+IL-4 around redpulp_macrophage binds IL-4_receptor on redpulp_macrophage modifier IL-4_on <=> IL-4_bound under redpulp_macrophage modifier IL-4_off
+IL-6 around redpulp_macrophage binds IL-6_receptor on redpulp_macrophage modifier IL-6_on <=> IL-6_bound under redpulp_macrophage modifier IL-6_off
+IL-10 around redpulp_macrophage binds IL-10_receptor on redpulp_macrophage modifier IL-10_on <=> IL-10_bound under redpulp_macrophage modifier IL-10_off
+IL-1 around redpulp_macrophage binds IL-1_receptor on redpulp_macrophage modifier IL-1_on <=> IL-1_bound under redpulp_macrophage modifier IL-1_off
+TNFa around redpulp_macrophage binds TNFa_receptor on redpulp_macrophage modifier TNFa_on <=> TNFa_bound under redpulp_macrophage modifier TNFa_off
+LPS around redpulp_macrophage binds LPS_receptor on redpulp_macrophage modifier LPS_on <=> LPS_bound under redpulp_macrophage modifier LPS_off      #LPS_receptor is TLR 4 change made for consistency of format
+TGFb around redpulp_macrophage binds TGFb_receptor on redpulp_macrophage modifier TGFb_on <=> TGFb_bound under redpulp_macrophage modifier TGFb_off
+
+#redpulp_macrophage UNDER surface reactions
+
+#Decisions - lets straight line the process for now, hack , multipath can be added later.
+#IFNg
+IFNg_bound under redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier Jak1_IFNg_on <=> Trans_IFNg1 under redpulp_macrophage modifier Jak1_IFNg_off # once Jak1 binds the ligand is stuck bound to the receptor
+Trans_IFNg1 under redpulp_macrophage binds Jak2 contained redpulp_macrophage modifier Jak2_Trans_IFNg1_on <=> Trans_IFNg2 under redpulp_macrophage modifier Jak2_Trans_IFNg1_off
+Trans_IFNg2 under redpulp_macrophage binds STAT1_inactive contained redpulp_macrophage modifier Trans_IFNg2_STAT1_on => STAT1 contained redpulp_macrophage and IFNg_bound under redpulp_macrophage
+#IL-4
+IL-4_bound under redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier Jak1_IL-4_on <=> Trans_IL-4_1 under redpulp_macrophage modifier Jak1_IL-4_off # once Jak1 binds the ligand is stuck bound to the receptor
+Trans_IL-4_1 under redpulp_macrophage binds Jak3 contained redpulp_macrophage modifier Jak3_Trans_IL-4_on <=> Trans_IL-4_2 under redpulp_macrophage modifier Jak3_Trans_IL-4_off
+Trans_IL-4_2 under redpulp_macrophage binds STAT6_inactive contained redpulp_macrophage modifier Trans_IL-4_2_STAT6_on => STAT6 contained redpulp_macrophage and IL-4_bound under redpulp_macrophage
+#IL-6
+IL-6_bound under redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier Jak1_IL-6_on <=> Trans_IL-6_1 under redpulp_macrophage modifier Jak1_IL-6_off # hack without good evidence that this is Jak2 and stat1. Extra hack I made the first one Jak 1 to mirror IFNg to avoid the species transform issue with reversible reactions 
+Trans_IL-6_1 under redpulp_macrophage binds Jak2 contained redpulp_macrophage modifier Jak2_Trans_IL-6_on <=> Trans_IL-6_2 under redpulp_macrophage modifier Jak2_Trans_IL-6_off
+Trans_IL-6_2 under redpulp_macrophage binds STAT1_inactive contained redpulp_macrophage modifier Trans_IL-6_2_STAT1_on => STAT1 contained redpulp_macrophage and IL-6_bound under redpulp_macrophage
+#IL-10
+IL-10_bound under redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier Jak1_IL-10_on <=> Trans_IL-10_1 under redpulp_macrophage modifier Jak1_IL-10_off # once Jak1 binds the ligand is stuck bound to the receptor
+Trans_IL-10_1 under redpulp_macrophage binds Tyk2 contained redpulp_macrophage modifier Tyk2_Trans_IL-10_on <=> Trans_IL-10_2 under redpulp_macrophage modifier Tyk2_Trans_IL-10_off
+Trans_IL-10_2 under redpulp_macrophage binds STAT3_inactive contained redpulp_macrophage modifier Trans_IL-10_2_STAT3_on => STAT3 contained redpulp_macrophage and IL-10_bound under redpulp_macrophage
+#IL-1, TNFa, LPS pathway merge hack in approach and hack in execution of the approach
+catalyst IL-1_bound under redpulp_macrophage binds pre_IKK contained redpulp_macrophage modifier pre_IKK_IL-1_on => IKK contained redpulp_macrophage #detection of an awkward reverse species drift. Made all 3 equations => and skipped ot the end of the chain popping off IKK with no intermediates. This is a language based choice rather than a modelling based choice.
+catalyst LPS_bound under redpulp_macrophage binds pre_IKK contained redpulp_macrophage modifier pre_IKK_LPS_on => IKK contained redpulp_macrophage #off rates removed as there is no back anymore
+catalyst TNFa_bound under redpulp_macrophage binds pre_IKK contained redpulp_macrophage modifier pre_IKK_TNFa_on => IKK contained redpulp_macrophage # catalysts because there is no need to write the receptor_bound on both sides of the equation.
+#TGFb
+TGFb_bound under redpulp_macrophage binds SMAD2 contained redpulp_macrophage modifier SMAD2_TGFb_on <=> Trans_TGFb_1 under redpulp_macrophage modifier SMAD2_TGFb_off
+Trans_TGFb_1 under redpulp_macrophage binds SMAD3 contained redpulp_macrophage modifier SMAD3_Trans_TGFb_1_on <=> Trans_TGFb_2 under redpulp_macrophage modifier SMAD3_Trans_TGFb_2_off
+Trans_TGFb_2 under redpulp_macrophage binds SMAD4_inactive contained redpulp_macrophage modifier Trans_TGFb_2_SMAD4_on => SMAD4 contained redpulp_macrophage and TGFb_bound under redpulp_macrophage
+
+
+#IFNg pathway to activation
+STAT1 contained redpulp_macrophage modifier STAT1_disassociation_rate => STAT1_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Jak2 contained redpulp_macrophage #new
+STAT1 contained redpulp_macrophage binds IRF1_inactive contained redpulp_macrophage modifier STAT1_IRF1_inactive_on <=> IRF1 contained redpulp_macrophage modifier STAT1_IRF1_inactive_off
+gene IRF1 contained redpulp_macrophage modifier make_socs1 => socs1 contained redpulp_macrophage
+gene IRF1 contained redpulp_macrophage modifier make_NOS2_activator => NOS2_activator contained redpulp_macrophage
+NOS2_activator contained redpulp_macrophage binds NOS2_gene contained redpulp_macrophage modifier NOS2_on <=> NOS2_producing contained redpulp_macrophage modifier NOS2_off
+#NO production  
+gene NOS2_producing contained redpulp_macrophage modifier make_NO => NO contained redpulp_macrophage
+#activation hack
+gene NOS2_producing contained redpulp_macrophage modifier make_ACTIVATE => ACTIVATE contained redpulp_macrophage
+gene IRF1 contained redpulp_macrophage modifier make_ACTIVATE => ACTIVATE contained redpulp_macrophage
+gene IRF1 contained redpulp_macrophage modifier make_SMAD7 => SMAD7 contained redpulp_macrophage
+ACTIVATE contained redpulp_macrophage binds activated_inactive contained redpulp_macrophage modifier activation_rate <=> activated contained redpulp_macrophage modifier un_activation_rate
+#cytokine production from activated hack
+gene activated contained redpulp_macrophage modifier make_IL-1 => IL-1 around redpulp_macrophage
+gene activated contained redpulp_macrophage modifier make_IL-6 => IL-6 around redpulp_macrophage
+gene activated contained redpulp_macrophage modifier make_IL-12 => IL-12 around redpulp_macrophage
+gene activated contained redpulp_macrophage modifier make_TNFa => TNFa around redpulp_macrophage
+
+#IL-4 pathway to alternatively activated. hack like approach with 2madeupgene (could be fixed) intermediate and alternatively_activated gene end stage.
+STAT6 contained redpulp_macrophage modifier STAT6_disassociation_rate => STAT6_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Jak3 contained redpulp_macrophage #new
+STAT6 contained redpulp_macrophage binds 4madeupgene_inactive contained redpulp_macrophage modifier STAT6_4madeupgene_inactive_on <=> 4madeupgene contained redpulp_macrophage modifier STAT6_4madeupgene_inactive_off
+gene 4madeupgene contained redpulp_macrophage modifier make_socs3 => socs3 contained redpulp_macrophage
+gene 4madeupgene contained redpulp_macrophage modifier make_ALTERNATIVELY_ACTIVATE => ALTERNATIVELY_ACTIVATE contained redpulp_macrophage
+ALTERNATIVELY_ACTIVATE contained redpulp_macrophage binds alternatively_activated_inactive contained redpulp_macrophage modifier alternative_activation_rate <=> alternatively_activated contained redpulp_macrophage modifier un_alternative_activation_rate
+gene alternatively_activated contained redpulp_macrophage modifier make_IL-10 => IL-10 around redpulp_macrophage #it should be IL-10 not IL-4, so don't change it back again!
+gene alternatively_activated contained redpulp_macrophage modifier make_TGFb => TGFb around redpulp_macrophage
+
+#IL-10 pathway to deactivation. hack like approach with 10madeupgene (could be fixed) intermediate and deactivated gene end stage.
+STAT3 contained redpulp_macrophage modifier STAT3_disassociation_rate => STAT3_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Tyk2 contained redpulp_macrophage #new
+STAT3 contained redpulp_macrophage binds 10madeupgene_inactive contained redpulp_macrophage modifier STAT3_10madeupgene_inactive_on <=> 10madeupgene contained redpulp_macrophage modifier STAT3_10madeupgene_inactive_off
+gene 10madeupgene contained redpulp_macrophage modifier make_socs3 => socs3 contained redpulp_macrophage
+gene 10madeupgene contained redpulp_macrophage modifier make_DEACTIVATE => DEACTIVATE contained redpulp_macrophage
+DEACTIVATE contained redpulp_macrophage binds deactivated_inactive contained redpulp_macrophage modifier deactivation_rate <=> deactivated contained redpulp_macrophage modifier un_deactivation_rate
+gene deactivated contained redpulp_macrophage modifier make_IL-10 => IL-10 around redpulp_macrophage
+gene deactivated contained redpulp_macrophage modifier make_IL-10_reporter => IL-10_reporter around redpulp_macrophage #IL-10 around redpulp_macrophage TODO put this back
+
+#TNFa pathway
+IKK contained redpulp_macrophage and NFkb_activator_sequestered contained redpulp_macrophage modifier IKK_NFkb_release_NFkb => NFkb_activator contained redpulp_macrophage #2 things destroyed, one thing released. Very strange
+NFkb_activator contained redpulp_macrophage binds NFkb_inactive contained redpulp_macrophage modifier NFkb_activation_on <=> NFkb contained redpulp_macrophage modifier NFkb_activation_off
+#NON-REVERSIBLE FORM BELOW
+NFkb_activator contained redpulp_macrophage binds NFkb_sequesterer contained redpulp_macrophage modifier NFkb_activator_sequestration => NFkb_activator_sequestered contained redpulp_macrophage
+#NFkb_activator contained redpulp_macrophage binds NFkb_sequesterer contained redpulp_macrophage modifier NFkb_activator_sequestration <=> NFkb_activator_sequestered contained redpulp_macrophage modifier NFkb_activator_DEsequestration
+gene NFkb contained redpulp_macrophage modifier make_NOS2_activator => NOS2_activator contained redpulp_macrophage #joins on to the NOS2 - equations in the IFNg pathway
+gene NFkb contained redpulp_macrophage modifier make_NFkb_reporter => NFkb_reporter contained redpulp_macrophage #joins on to the NOS2 - equations in the IFNg pathway
+gene constitutional contained redpulp_macrophage modifier make_NFkb_sequesterer => NFkb_sequesterer contained redpulp_macrophage #
+gene constitutional contained redpulp_macrophage modifier make_pre_IKK => pre_IKK contained redpulp_macrophage
+
+#TGFb pathway (to alternatively activated too)
+SMAD4 contained redpulp_macrophage modifier SMAD4_disassociation_rate => SMAD4_inactive contained redpulp_macrophage and SMAD2 contained redpulp_macrophage and SMAD3 contained redpulp_macrophage #new
+SMAD4 contained redpulp_macrophage binds TGFbmadeupgene_inactive contained redpulp_macrophage modifier SMAD4_TGFbmadeupgene_inactive_on <=> TGFbmadeupgene contained redpulp_macrophage modifier SMAD4_TGFbmadeupgene_inactive_off
+gene TGFbmadeupgene contained redpulp_macrophage modifier make_SHP1 => SHP1 contained redpulp_macrophage
+gene TGFbmadeupgene contained redpulp_macrophage modifier make_SMAD7 => SMAD7 contained redpulp_macrophage # hack evidence for this linkage not searched for. Included to give TGFb an "off", Biology would approve, but it may not be done in this manner
+gene TGFbmadeupgene contained redpulp_macrophage modifier TGFb_make_DEACTIVATE => DEACTIVATE contained redpulp_macrophage # hack is this accurate?
+gene TGFbmadeupgene contained redpulp_macrophage modifier make_TGFb_reporter => TGFb_reporter contained redpulp_macrophage
+
+#Turning off TGFb 
+#mechanisms are hack like. I think SMAD7 might be one of those where some people claim it helps TGFb and some calim it hinders it - probably context dependent.
+#I'm taking the SHP1 approach instead of the socs approach.
+catalyst SMAD7 contained redpulp_macrophage and Trans_TGFb_1 under redpulp_macrophage modifier SMAD7_remove_SMAD2 => TGFb_bound under redpulp_macrophage and SMAD2 contained redpulp_macrophage
+catalyst SMAD7 contained redpulp_macrophage and Trans_TGFb_2 under redpulp_macrophage modifier SMAD7_remove_SMAD3 => Trans_TGFb_1 under redpulp_macrophage and SMAD3 contained redpulp_macrophage
+catalyst SMAD7 contained redpulp_macrophage and SMAD4 contained redpulp_macrophage modifier SMAD7_remove_SMAD4 => SMAD4_inactive contained redpulp_macrophage and SMAD2 contained redpulp_macrophage and SMAD3 contained redpulp_macrophage
+
+
+
+#Decay
+NO contained redpulp_macrophage modifier NO_decay => decay                       #new
+IL-1 around redpulp_macrophage modifier IL-1_decay => decay                      #new
+IL-4 around redpulp_macrophage modifier IL-4_decay => decay                      #new
+IL-10_reporter contained spleen modifier IL-10_reporter_decay => decay                      #new
+IL-10 around redpulp_macrophage modifier IL-10_decay => decay                      #new
+TGFb around redpulp_macrophage modifier TGFb_decay => decay                      #new
+IL-6 around redpulp_macrophage modifier IL-6_decay => decay                      #new
+IL-12 around redpulp_macrophage modifier IL-12_decay => decay                    #new
+TNFa around redpulp_macrophage modifier TNFa_decay => decay                      #new
+ACTIVATE contained redpulp_macrophage modifier ACTIVATE_decay => decay                    #new
+ALTERNATIVELY_ACTIVATE contained redpulp_macrophage modifier ALTERNATIVELY_ACTIVATE_decay => decay
+DEACTIVATE contained redpulp_macrophage modifier DEACTIVATE_decay => decay                    #new
+socs1 contained redpulp_macrophage modifier socs1_decay => decay                      #new
+socs3 contained redpulp_macrophage modifier socs3_decay => decay                      #new
+NOS2_activator contained redpulp_macrophage modifier NOS2_activator_decay => decay                      #new
+NFkb_sequesterer contained redpulp_macrophage modifier NFkb_sequesterer_decay => decay
+pre_IKK contained redpulp_macrophage modifier pre_IKK_decay => decay
+IKK contained redpulp_macrophage modifier IKK_decay => decay
+NFkb_reporter contained redpulp_macrophage modifier NFkb_reporter_decay => decay
+SMAD7 contained redpulp_macrophage modifier SMAD7_decay => decay
+TGFb_reporter contained redpulp_macrophage modifier TGFb_reporter_decay => decay
+
+MHCI on redpulp_macrophage modifier MHCI_decay  => decay
+MHCII on redpulp_macrophage modifier MHCII_decay => decay
+CD1d on redpulp_macrophage modifier CD1d_decay  => decay
+ 
+#Inhibition
+socs1 contained redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier socs1_Jak1_on <=> socs1_Jak1 contained redpulp_macrophage modifier socs1_Jak1_off
+socs3 contained redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier socs3_Jak1_on <=> socs3_Jak1 contained redpulp_macrophage modifier socs3_Jak1_off
+
+#REPRESSION SECTION#
+
+#SHP1 repression
+#Pulling the complexes into their component parts is very powerful. It is however a reasonable approximation to make this process instantaions. 
+#The alternative is to have SHP1 join the complex and then with some modifier pull the components appart. Mean time in the SHP1 complex would no doubt be very short.
+#Undoing the IFNg pathway
+catalyst SHP1 contained redpulp_macrophage and Trans_IFNg1 under redpulp_macrophage modifier SHP1_remove_Jak => IFNg_bound under redpulp_macrophage and Jak1 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and Trans_IFNg2 under redpulp_macrophage modifier SHP1_remove_Jak => Trans_IFNg1 under redpulp_macrophage and Jak2 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and STAT1 contained redpulp_macrophage modifier SHP1_remove_STAT => STAT1_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Jak2 contained redpulp_macrophage
+#Undoing the IL-6 pathway
+catalyst SHP1 contained redpulp_macrophage and Trans_IL-6_1 under redpulp_macrophage modifier SHP1_remove_Jak => IL-6_bound under redpulp_macrophage and Jak1 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and Trans_IL-6_2 under redpulp_macrophage modifier SHP1_remove_Jak => Trans_IL-6_1 under redpulp_macrophage and Jak2 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and STAT1 contained redpulp_macrophage modifier SHP1_remove_STAT => STAT1_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Jak2 contained redpulp_macrophage #because this is the same as IFNg they need the same Jaks hack may not actually be biologically accurate, it should be two Stats and no Jaks that are the message.
+#Undoing the IL-10 pathway
+catalyst SHP1 contained redpulp_macrophage and Trans_IL-10_1 under redpulp_macrophage modifier SHP1_remove_Jak => IL-10_bound under redpulp_macrophage and Jak1 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and Trans_IL-10_2 under redpulp_macrophage modifier SHP1_remove_Jak => Trans_IL-10_1 under redpulp_macrophage and Tyk2 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and STAT3 contained redpulp_macrophage modifier SHP1_remove_STAT => STAT3_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Tyk2 contained redpulp_macrophage
+#Undoing the IL-4 pathway
+catalyst SHP1 contained redpulp_macrophage and Trans_IL-4_1 under redpulp_macrophage modifier SHP1_remove_Jak => IL-4_bound under redpulp_macrophage and Jak1 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and Trans_IL-4_2 under redpulp_macrophage modifier SHP1_remove_Jak => Trans_IL-4_1 under redpulp_macrophage and Jak3 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and STAT6 contained redpulp_macrophage modifier SHP1_remove_STAT => STAT6_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Jak3 contained redpulp_macrophage
+
+SHP1 contained redpulp_macrophage modifier SHP1_decay => decay
+#catalyst SHP1 contained redpulp_macrophage and ACTIVATE contained redpulp_macrophage modifier SHP1_unACTIVATE => decay #perhaps this is far too powerful/inaccurate? hack ?
+#Further to this point, it should be unrequired as the pathway, once shut down will eventually have th ACTIVATE decay away etc
+
+
+#amastigote reactions
+#and iron cycle. It takes 1 iron when a amastigote is produced and 1 iron comes when it is dead. Iron effects the reproduction modifier but not the death rates
+#stoichiometry makes a hack where the number should really be a parameter, particularly in this instance where they are clearly hacky numbers
+#death:
+amastigote contained redpulp_macrophage and NO contained redpulp_macrophage modifier active_amastigote_killing => 50 dead_amastigote_antigen contained redpulp_macrophage and iron contained redpulp_macrophage # 10 and 50 are clearly both hack
+amastigote contained redpulp_macrophage modifier passive_amastigote_death => 10 dead_amastigote_antigen contained redpulp_macrophage and iron contained redpulp_macrophage #passive mechanism, sometimes things die
+#reproduction
+#"catalyst" because it is not used up. "and" because bind seems more wrong. iron because something needs to stop this being exponential, so it may as well be the known resource: iron.
+catalyst amastigote contained redpulp_macrophage and iron contained redpulp_macrophage modifier amastigote_reproduction =>  amastigote contained redpulp_macrophage
+#expression. Now it is acting as a gene. It is a quasi jack of all trades
+gene amastigote contained redpulp_macrophage modifier make_SHP1 => SHP1 contained redpulp_macrophage
+
+dead_amastigote_antigen contained redpulp_macrophage modifier dead_amastigote_antigen_decay => decay
+
+#iron cycle required to limit the exponential phase of amastigote growth
+#Consider making iron a fixed resource that goes in on amastigote reproduction and comes back out on amastigote death in a conserved manner - bit of a hard limit
+#This doesn't deal with the with the wider implications of the iron cycle where amastigotes stimulate production of blood cells, which presumably then leads to blood cell clearence, or increased iron delivery to redpulp_macrophage and kupffer cells
+
+
+#redpulp_macrophage to ON surface reactions
+#presentation of antigen MHCI MHCII CD1d. In each case we are implicitly considering the receptor to be loaded with amastigote antigen. No other MHC/CD1d are in the model
+gene activated contained redpulp_macrophage and dead_amastigote_antigen contained redpulp_macrophage modifier MHCI_production => MHCI on redpulp_macrophage #This reaction can only proceed when there is some activated gene and some dead amastigotes
+#MHCI requires licencing, so there is no constitutional expression of MHCI. Examining this may explain the CD4 biased nature of the response.
+gene activated contained redpulp_macrophage and dead_amastigote_antigen contained redpulp_macrophage modifier MHCII_production => MHCII on redpulp_macrophage #The upregulation mechanism
+gene constitutional contained redpulp_macrophage and dead_amastigote_antigen contained redpulp_macrophage modifier constitutional_MHCII_production => MHCII on redpulp_macrophage #The constitutional mechanism
+gene activated contained redpulp_macrophage and dead_amastigote_antigen contained redpulp_macrophage modifier CD1d_production => CD1d on redpulp_macrophage #The upregulation mechanism 
+gene constitutional contained redpulp_macrophage and catalyst amastigote contained redpulp_macrophage modifier constitutional_CD1d_production_alive => CD1d on redpulp_macrophage #The constitutional mechanism based on the number of live amastigotes. Shedding of lipid?
+gene constitutional contained redpulp_macrophage and dead_amastigote_antigen contained redpulp_macrophage modifier constitutional_CD1d_production_dead => CD1d on redpulp_macrophage
+

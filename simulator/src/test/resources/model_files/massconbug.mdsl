@@ -1,0 +1,17 @@
+initial tree {spleen {60 redpulp_macrophage}}
+
+species Th1I contained spleen        = 10 unit
+species Th1I_exp contained spleen    = 0 unit
+
+species MHCII on redpulp_macrophage  = 20 unit
+species IFNg contained spleen        = 100 unit
+species TGFb contained spleen        = 50 unit
+
+parameter IFNg_effectiveness              = 0.001 unit
+parameter TGFb_effectiveness              = 0.1 unit
+parameter Th1I_exp_Th1I                   = 100 unit #depends on MHCII
+parameter Th1I_Th1I_exp                   = 4 unit #depends on IFNg and TGFb levels
+
+
+Th1I_exp contained spleen modifier Th1I_exp_Th1I*(1 + ((TGFb contained spleen)*TGFb_effectiveness)/(1+(IFNg contained spleen)*IFNg_effectiveness)) <=> Th1I contained spleen binds catalyst MHCII on redpulp_macrophage modifier Th1I_Th1I_exp
+

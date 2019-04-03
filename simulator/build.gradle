@@ -1,0 +1,145 @@
+
+// Apply the plugins
+apply plugin: 'java'
+apply plugin: "eclipse"
+apply plugin: 'antlr'
+apply plugin: "jacoco"
+apply plugin: 'checkstyle'
+
+// set the java versions
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// download dependencies from jcenter 
+repositories {
+    jcenter()
+}
+
+// Declare the dependencies for your production and test code
+dependencies {
+
+    // The production code uses the SLF4J logging API at compile time
+    compile 'org.slf4j:slf4j-api:1.7.13'
+
+	antlr "org.antlr:antlr4:4.5"
+
+    testCompile 'junit:junit:3.8.2'
+
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.1'
+	
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-math3
+	compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
+	// https://mvnrepository.com/artifact/com.google.guava/guava
+	compile group: 'com.google.guava', name: 'guava', version: '19.0'
+
+	// https://mvnrepository.com/artifact/org.hamcrest/hamcrest-all
+	compile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+
+	// https://mvnrepository.com/artifact/com.beust/jcommander
+	compile group: 'com.beust', name: 'jcommander', version: '1.27'
+
+	// https://mvnrepository.com/artifact/com.github.stefanbirkner/system-rules
+	compile group: 'com.github.stefanbirkner', name: 'system-rules', version: '1.16.0'
+}
+
+// command line arguments for antlr
+generateGrammarSource {
+    maxHeapSize = "64m"
+    arguments += ["-o", "./src/main/java/com/simomics/leishsim/parsing", "-listener", "-visitor", "-long-messages", "-package", "com.simomics.leishsim.parsing", "-encoding", "UTF-8"]
+    outputDirectory = new File("./generated-src/main/java/com/simomics/leishsim/parsing".toString())
+}
+
+// add antlr generated java files to the build
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java'
+            srcDirs 'generated-src/main/java'
+        }
+    }
+}
+
+// delete antlr generated files when cleaning
+clean {
+    delete 'generated-src'
+}
+
+// config the generated jar
+jar {
+
+    // set the main class
+    manifest {
+        attributes 'Main-Class': 'com.simomics.leishsim.Driver'
+    }
+
+    // jar name
+    baseName 'leishsim'
+
+	// include all the dependencies
+	from {
+    	configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+  	}
+}
+
+
+task jarDiagramGenerator(type: Jar) {
+    
+    // set the main class
+    manifest {
+        attributes 'Main-Class': 'com.simomics.leishsim.DiagramGenerator'
+    }
+
+    // jar name
+    baseName = "diagramGenerator"
+
+    // include all the dependencies
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+
+// run jacoco after tests
+test { 
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled true
+    }
+    // NB: The coverage chart in Jenkins is defined in Jenkins itself.
+    //     Changing this file just changes the locally-generated coverage reports. 
+    //     Need to keep this synchronised with Jenkins.
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+            	'com/simomics/leishsim/parsing/MembraneModel*', // antlr generated files
+                'ec/util/*'                                     // random number generation library
+            ])
+        })
+    }
+}
+
+// Checkstyle settings
+checkstyle {
+    toolVersion = "7.0"
+    ignoreFailures = true
+    showViolations = false
+}
+
+// Checkstyle report settings
+tasks.withType(Checkstyle) {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+    exclude 'com/simomics/leishsim/parsing/MembraneModel*' // antlr generated files
+    exclude 'ec/util/*'                                    // random number generation library
+}
+
+
+

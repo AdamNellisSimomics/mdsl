@@ -1,0 +1,18 @@
+
+# Example showing that with independent reactions, 
+#   changing the delay of one does not affect the other.
+#
+# The reactions a -> b and c -> d are independent
+# Changing the delay of c -> d should not change the rate of a -> b
+
+initial tree {simulation}
+
+species a contained simulation = 1000 units
+species b contained simulation =    0 units
+species c contained simulation = 1000 units
+species d contained simulation =    0 units
+species e contained simulation =    0 units
+
+a contained simulation modifier ln(2) / 10 => b contained simulation
+c contained simulation modifier ln(2) / 10 delay 20 => d contained simulation
+b contained simulation binds d contained simulation modifier 10 => e contained simulation

@@ -1,0 +1,22 @@
+  simulation
+    membrane_a [a_1]
+      Contained: 10 x, 30 z
+    membrane_a [a_1]
+      Contained: 10 x, 30 z
+    membrane_a [a_2]
+      Contained: 20 y, 30 z
+    membrane_b
+      membrane_a
+        Contained: 30 z
+      membrane_a
+        Contained: 30 z
+      membrane_a
+        Contained: 30 z
+      membrane_a [a_2]
+        Contained: 20 y, 30 z
+      membrane_a [a_2]
+        Contained: 20 y, 30 z
+      membrane_a [a_2]
+        Contained: 20 y, 30 z
+      membrane_a [a_2]
+        Contained: 20 y, 30 z

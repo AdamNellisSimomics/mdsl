@@ -1,0 +1,19 @@
+
+initial tree {simulation}
+
+parameter p = 3.6 units
+parameter q = 4.2 units
+parameter r = 5.9 units
+
+species a contained simulation = 5 units
+species b contained simulation = 3 + 6 units
+species c contained simulation = 4 * (7 - 2) units
+species d contained simulation = 4 * (7 - 2.5) units
+species e contained simulation = round(3 * (7 - 2.5)) units
+species f contained simulation = round ( 3 * (7 - 2.5) ) units
+species g contained simulation = 60 / 12 units
+species h contained simulation = round (59 / 12) units
+species i contained simulation = round (p) units
+species j contained simulation = 10 * p units
+species k contained simulation = round (3.5 * p - q + 7) units
+species l contained simulation = round(ln(2) * p * r) * 10 units

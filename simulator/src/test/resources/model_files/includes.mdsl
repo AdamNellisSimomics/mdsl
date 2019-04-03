@@ -1,0 +1,9 @@
+
+initial tree {simulation}
+
+species a contained simulation = 10 units
+species c contained simulation = 0 units
+
+include includes_1.mdsl
+
+a contained simulation binds b contained simulation modifier 1 => c contained simulation

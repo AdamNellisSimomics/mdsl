@@ -1,0 +1,12 @@
+
+# Model file using "around membrane" and "contained simulation", which are synonyms
+
+initial tree {simulation {4 membrane}}
+
+# Should be initialised the same
+species a contained simulation = 100 units
+species b around membrane = 100 units
+
+# Reactions should be the same
+a contained simulation modifier 10 => decay
+b around membrane modifier 10 => decay

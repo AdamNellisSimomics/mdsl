@@ -1,0 +1,16 @@
+
+#Testing how the engine handles rates of reactions.
+#	 Behaviour: If you want an equation to have a half-time of h, then set its rate to: (ln(2) / h)
+#	            This is the median of an exponential distribution with parameter h (p(x) = e^(-hx)).
+#
+
+initial tree { simulation }
+
+species A contained simulation = 10 mol.liter^-1
+species B contained simulation = 1000 mol.liter^-1
+
+parameter rate = 0.05776226504 units # ln(2) / 12
+
+A contained simulation modifier rate => decay
+
+B contained simulation modifier rate => decay

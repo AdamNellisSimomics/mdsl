@@ -1,0 +1,10 @@
+
+# Model that uses delays in reactions.
+
+initial tree {simulation}
+
+species a contained simulation = 5 units
+
+a contained simulation modifier 1 delay 1000 => b contained simulation
+
+c contained simulation modifier 10 delay 20 <=> d contained simulation modifier 30 delay 40

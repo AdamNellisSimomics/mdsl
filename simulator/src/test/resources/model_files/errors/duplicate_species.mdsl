@@ -1,0 +1,11 @@
+
+# A model file that contains two definitions for the same species.
+# This should throw a warning.
+
+initial tree {simulation}
+
+species a contained simulation = 1 units
+species a contained simulation = 1 units
+species b contained simulation = 1 units
+
+a contained simulation modifier 0.3 => b contained simulation

@@ -1,0 +1,1275 @@
+#Spleen model: first section modelling T cells NK iNKT, neutrophils, other monocyte derived macrophages. Second section models redpulp macrophages in intracellular detail
+initial tree {spleen {10 redpulp_macrophage}}
+parameter rpm = 10 cells
+
+parameter volcor = (10 / rpm) unitless 
+##volcor is volume correction. The simulation was tuned at 10 rpm (redpulp macrophages), which is why this is "10/rpm". 
+##For each rpm there is a scaled number of each other cell type based on data, so in effect 1 rpm and associated cells is defining some volume of spleen (though the volume is never explicitly calculated). 
+##The volume of spleen becomes relevent when you are considering the conversion between an amount of cytokine produced and the concentration of cytokine in the volume.
+##volcor is applied to the reaction rather than production. The more rpm the less potent (lower concentration) a single unit of cytokine is.
+
+species EXPERIMENTAL_PROTOCOL_drug003024 contained redpulp_macrophage = 0 unit [intervention switch]
+species EXPERIMENTAL_PROTOCOL_anti_IL-10 contained spleen = 0 unit [IL-10 'knock down' intervention switch]#1/0 on/off
+species EXPERIMENTAL_PROTOCOL_anti_IFNg contained spleen = 0 unit [IFNg 'knock down' intervention switch]
+species EXPERIMENTAL_PROTOCOL_anti_TNFa contained spleen = 0 unit [TNFa 'knock down' intervention switch]
+
+
+species Th0 contained spleen         = 0 unit [CD4 cell 'antigen specific' niave]#simulation starts at 28 days, no niave cells are expected 
+species Th0_exp contained spleen     = 0 unit [CD4 cell 'antigen specific' niave]
+species Th1I contained spleen        = round(3.68*rpm) unit [CD4 cell 'antigen specific' Th1 inflammatory]
+species Th1I_exp contained spleen    = 0 unit [CD4 cell 'antigen specific' Th1 inflammatory]
+species Th1II contained spleen       = 0 unit [CD4 cell 'antigen specific' Th1 inflammatory]
+species Th1II_exp contained spleen   = 0 unit [CD4 cell 'antigen specific' Th1 inflammatory]
+species Th1III contained spleen      = round(0.35*rpm) unit [CD4 cell 'antigen specific' Th1 inflammatory IL-10]
+species Th1III_exp contained spleen  = 0 unit [CD4 cell 'antigen specific' Th1 inflammatory IL-10]
+species Th2 contained spleen         = round(0.1*rpm) unit [CD4 cell 'antigen specific' Th2]
+species Th2_exp contained spleen     = 0 unit [CD4 cell 'antigen specific' Th2]
+species Tr1 contained spleen         = 0 unit [CD4 cell 'antigen specific' Tr1 anti-inflammatory] ## TODO TODO TODO data missing
+species Tr1_exp contained spleen     = 0 unit [CD4 cell 'antigen specific' Tr1 anti-inflammatory] ## TODO TODO TODO data missing
+
+species nTreg_exp contained spleen   = round(1.1*rpm) unit [CD4 cell Tr1 anti-inflammatory] #TURN ON nTreg currently too powerful - linkage between IL-10 producers so powerful that if one turns on, they all turn on
+
+species Tc0     contained spleen     = 0 unit [CD8 cell 'antigen specific' niave] #TURN ON
+species Tc0_exp contained spleen     = 0 unit [CD8 cell 'antigen specific' niave]
+species Tc1     contained spleen     = round(0.59*rpm) unit [CD8 cell 'antigen specific' Tc1 inflammatory]
+species Tc1_exp contained spleen     = 0 unit [CD8 cell 'antigen specific' Tc1 inflammatory]
+species Tc2     contained spleen     = round(0.06*rpm) unit [CD8 cell 'antigen specific' Tc2]
+species Tc2_exp contained spleen     = 0 unit [CD8 cell 'antigen specific' Tc2]
+
+species iNKT contained spleen        = round(4.19*rpm) unit [NKT cell 'antigen specific' innate iNKT inflammatory]#TURN ON
+species iNKT_exp contained spleen    = 0 unit [NKT cell 'antigen specific' innate iNKT inflammatory]
+
+species NK contained spleen          = round(2.13*rpm) unit [NK cell innate inflammatory]#TURN ON
+species NK_exp contained spleen      = 0 unit [NK cell innate inflammatory]
+species NKIL-10 contained spleen     = 0 unit [NK cell innate inflammatory IL-10]
+species NKIL-10_exp contained spleen = 0 unit [NK cell innate inflammatory IL-10]
+
+species Neutrophil_resting       contained spleen = round(4.74*rpm) unit [APC cell niave] #TURN ON #5 on both contribute about 50 IL-10 to the standing average - 50% IL-10 producing
+species Neutrophil_NFkb_exhausted contained spleen = 0 unit [APC cell niave]
+species Neutrophil_Activated     contained spleen = 0 unit  [APC cell inflammatory]
+species Neutrophil_Alt_Activated contained spleen = 0 unit  [APC cell]
+species Neutrophil_Deactivated   contained spleen = 0 unit  [APC cell anti-inflammatory]
+
+species OtherAPC_resting       contained spleen = round(8.29*rpm) unit [APC cell niave] #TURN ON #5 on both contribute about 50 IL-10 to the standing average - 50% IL-10 producing
+species OtherAPC_NFkb_exhausted contained spleen = 0 unit [APC cell niave]
+species OtherAPC_Activated     contained spleen = 0 unit  [APC cell inflammatory]
+species OtherAPC_Alt_Activated contained spleen = 0 unit  [APC cell]
+species OtherAPC_Deactivated   contained spleen = 0 unit  [APC cell anti-inflammatory]
+
+species CD1d  on redpulp_macrophage  = 0 unit [receptor ligand antigen NKT lipid]#was 20
+species MHCI on redpulp_macrophage   = 0 unit [receptor ligand antigen CD8 peptide adaptive]#was 20
+species MHCII on redpulp_macrophage  = 0 unit [receptor ligand antigen CD4 peptide adaptive]#was 20
+species IFNg contained spleen        = 0 unit [cytokine ligand inflammatory]#100 unit
+species TNFa contained spleen        = 0 unit [cytokine ligand inflammatory]#150 unit
+species IL-10 contained spleen       = 0 unit [cytokine ligand anti-inflammatory]#300 unit
+species IL-4 contained spleen        = 0 unit [cytokine ligand anti-inflammatory]#100 unit
+species TGFb contained spleen        = 0 unit [cytokine ligand anti-inflammatory]#50 unit
+species IL-12 contained spleen       = 0 unit [cytokine ligand inflammatory]#100 unit
+species IL-1 contained spleen        = 0 unit [cytokine ligand inflammatory innate]#100 unit #APCs only so far
+species IL-6 contained spleen        = 0 unit [cytokine ligand inflammatory innate]#100 unit #APCs only so far
+species LPS contained spleen         = 0 unit [cytokine ligand inflammatory innate]#APCs only so far #Model contains no sources for LPS
+
+#maturation of NK
+parameter NK_exp_NKIL-10_exp             = 0.7/168 unit
+#maturation of CD8
+parameter Tc0_exp_Tc1_rate                = 0.7/168 unit 
+parameter Tc0_exp_Tc2_rate                = 0.7/168 unit
+#maturation of CD4
+parameter Th0_exp_Th1I_rate               = 0.7/168 unit
+parameter Th0_exp_Th2_rate                = 0.7/168 unit
+parameter Th0_exp_Tr1_rate                = 0.7/168 unit
+parameter Th1I_exp_Th1II_exp              = 0.7/168 unit
+parameter Th1I_Th1II                      = 0.7/168 unit
+parameter Th1II_exp_Th1III_exp            = (0.7/168)/(55*50) unit #extra ruduction added to allow responsivness to IL-12 levels, without it, it was a bit of a hair trigger 
+parameter Th1II_Th1III                    = (0.7/168)/(55*50) unit #55 is approximately the effectiveness and then 50 would be the dose
+
+parameter APC_activations                          = 0.0000000005 unit
+parameter Neutrophil_NFkb_exhausted_activation     = APC_activations / 10 unit 
+parameter Neutrophil_NFkb_exhausted_alt_activation = APC_activations / 10 unit 
+parameter Neutrophil_NFkb_exhausted_deactivation   = APC_activations / 10 unit 
+parameter Neutrophil_resting_activation            = APC_activations / 2 unit 
+parameter Neutrophil_resting_alt_activation        = APC_activations unit 
+parameter Neutrophil_resting_deactivation          = APC_activations unit 
+
+parameter OtherAPC_NFkb_exhausted_activation       = APC_activations / 10 unit 
+parameter OtherAPC_NFkb_exhausted_alt_activation   = APC_activations / 10 unit 
+parameter OtherAPC_NFkb_exhausted_deactivation     = APC_activations / 10 unit 
+parameter OtherAPC_resting_activation              = APC_activations / 2 unit 
+parameter OtherAPC_resting_alt_activation          = APC_activations unit 
+parameter OtherAPC_resting_deactivation            = APC_activations unit 
+
+parameter return_to_resting                              = ln(2)/(12) hour^-1
+parameter Neutrophil_Activated_Neutrophil_NFkb_exhausted = return_to_resting hour-1 
+parameter Neutrophil_NFkb_exhausted_resting              = return_to_resting hour-1 
+parameter Neutrophil_Alt_Activated_resting               = return_to_resting hour-1 
+parameter Neutrophil_Deactivated_resting                 = return_to_resting hour-1 
+
+parameter OtherAPC_Activated_OtherAPC_NFkb_exhausted     = return_to_resting hour-1 
+parameter OtherAPC_NFkb_exhausted_resting                = return_to_resting hour-1 
+parameter OtherAPC_Alt_Activated_resting                 = return_to_resting hour-1 
+parameter OtherAPC_Deactivated_resting                   = return_to_resting hour-1 
+
+#expressing or not expressing
+parameter cell_up                         = ln(2)/0.5 hour^-1 #was  #value calculated for Th1 style. At 1000 MHC it should take about 1 min: cell_up = ln(2)/(1000MHC*0.0166hour)
+parameter cell_down                       = ln(2)/(24*4) hour^-1 # was #value calculated for Th1 style. At 100 IFNg, IL-10, TGFb "mixed conditions" it will take about 6 hours: cell_down = ln(2)*(1 + 43000)/(6hours*(1+2000+3.4))
+parameter Th0_Th0_exp                     = cell_up unit #must account for MHCII effectiveness
+parameter Th1I_Th1I_exp                   = cell_up unit #depends on IFNg and TGFb levels
+parameter Th1II_Th1II_exp                 = cell_up unit
+parameter Th1III_Th1III_exp               = cell_up unit
+parameter Th2_Th2_exp                     = cell_up unit
+parameter Tr1_Tr1_exp                     = cell_up unit
+parameter Tc0_Tc0_exp                     = cell_up unit #must account for MHCI effectiveness
+parameter Tc1_Tc1_exp                     = cell_up unit #must account for MHCI effectiveness
+parameter Tc2_Tc2_exp                     = cell_up unit #must account for MHCI effectiveness
+parameter iNKT_iNKT_exp                   = cell_up / 5000000 unit # IL-12 only route
+parameter iNKT_iNKT_exp_rate              = cell_up / 100 unit  #cd1d and IL-12 dependent MUST account for CD1d effectiveness
+parameter NK_NK_exp                       = cell_up / 5000000 unit #factor /50 added to expand responsive range to IL-12. It may be a feature of cytokine only activation
+parameter NKIL-10_NKIL-10_exp             = cell_up / 5000000 unit
+parameter Th0_exp_Th0                     = cell_down unit 
+parameter Th1I_exp_Th1I                   = cell_down unit 
+parameter Th1II_exp_Th1II                 = cell_down unit 
+parameter Th1III_exp_Th1III               = cell_down unit 
+parameter Th2_exp_Th2                     = cell_down unit 
+parameter Tr1_exp_Tr1                     = cell_down unit 
+parameter Tc0_exp_Tc0                     = cell_down unit 
+parameter Tc1_exp_Tc1                     = cell_down unit 
+parameter Tc2_exp_Tc2                     = cell_down unit 
+parameter iNKT_exp_iNKT                   = cell_down*10 unit 
+parameter NK_exp_NK                       = cell_down*10 unit 
+parameter NKIL-10_exp_NKIL-10             = cell_down*10 unit 
+
+parameter production_of_cytokines         = 20 unit #highly runtime sensitive
+parameter production_of_IFNg              = production_of_cytokines*3 unit
+parameter production_of_IL-10             = production_of_cytokines unit
+parameter production_of_IL-12             = production_of_cytokines/100 unit
+parameter production_of_IL-1              = production_of_cytokines/10 unit
+parameter production_of_IL-6              = production_of_cytokines/20 unit
+parameter production_of_TNFa              = production_of_cytokines/5 unit
+parameter production_of_TGFb              = production_of_cytokines unit
+parameter production_of_NO                = production_of_cytokines unit
+parameter production_of_IL-4              = production_of_cytokines unit
+
+parameter Th1I_exp_make_IFNg              = production_of_IFNg unit
+parameter Th1I_exp_make_TNFa              = production_of_TNFa unit
+parameter Th1II_exp_make_IFNg             = production_of_IFNg unit
+parameter Th1II_exp_make_TNFa             = production_of_TNFa unit
+parameter Th1III_exp_make_IFNg            = production_of_IFNg unit
+parameter Th1III_exp_make_TNFa            = production_of_TNFa unit
+parameter Th1III_exp_make_IL-10           = production_of_IL-10 unit
+parameter Th2_exp_make_IL-4               = production_of_IL-4 unit
+parameter Th2_exp_make_IL-10              = production_of_IL-10 unit
+parameter Tr1_exp_make_IL-10              = production_of_IL-10 unit
+parameter nTreg_exp_make_IL-10            = production_of_IL-10 unit        ## TODO TODO be aware of the /10 introduced to stop nTreg dominating the system
+parameter nTreg_exp_make_TGFb             = production_of_TGFb unit    ## TODO TODO be aware of the /10 introduced to stop nTreg dominating the system
+
+parameter Tc1_exp_make_IFNg               = production_of_IFNg unit
+parameter Tc1_exp_make_TNFa               = production_of_TNFa unit
+parameter Tc2_exp_make_IL-4               = production_of_IL-4 unit
+parameter Tc2_exp_make_IL-10              = production_of_IL-10 unit
+
+parameter iNKT_exp_make_IFNg              = production_of_IFNg unit
+parameter iNKT_exp_make_IL-4              = production_of_IL-4 unit
+
+parameter NKIL-10_exp_make_IFNg           = production_of_IFNg unit
+parameter NKIL-10_exp_make_TNFa           = production_of_TNFa unit
+parameter NKIL-10_exp_make_IL-10          = production_of_IL-10 unit
+parameter NK_exp_make_IFNg                = production_of_IFNg unit
+parameter NK_exp_make_TNFa                = production_of_TNFa unit
+
+parameter OtherAPC_make_TNFa              = production_of_TNFa unit
+parameter OtherAPC_make_IL-1              = production_of_IL-1 unit
+parameter OtherAPC_make_IL-6              = production_of_IL-6 unit
+parameter OtherAPC_make_IL-12             = production_of_IL-12 unit
+parameter OtherAPC_make_NO                = production_of_NO unit
+parameter OtherAPC_make_TGFb              = production_of_TGFb unit
+parameter OtherAPC_make_IL-10             = production_of_IL-10 unit
+
+parameter Neutrophil_make_TNFa            = production_of_TNFa unit
+parameter Neutrophil_make_IL-1            = production_of_IL-1 unit
+parameter Neutrophil_make_IL-6            = production_of_IL-6 unit
+parameter Neutrophil_make_IL-12           = production_of_IL-12 unit
+parameter Neutrophil_make_NO              = production_of_NO unit
+parameter Neutrophil_make_TGFb            = production_of_TGFb unit
+parameter Neutrophil_make_IL-10           = production_of_IL-10 unit
+
+parameter damage_make_LPS                 = production_of_cytokines / 100 unit 
+parameter damage_make_IL-10               = production_of_IL-10 unit 
+
+####new parameters
+parameter stuff_decay                     = 1.5 unit # was1.5
+
+
+
+parameter generic_effectiveness           = 1000000 unit #this is super important, but hard to understand. It is controlling the weighting vs the +1 to stop divide by 0 errors
+parameter IFNg_effectiveness              =   generic_effectiveness/100 unit # pre-ED50 values generic_effectiveness/0.00228  unit
+parameter IL-12_effectiveness             =   generic_effectiveness/300 unit# pre-ED50 values generic_effectiveness/0.018  unit ## 18 pM	http://www.ncbi.nlm.nih.gov/pubmed/23135926 Parra-Guillen2013
+parameter TGFb_effectiveness              =   generic_effectiveness/40 unit # pre-ED50 values generic_effectiveness/0.05  unit
+parameter IL-4_effectiveness              =   generic_effectiveness/200 unit# pre-ED50 values generic_effectiveness/0.382  unit
+parameter IL-10_effectiveness             =   generic_effectiveness/300 unit # pre-ED50 values generic_effectiveness/0.297  unit
+parameter TNFa_effectiveness              =   generic_effectiveness/5 unit# pre-ED50 values generic_effectiveness/0.19  unit
+parameter IL-6_effectiveness              =   generic_effectiveness/7 unit# pre-ED50 values generic_effectiveness/10  unit
+parameter IL-1_effectiveness              =   generic_effectiveness/10 unit# pre-ED50 values generic_effectiveness/0.072  unit
+parameter LPS_effectiveness               =   generic_effectiveness/500 unit # hack hack hack this one is made up # pre-ED50 values generic_effectiveness/3  unit
+#LPS_off/3 unit TNFa_off/0.19 unit IL-1_off/0.072 unit TGFb_off/0.05 unit IL-10_off/0.297 IL-4_off/0.382 unit IL-6_off/10 units IFNg_off/0.00228 units
+#IL-4_off/0.382 unit #kon = koff/kd  ## kd=382 (+/- 115) pico Molar	= 0.382 nM
+
+
+##"Consequently, half-life is not a constant value and is inversely proportional to the concentration of NO, so the half-life becomes much longer as nitric oxide becomes more dilute. 
+#At physiological concentrations of NO (1 μM to 10 nM), the half-life of NO due to the reaction with oxygen has been calculated to range from 9 to 900 min [4]. 
+#In aqueous solution, increasing partial oxygen pressure from 150 to 700 mmHg reduces half-life of a given amount of NO from 6.2 to 3.8 s" http://www.sciencedirect.com/science/article/pii/S0005272899000201
+
+parameter NO_decay                      = ln(2)/15 hour-1 ##see inversly proportional equation. At physiological concentrations of NO (1 μM to 10 nM), the half-life of NO due to the reaction with oxygen has been calculated to range from 9 to 900 min [4]. http://www.sciencedirect.com/science/article/pii/S0005272899000201
+parameter IL-1_decay                    = ln(2)/1.5 hour-1 #http://www.jbc.org/content/263/17/8473.abstract
+parameter IL-4_decay                    = ln(2)/0.316 hour-1 #"We have found that IL-4 has a serum half-life of 19 +/- 2 min following intravenous administration" http://www.ncbi.nlm.nih.gov/pubmed/2562642
+parameter IL-6_decay                    = ln(2)/3 hour-1 #"The half-life of IL-6 is only 2–4 h" http://ndt.oxfordjournals.org/content/23/4/1460.3.full
+parameter IL-10_decay                   = ln(2)/1.85 hour-1 #"clinical studies with IL-10 remain difficult due to its short half-life (1.1–2.6 h) in serum" http://www.nature.com/gt/journal/v16/n2/full/gt2008156a.html
+parameter IL-12_decay                   = ln(2)/12 hour-1 #Hamza2010
+parameter TGFb_decay                    = ln(2)/0.033 hour-1 #"Free TGF-β has a half life of about 2 min, whereas the latent form — 90 min." http://www.actabp.pl/pdf/2_2005/329s.pdf
+parameter TNFa_decay                    = ln(2)/0.303 hour-1 #"in free plasma TNF-alpha concentration (half-life 18.2 min)" http://www.ncbi.nlm.nih.gov/pubmed/8324076
+parameter IFNg_decay                    = ln(2)/0.0183 hour-1 #"Interferon-γ (IFN-γ) binds with high affinity to heparan sulfate and heparin molecules through its carboxyl-terminal domain. In vivo, IFN-γ is eliminated from the bloodstream with a half-life (t1/2) of 1.1 min, due to binding to heparan sulfate. Unbound IFN-γ is cleaved  rapidly at the carboxyl-terminal side, a process that removes at least 18 amino acids and inactivates the cytokine. When bound to heparin, the plasma clearance of IFN-γ is decreased greatly (t1/2 = 99 min)" http://www.jbc.org/content/271/27/16139.full
+parameter LPS_decay                     = ln(2)/12 hour-1 #"The half-life for LPS was approximately 12 h, which is similar to results reported in C3H/St and C3H/HeJ mice [36]."	https://journal-inflammation.biomedcentral.com/articles/10.1186/1476-9255-4-22
+
+
+
+IL-1 contained spleen   modifier IL-1_decay => decay
+#IL-2 contained spleen   modifier IL-2_decay => decay
+IL-4 contained spleen   modifier IL-4_decay  => decay
+IL-6 contained spleen   modifier IL-6_decay  => decay
+IL-10 contained spleen  modifier IL-10_decay => decay
+IL-12 contained spleen  modifier IL-12_decay => decay
+TGFb contained spleen   modifier TGFb_decay  => decay
+TNFa contained spleen   modifier TNFa_decay  => decay
+IFNg contained spleen   modifier IFNg_decay  => decay
+LPS contained spleen    modifier LPS_decay   => decay
+
+
+ 
+#Th0 differentiations and states
+Th0 contained spleen binds catalyst MHCII on redpulp_macrophage modifier volcor*Th0_Th0_exp => Th0_exp contained spleen
+#partly to avoid duplication only Th0 in the expressing state may differentiate - this is effectively also a 2 step process to activation
+#Returning to a resting Th0 state
+Th0_exp contained spleen modifier Th0_exp_Th0 => Th0 contained spleen 
+#Expression
+Th0_exp contained spleen binds catalyst MHCII on redpulp_macrophage modifier volcor*Th0_exp_Th1I_rate*(((IL-12 contained spleen)*IL-12_effectiveness) + (IFNg contained spleen)*IFNg_effectiveness)/(1+ ((TGFb contained spleen)*TGFb_effectiveness)) => Th1I_exp contained spleen
+Th0_exp contained spleen binds catalyst MHCII on redpulp_macrophage modifier volcor*Th0_exp_Th2_rate*((IL-4 contained spleen)*IL-4_effectiveness)/(1+((TGFb contained spleen)*TGFb_effectiveness)) => Th2_exp contained spleen
+Th0_exp contained spleen binds catalyst MHCII on redpulp_macrophage modifier volcor*Th0_exp_Tr1_rate*((IL-10 contained spleen)*IL-10_effectiveness)/(1+((TGFb contained spleen)*TGFb_effectiveness)) => Tr1_exp contained spleen
+
+
+#Th1I differentiations and states
+#activation and dectivation (valid syntax check. This would be more comfortable the other way around, but the parser is ambidextrous)
+#hack added 1+ to tgfb to stop the fall back rate being 0
+Th1I_exp contained spleen modifier volcor*Th1I_exp_Th1I*(1 + ((TGFb contained spleen)*TGFb_effectiveness + ((IL-10 contained spleen)*IL-10_effectiveness))/(1+(IFNg contained spleen)*IFNg_effectiveness)) <=> Th1I contained spleen binds catalyst MHCII on redpulp_macrophage modifier volcor*Th1I_Th1I_exp
+#Differentiation
+Th1I_exp contained spleen modifier Th1I_exp_Th1II_exp => Th1II_exp contained spleen #allowing differentiation from both states
+Th1I contained spleen modifier Th1I_Th1II => Th1II contained spleen  # Th1I_exp_Th1II_exp rates will probably be the same Th1I_Th1II. Parameter can simply relate to number of hours
+#Expression
+gene Th1I_exp contained spleen modifier Th1I_exp_make_IFNg => IFNg contained spleen
+gene Th1I_exp contained spleen modifier Th1I_exp_make_TNFa => TNFa contained spleen
+
+#Th1II differentiations and states
+Th1II contained spleen binds catalyst MHCII on redpulp_macrophage modifier volcor*Th1II_Th1II_exp <=> Th1II_exp contained spleen modifier volcor*Th1II_exp_Th1II*(1 + ((TGFb contained spleen)*TGFb_effectiveness + ((IL-10 contained spleen)*IL-10_effectiveness))/(1+((IFNg contained spleen)*IFNg_effectiveness)))
+#Differentiation
+Th1II_exp contained spleen modifier volcor*Th1II_exp_Th1III_exp*((IL-12 contained spleen)*IL-12_effectiveness) => Th1III_exp contained spleen #allowing differentiation from both states
+Th1II contained spleen modifier volcor*Th1II_Th1III*((IL-12 contained spleen)*IL-12_effectiveness) => Th1III contained spleen  # Th1I_exp_Th1II_exp rates will probably be the same Th1I_Th1II. Parameter can simply relate to number of hours
+#Expression
+gene Th1II_exp contained spleen modifier Th1II_exp_make_IFNg => IFNg contained spleen
+gene Th1II_exp contained spleen modifier Th1II_exp_make_TNFa => TNFa contained spleen
+
+#Th1III differentiations and states
+Th1III contained spleen binds catalyst MHCII on redpulp_macrophage modifier volcor*Th1III_Th1III_exp <=> Th1III_exp contained spleen modifier volcor*Th1III_exp_Th1III*(1 + ((TGFb contained spleen)*TGFb_effectiveness +((IL-10 contained spleen)*IL-10_effectiveness)) /(1+((IFNg contained spleen)*IFNg_effectiveness)))
+#Expression
+gene Th1III_exp contained spleen modifier Th1III_exp_make_IFNg => IFNg contained spleen
+gene Th1III_exp contained spleen modifier Th1III_exp_make_TNFa => TNFa contained spleen
+#gene Th1III_exp contained spleen modifier Th1III_exp_make_IL-2 => IL-2 contained spleen
+#gene Th1III contained spleen modifier Th1III_make_IL-2 => IL-2 contained spleen
+gene Th1III_exp contained spleen modifier Th1III_exp_make_IL-10 => IL-10 contained spleen
+ 
+#Th2 differentiations and states
+#hack added 1+ to the tgfb
+Th2_exp contained spleen modifier volcor*Th2_exp_Th2*(1 + (((TGFb contained spleen)*TGFb_effectiveness + ((IL-10 contained spleen)*IL-10_effectiveness)) /(1 + ((IL-4 contained spleen)*IL-4_effectiveness)))) <=> Th2 contained spleen binds catalyst MHCII on redpulp_macrophage modifier volcor*Th2_Th2_exp
+#Expression
+gene Th2_exp contained spleen modifier Th2_exp_make_IL-4 => IL-4 contained spleen
+gene Th2_exp contained spleen modifier Th2_exp_make_IL-10 => IL-10 contained spleen
+
+#Tr1 differentiations and states
+Tr1_exp contained spleen modifier volcor*Tr1_exp_Tr1*(1+(TGFb contained spleen)*TGFb_effectiveness + ((IL-10 contained spleen)*IL-10_effectiveness)) <=> Tr1 contained spleen binds catalyst MHCII on redpulp_macrophage modifier volcor*Tr1_Tr1_exp
+#Expression
+gene Tr1_exp contained spleen modifier Tr1_exp_make_IL-10 => IL-10 contained spleen
+
+#Expression
+gene nTreg_exp contained spleen modifier nTreg_exp_make_IL-10 => IL-10 contained spleen ##(multiplying factor TGFb is based on Rubtsov2007 figure 1 that reg cells get a boost)
+gene nTreg_exp contained spleen modifier nTreg_exp_make_TGFb  => TGFb contained spleen ##This multiplying by TGFb does not occur in cell lines where there is an _exp mode as TGFb is already controlling the T:T_exp ratio. Multiplying through would be double counting the effect of TGFb
+
+#Section CD8 T Cells
+#reactions CONTAINED in the simulation
+
+# TODO influx and outflux needs to go in every cell section
+
+#Tc0 differentiations and states
+Tc0 contained spleen binds catalyst MHCI on redpulp_macrophage modifier volcor*Tc0_Tc0_exp => Tc0_exp contained spleen
+Tc0_exp contained spleen modifier Tc0_exp_Tc0 => Tc0 contained spleen 
+
+#Differentiation
+Tc0_exp contained spleen binds catalyst MHCI on redpulp_macrophage modifier volcor*Tc0_exp_Tc1_rate*((IFNg contained spleen)*IFNg_effectiveness)/(1+((TGFb contained spleen)*TGFb_effectiveness)) => Tc1_exp contained spleen
+Tc0_exp contained spleen binds catalyst MHCI on redpulp_macrophage modifier volcor*Tc0_exp_Tc2_rate*((IL-4 contained spleen)*IL-4_effectiveness)/(1+((TGFb contained spleen)*TGFb_effectiveness)) => Tc2_exp contained spleen
+
+#Tc1 differentiations and states
+Tc1_exp contained spleen modifier volcor*Tc1_exp_Tc1*(1 + ((TGFb contained spleen)*TGFb_effectiveness + ((IL-10 contained spleen)*IL-10_effectiveness)) /(1+((IFNg contained spleen)*IFNg_effectiveness))) <=> Tc1 contained spleen binds catalyst MHCI on redpulp_macrophage modifier volcor*Tc1_Tc1_exp
+#Expression
+gene Tc1_exp contained spleen modifier Tc1_exp_make_IFNg => IFNg contained spleen
+gene Tc1_exp contained spleen modifier Tc1_exp_make_TNFa => TNFa contained spleen
+
+
+#Tc2 differentiations and states
+Tc2_exp contained spleen modifier volcor*Tc2_exp_Tc2*(1 + (((TGFb contained spleen)*TGFb_effectiveness + ((IL-10 contained spleen)*IL-10_effectiveness)) /(1 + ((IL-4 contained spleen)*IL-4_effectiveness)))) <=> Tc2 contained spleen binds catalyst MHCI on redpulp_macrophage modifier volcor*Tc2_Tc2_exp
+#Expression
+gene Tc2_exp contained spleen modifier Tc2_exp_make_IL-4 => IL-4 contained spleen
+gene Tc2_exp contained spleen modifier Tc2_exp_make_IL-10 => IL-10 contained spleen
+
+
+#NK differentiations and states
+#activation and dectivation (valid syntax check. This would be more comfortable the other way around, but the parser is ambidextrous)
+NK_exp contained spleen modifier volcor*NK_exp_NK*(1+ ((TGFb contained spleen)*TGFb_effectiveness + ((IL-10 contained spleen)*IL-10_effectiveness)) /(1 + ((IL-12 contained spleen)*IL-12_effectiveness))) <=> NK contained spleen modifier volcor*NK_NK_exp*((IL-12 contained spleen)*IL-12_effectiveness)
+#Differentiation
+NK_exp contained spleen modifier NK_exp_NKIL-10_exp => NKIL-10_exp contained spleen #only activated NK get to go the IL-10 state. ##Perhaps NKIL-10 should be allowed to come back in the non exp 
+#Expression
+gene NK_exp contained spleen modifier NK_exp_make_IFNg => IFNg contained spleen
+gene NK_exp contained spleen modifier NK_exp_make_TNFa => TNFa contained spleen
+
+#NKIL-10 differentiations and states
+#activation and dectivation (valid syntax check. This would be more comfortable the other way around, but the parser is ambidextrous)
+NKIL-10_exp contained spleen modifier volcor*NKIL-10_exp_NKIL-10*(1+ ((TGFb contained spleen)*TGFb_effectiveness + ((IL-10 contained spleen)*IL-10_effectiveness)) /(1 + ((IL-12 contained spleen)*IL-12_effectiveness))) <=> NKIL-10 contained spleen modifier volcor*NKIL-10_NKIL-10_exp*((IL-12 contained spleen)*IL-12_effectiveness)
+#Expression
+gene NKIL-10_exp contained spleen modifier NKIL-10_exp_make_IFNg => IFNg contained spleen
+gene NKIL-10_exp contained spleen modifier NKIL-10_exp_make_TNFa => TNFa contained spleen
+gene NKIL-10_exp contained spleen modifier NKIL-10_exp_make_IL-10 => IL-10 contained spleen
+
+
+######################
+#iNKT differentiations and states
+#activation and dectivation (valid syntax check. This would be more comfortable the other way around, but the parser is ambidextrous)
+#Activation by CD1d with an IL-12 component
+iNKT contained spleen binds catalyst CD1d on redpulp_macrophage modifier volcor*iNKT_iNKT_exp_rate*(1+((IL-12 contained spleen)*IL-12_effectiveness)/(1+((TGFb contained spleen)*TGFb_effectiveness))) => iNKT_exp contained spleen #Rubtsov2007 lacks info on the iNKT/NKT, but we can extrapolate
+#Activation by cytokine only
+iNKT contained spleen modifier volcor*iNKT_iNKT_exp*((IL-12 contained spleen)*IL-12_effectiveness) => iNKT_exp contained spleen
+#Returning to a rest state
+iNKT_exp contained spleen modifier volcor*iNKT_exp_iNKT*(1+ ((TGFb contained spleen)*TGFb_effectiveness +((IL-10 contained spleen)*IL-10_effectiveness)) /(1 + ((IL-12 contained spleen)*IL-12_effectiveness))) => iNKT contained spleen
+#Expression
+gene iNKT_exp contained spleen modifier iNKT_exp_make_IFNg => IFNg contained spleen
+gene iNKT_exp contained spleen modifier iNKT_exp_make_IL-4 => IL-4 contained spleen
+######################
+
+
+#((TGFb contained spleen)*TGFb_effectiveness)
+#((IL-12 contained spleen)*IL-12_effectiveness)
+#((IFNg contained spleen)*IFNg_effectiveness)
+#((IL-10 contained spleen)*IL-10_effectiveness)
+#((IL-4 contained spleen)*IL-4_effectiveness)
+#((IL-2 contained spleen)*IL-2_effectiveness)
+#(((IFNg contained spleen)*IFNg_effectiveness) + ((TNFa contained spleen)*TNFa_effectiveness) + ((IL-6 contained spleen)*IL-6_effectiveness) + ((IL-1 contained spleen)*IL-1_effectiveness) + ((LPS contained spleen)*LPS_effectiveness))
+#(((TGFb contained spleen)*TGFb_effectiveness) + ((IL-10 contained spleen)*IL-10_effectiveness))
+
+#up depends on a variety of cytokines, with both a numerator and a denominator 
+#down depends on time. This stops these reactions from firing far too fast and is a sound modelling decision as there are many factors that balance up. However when the genes are on, there are no signals that turn them off
+
+Neutrophil_resting contained spleen modifier volcor*Neutrophil_resting_activation*(((IFNg contained spleen)*IFNg_effectiveness) + ((TNFa contained spleen)*TNFa_effectiveness) + ((IL-6 contained spleen)*IL-6_effectiveness) + ((IL-1 contained spleen)*IL-1_effectiveness) + ((LPS contained spleen)*LPS_effectiveness)) => Neutrophil_Activated contained spleen
+Neutrophil_resting contained spleen modifier volcor*Neutrophil_resting_alt_activation*(((IL-4 contained spleen)*IL-4_effectiveness)) <=> Neutrophil_Alt_Activated contained spleen modifier Neutrophil_Alt_Activated_resting
+Neutrophil_resting contained spleen modifier volcor*Neutrophil_resting_deactivation*((IL-10 contained spleen)*IL-10_effectiveness) <=> Neutrophil_Deactivated contained spleen modifier Neutrophil_Deactivated_resting
+
+Neutrophil_Activated contained spleen modifier Neutrophil_Activated_Neutrophil_NFkb_exhausted => Neutrophil_NFkb_exhausted contained spleen
+Neutrophil_NFkb_exhausted contained spleen modifier Neutrophil_NFkb_exhausted_resting => Neutrophil_resting contained spleen
+Neutrophil_NFkb_exhausted contained spleen modifier volcor*Neutrophil_NFkb_exhausted_activation*(((IFNg contained spleen)*IFNg_effectiveness) + ((IL-6 contained spleen)*IL-6_effectiveness))  => Neutrophil_Activated contained spleen
+Neutrophil_NFkb_exhausted contained spleen modifier volcor*Neutrophil_NFkb_exhausted_alt_activation*((IL-4 contained spleen)*IL-4_effectiveness) => Neutrophil_Alt_Activated contained spleen
+Neutrophil_NFkb_exhausted contained spleen modifier volcor*Neutrophil_NFkb_exhausted_deactivation*((IL-10 contained spleen)*IL-10_effectiveness)  => Neutrophil_Deactivated contained spleen
+
+
+#Expression
+#Activated expression
+gene Neutrophil_Activated contained spleen modifier Neutrophil_make_TNFa => TNFa contained spleen
+gene Neutrophil_Activated contained spleen modifier Neutrophil_make_IL-1 => IL-1 contained spleen
+gene Neutrophil_Activated contained spleen modifier Neutrophil_make_IL-6 => IL-6 contained spleen
+gene Neutrophil_Activated contained spleen modifier Neutrophil_make_IL-12 => IL-12 contained spleen
+gene Neutrophil_Activated contained spleen modifier Neutrophil_make_NO => NO contained spleen
+#Alternatively activated expression
+gene Neutrophil_Alt_Activated contained spleen modifier Neutrophil_make_IL-10 => IL-10 contained spleen
+gene Neutrophil_Alt_Activated contained spleen modifier Neutrophil_make_TGFb => TGFb contained spleen
+#Deactivated expression
+gene Neutrophil_Deactivated contained spleen modifier Neutrophil_make_IL-10 => IL-10 contained spleen
+
+
+OtherAPC_resting contained spleen modifier volcor*OtherAPC_resting_activation*(((IFNg contained spleen)*IFNg_effectiveness) + ((TNFa contained spleen)*TNFa_effectiveness) + ((IL-6 contained spleen)*IL-6_effectiveness) + ((IL-1 contained spleen)*IL-1_effectiveness) + ((LPS contained spleen)*LPS_effectiveness)) => OtherAPC_Activated contained spleen
+OtherAPC_resting contained spleen modifier volcor*OtherAPC_resting_alt_activation*(((IL-4 contained spleen)*IL-4_effectiveness)) <=> OtherAPC_Alt_Activated contained spleen modifier OtherAPC_Alt_Activated_resting
+OtherAPC_resting contained spleen modifier volcor*OtherAPC_resting_deactivation*((IL-10 contained spleen)*IL-10_effectiveness) <=> OtherAPC_Deactivated contained spleen modifier OtherAPC_Deactivated_resting
+
+OtherAPC_Activated contained spleen modifier OtherAPC_Activated_OtherAPC_NFkb_exhausted => OtherAPC_NFkb_exhausted contained spleen
+OtherAPC_NFkb_exhausted contained spleen modifier OtherAPC_NFkb_exhausted_resting => OtherAPC_resting contained spleen
+OtherAPC_NFkb_exhausted contained spleen modifier volcor*OtherAPC_NFkb_exhausted_activation*(((IFNg contained spleen)*IFNg_effectiveness) + ((IL-6 contained spleen)*IL-6_effectiveness))  => OtherAPC_Activated contained spleen
+OtherAPC_NFkb_exhausted contained spleen modifier volcor*OtherAPC_NFkb_exhausted_alt_activation*((IL-4 contained spleen)*IL-4_effectiveness) => OtherAPC_Alt_Activated contained spleen
+OtherAPC_NFkb_exhausted contained spleen modifier volcor*OtherAPC_NFkb_exhausted_deactivation*((IL-10 contained spleen)*IL-10_effectiveness)  => OtherAPC_Deactivated contained spleen
+
+
+#Expression
+#Activated expression
+gene OtherAPC_Activated contained spleen modifier OtherAPC_make_TNFa => TNFa contained spleen
+gene OtherAPC_Activated contained spleen modifier OtherAPC_make_IL-1 => IL-1 contained spleen
+gene OtherAPC_Activated contained spleen modifier OtherAPC_make_IL-6 => IL-6 contained spleen
+gene OtherAPC_Activated contained spleen modifier OtherAPC_make_IL-12 => IL-12 contained spleen
+gene OtherAPC_Activated contained spleen modifier OtherAPC_make_NO => NO contained spleen
+#Alternatively activated expression
+gene OtherAPC_Alt_Activated contained spleen modifier OtherAPC_make_IL-10 => IL-10 contained spleen
+gene OtherAPC_Alt_Activated contained spleen modifier OtherAPC_make_TGFb => TGFb contained spleen
+#Deactivated expression
+gene OtherAPC_Deactivated contained spleen modifier OtherAPC_make_IL-10 => IL-10 contained spleen
+
+
+species amastigote          contained redpulp_macrophage = 5 unit [parasite intracellular] #TURN ON
+species iron                contained redpulp_macrophage = 295 unit [parasite resource intracellular conserved] #TURN ON #conserved species. Iron + amastigote = constant
+
+#species NFkb_reporter       contained redpulp_macrophage = 0 unit [reporter]
+
+
+species  IFNg_receptor      on redpulp_macrophage = 10 units [receptor inflammatory IFNg constitutional]
+species  IFNg_bound         under redpulp_macrophage = 0 units [receptor inflammatory intracellular IFNg]
+species  Jak1               contained redpulp_macrophage = 0 units [signalling constitutional intracellular IFNg IL-6 IL-10 IL-4] # see socs1_Jak1 was20
+species  Trans_IFNg1        under redpulp_macrophage = 0 units [signalling intracellular IFNg]
+species  Jak2               contained redpulp_macrophage = 20 units [signalling constitutional intracellular IFNg IL-6]
+species  Trans_IFNg2        under redpulp_macrophage = 0 units [signalling intracellular IFNg]
+species  STAT1_inactive     contained redpulp_macrophage = 20 units [signalling constitutional intracellular]
+species  STAT1              contained redpulp_macrophage = 0 units [signalling intracellular promoter IFNg IL-6]
+species  IRF1_inactive      contained redpulp_macrophage = 1 units [DNA intracellular IFNg IL-6 conserved]
+species  IRF1               contained redpulp_macrophage = 0 units [DNA intracellular IFNg]
+species  IRF1_6             contained redpulp_macrophage = 0 units [DNA intracellular IL-6]
+species  socs1              contained redpulp_macrophage = 0 units [signalling suppression intracellular IFNg IL-6 IL-10 IL-4]
+species  NOS2_activator     contained redpulp_macrophage = 0 units [promoter intracellular IFNg IL-6 NFKb IL-1 LPS TNFa]
+species  NOS2_gene          contained redpulp_macrophage = 1 units [DNA intracellular IFNg IL-6 NFKb IL-1 LPS TNFa conserved]
+species  NOS2_producing     contained redpulp_macrophage = 0 units [DNA intracellular IFNg IL-6 NFKb IL-1 LPS TNFa] 
+species  NO                 contained redpulp_macrophage = 0 units [parasite killing intracellular]
+species  ACTIVATE           contained redpulp_macrophage = 0 units [promoter intracellular IFNg IL-6 NFKb IL-1 LPS TNFa]
+species  activated_inactive contained redpulp_macrophage = 1 units [DNA intracellular inflammatory IFNg IL-6 NFKb IL-1 LPS TNFa conserved]
+species  activated          contained redpulp_macrophage = 0 units [DNA intracellular inflammatory IFNg IL-6 NFKb IL-1 LPS TNFa]
+
+#species  IL-12              around redpulp_macrophage = 0 units
+species  socs1_Jak1         contained redpulp_macrophage = 20 units [signalling suppression intracellular IFNg IL-6 IL-10 IL-4]
+
+species IL-6_receptor       on redpulp_macrophage = 10 units [receptor inflammatory IL-6 constitutional]
+species IL-6_bound          under redpulp_macrophage = 0 units [receptor inflammatory intracellular IL-6]
+species Trans_IL-6_1        under redpulp_macrophage = 0 units [signalling intracellular IL-6]
+species Trans_IL-6_2        under redpulp_macrophage = 0 units [signalling intracellular IL-6]
+
+species IL-4_receptor                    on redpulp_macrophage = 10 unit        [receptor IL-4 constitutional]#from IL-4
+species IL-4_bound                       under redpulp_macrophage = 0 unit      [receptor intracellular IL-4]#from IL-4
+species Trans_IL-4_1                     under redpulp_macrophage = 0 unit      [signalling intracellular IL-4]#from IL-4
+species Jak3                             contained redpulp_macrophage = 20 unit [signalling intracellular IL-4 constitutional]#from IL-4
+species Trans_IL-4_2                     under redpulp_macrophage = 0 unit      [signalling intracellular IL-4] #from IL-4
+species STAT6_inactive                   contained redpulp_macrophage = 20 unit [signalling intracellular IL-4 constitutional] #from IL-4
+species STAT6                            contained redpulp_macrophage = 0 unit  [signalling promoter intracellular IL-4]#from IL-4
+species 4madeupgene_inactive             contained redpulp_macrophage = 1 unit  [DNA intracellular IL-4]#from IL-4
+species 4madeupgene                      contained redpulp_macrophage = 0 unit  [DNA intracellular IL-4]#from IL-4
+species socs3                            contained redpulp_macrophage = 0 unit  [signalling suppression intracellular IFNg IL-6 IL-10 IL-4] #from IL-4
+species ALTERNATIVELY_ACTIVATE           contained redpulp_macrophage = 0 unit  [promoter intracellular IFNg IL-4]#from IL-4
+species alternatively_activated_inactive contained redpulp_macrophage = 1 unit  [DNA intracellular IL-4 conserved]#from IL-4
+species alternatively_activated          contained redpulp_macrophage = 0 unit  [DNA intracellular IL-4]#from IL-4
+species socs3_Jak1                       contained redpulp_macrophage = 0 unit  [signalling suppression intracellular IFNg IL-6 IL-10 IL-4]#from IL-4 NEW NEW jak1 comes from soc1_jak1
+
+species IL-10_receptor                   on redpulp_macrophage = 10 unit [receptor IL-10 constitutional] #receptor_sites  ##between 47 and 127 IL-10 receptor sites per cell ( hack B-cell data) Jurlander1997	http://www.bloodjournal.org/content/89/11/4146?sso-checked=true
+species IL-10_bound                      under redpulp_macrophage = 0 unit [receptor IL-10 intracellular]     
+species Trans_IL-10_1                    under redpulp_macrophage = 0 unit [signalling intracellular IL-10]     
+species Tyk2                             contained redpulp_macrophage = 20 unit [signalling intracellular IL-10 constitutional] 
+species Trans_IL-10_2                    under redpulp_macrophage = 0 unit [signalling intracellular IL-10]     
+species STAT3_inactive                   contained redpulp_macrophage = 20 unit [signalling intracellular IL-10 constitutional STAT3]
+species STAT3_10                         contained redpulp_macrophage = 0 unit [signalling intracellular IL-10 promoter STAT3]
+species STAT3_6                          contained redpulp_macrophage = 0 unit [signalling intracellular IL-6 NFkb_reporter_decaypromoter STAT3]
+#species STAT3                            contained redpulp_macrophage = 0 unit  [signalling intracellular IL-10 promoter]
+species 10madeupgene_inactive            contained redpulp_macrophage = 1 unit  [DNA intracellular IL-10 conserved]
+species 10madeupgene                     contained redpulp_macrophage = 0 unit  [DNA intracellular IL-10]
+species DEACTIVATE                       contained redpulp_macrophage = 0 unit  [promoter intracellular IL-10]
+species deactivated_inactive             contained redpulp_macrophage = 1 unit  [DNA intracellular IL-10 conserved]
+species deactivated                      contained redpulp_macrophage = 0 unit  [DNA intracellular IL-10]
+
+species SHP1                             contained redpulp_macrophage = 0 unit [signalling suppression intracellular IFNg IL-6 IL-10 IL-4 STAT1 STAT3 STAT6 jak1 jak2 tyk2]
+species dead_amastigote_antigen          contained redpulp_macrophage = 0 unit [parasite antigen inflammatory intracellular]
+
+species constitutional                   contained redpulp_macrophage = 1 unit [DNA conserved] #gene, always on
+
+species IL-1_receptor                    on redpulp_macrophage = 10 unit [receptor IL-1 constitutional NFkb]
+species IL-1_bound                       under redpulp_macrophage = 0 unit [receptor IL-1 intracellular NFkb]
+species TNFa_receptor                    on redpulp_macrophage = 10 unit [receptor TNFa constitutional NFkb]
+species TNFa_bound                       under redpulp_macrophage = 0 unit [receptor TNFa intracellular NFkb]
+species LPS_receptor                     on redpulp_macrophage = 10 unit [receptor TLR4 LPS constitutional NFkb]
+species LPS_bound                        under redpulp_macrophage = 0 unit [receptor TLR4 LPS intracellular NFkb]
+species pre_IKK                          contained redpulp_macrophage = 12 unit [signalling intracellular IL-1 LPS TNFa NFkb]
+species IKK                              contained redpulp_macrophage = 0 unit [signalling intracellular IL-1 LPS TNFa NFkb]
+species NFkb_activator_sequestered       contained redpulp_macrophage = 5 unit [signalling intracellular IL-1 LPS TNFa constitutional NFkb]
+species NFkb_activator                   contained redpulp_macrophage = 0 unit [intracellular IL-1 LPS TNFa promoter NFkb]
+species NFkb_inactive                    contained redpulp_macrophage = 1 unit [DNA intracellular IL-1 LPS TNFa conserved NFkb]
+species NFkb                             contained redpulp_macrophage = 0 unit [DNA intracellular IL-1 LPS TNFa NFkb]
+species NFkb_sequesterer                 contained redpulp_macrophage = 20 unit [signalling suppression intracellular IL-1 LPS TNFa NFkb]
+
+species TGFb_receptor                    on redpulp_macrophage = 10 unit [receptor TGFb constitutional] #350 unit [receptor TGFb constitutional] ##neutrophils express TGF-beta receptors (350 +/- 20 receptors/cell)	http://www.ncbi.nlm.nih.gov/pubmed/1652608 Brandes1991       
+species TGFb_bound                       under redpulp_macrophage = 0 unit [receptor TGFb intracellular]     
+species SMAD2                            contained redpulp_macrophage = 20 unit [signalling intracellular TGFb constitutional]
+species Trans_TGFb_1                     under redpulp_macrophage = 0 unit [signalling intracellular TGFb]
+species SMAD3                            contained redpulp_macrophage = 20 unit [signalling intracellular TGFb constitutional]     
+species Trans_TGFb_2                     under redpulp_macrophage = 0 unit [signalling intracellular TGFb]
+species SMAD4_inactive                   contained redpulp_macrophage = 20 unit [signalling intracellular TGFb constitutional]
+species SMAD4                            contained redpulp_macrophage = 0 unit [signalling intracellular TGFb promoter]
+species SMAD7                            contained redpulp_macrophage = 20 unit [signalling intracellular TGFb suppression]
+species TGFbmadeupgene_inactive          contained redpulp_macrophage = 1 unit [DNA TGFb intracellular conserved]
+species TGFbmadeupgene                   contained redpulp_macrophage = 0 unit [DNA TGFb intracellular]
+#species TGFb_reporter                    contained redpulp_macrophage = 0 unit [reporter TGFb]
+
+parameter ligand_off_generic              = 1 unit #alter the rates but not the ratio of bound-free by altering this
+
+#jak stat pathway parameters
+parameter jak_on                        = 1 unit## 10 unit ##1 unit
+parameter jak_off                       = 100 unit## 10 unit ##100 unit
+parameter stat_on                       = 1 unit## 1 unit ##1 unit
+parameter stat_decay                    = 100 unit #wa## 4 unit ##4 unit #was 1. signal loss #stat off is the break up of Statx into its component parts
+#genetic network parameters               ## ##
+parameter promoter_on                   = 0.7/0.5 unit ## 0.5 unit ##10 unit #was 10
+parameter promoter_off                  = 0.7/6 unit #0.25 unit ## 0.25 unit ##0.25 unit # was 0.25
+parameter make_promoter                 = 100 unit## 1 unit ##100 unit
+parameter promoter_decay                = 10 unit  ## 1 unit ##2 unit
+parameter make_repressor                = 100 unit
+parameter repressor_decay               = 1 units #the decay rate of inhibitors like socs1 and SMAD7
+
+parameter MHCI_production                 = 0.5 unit #only when in activated state
+parameter MHCII_production                = 0.5 unit #only when in activated state
+parameter CD1d_production                 = 0.5 unit #only when in activated state
+parameter constitutional_MHCII_production = 0.1 unit #much slower for constitutional
+parameter constitutional_CD1d_production_alive  = 0.005 unit #this enables a small level of detection at all times through CD1d
+parameter constitutional_CD1d_production_dead  = 0.1 unit
+
+parameter MHCI_decay                      = 0.7/9 unit
+parameter MHCII_decay                     = 0.7/9 unit
+parameter CD1d_decay                      = 0.7/9 unit
+
+parameter SHP1_remove_Jak                 = 5 unit
+parameter SHP1_remove_STAT                = 5 unit
+
+parameter TGFb_make_SHP1                       = 0.05 unit
+parameter amastigote_make_SHP1                 = 0.05 unit
+parameter SHP1_decay                      = ln(2)/19 unit ##weak evidence, value is for SHP2. Heinrich2003 Table 1
+parameter active_amastigote_killing      = 0.7/(24*35) unit #was0.7/(24*30)
+parameter passive_amastigote_death       = 0.7/(24*25) unit
+parameter amastigote_reproduction        = 0.7/(24*550) unit # interesting use of species for half life in parameter?
+parameter dead_amastigote_antigen_decay   = 0.7/(24*20) unit
+
+parameter make_SMAD7                        = make_repressor unit
+parameter SMAD7_decay                       = repressor_decay unit
+#parameter make_TGFb_reporter                = 100 unit
+#parameter TGFb_reporter_decay               = 1 units
+
+parameter SMAD7_remove_SMAD2                = 5 unit
+parameter SMAD7_remove_SMAD3                = 5 unit
+parameter SMAD7_remove_SMAD4                = 5 unit
+
+parameter TGFb_off                          = ligand_off_generic unit
+parameter TGFb_on                           = TGFb_off/0.05 unit ##50pM "In this investigation, [125I]TGF-beta 1 affinity binding studies were employed to show that neutrophils express TGF-beta receptors (350 +/- 20 receptors/cell), which exhibit high affinity for the ligand (dissociation constant, 50 pM)."	http://www.ncbi.nlm.nih.gov/pubmed/1652608 Brandes1991
+parameter SMAD2_TGFb_on                     = jak_on unit
+parameter SMAD2_TGFb_off                    = jak_off unit
+parameter SMAD3_Trans_TGFb_1_on             = jak_on unit
+parameter SMAD3_Trans_TGFb_2_off            = jak_off unit
+parameter Trans_TGFb_2_SMAD4_on             = stat_on unit
+parameter SMAD4_disassociation_rate         = stat_decay unit 
+parameter SMAD4_TGFbmadeupgene_inactive_on  = promoter_on unit
+parameter SMAD4_TGFbmadeupgene_inactive_off = promoter_off unit
+
+
+
+parameter IL-1_off                        = ligand_off_generic unit
+parameter IL-1_on                         = IL-1_off/0.072 unit ##was 72 +/- 3 pM	(rabit)	http://www.ncbi.nlm.nih.gov/pubmed/2137805 Chin1990
+parameter TNFa_off                        = ligand_off_generic unit
+parameter TNFa_on                         = TNFa_off/0.19 unit ## TNF-R1; Kd = 1.9 × 10−11 M http://www.pnas.org/content/95/2/570.full Grell1997
+parameter LPS_off                         = ligand_off_generic unit
+parameter LPS_on                          = LPS_off/3 unit ## 3 nM "A tentative dissociation constant (Kd) for LPS-TLR4-MD-2 complexes was approximately 3 nM" http://www.ncbi.nlm.nih.gov/pubmed/14517279 Akashi2003
+parameter pre_IKK_IL-1_on                 = 1 unit#was1 - idea is to make the signalling components get used up more quickly
+parameter pre_IKK_LPS_on                  = 1 unit#was1
+parameter pre_IKK_TNFa_on                 = 1 unit   #was1
+parameter IKK_NFkb_release_NFkb           = 1 unit 
+parameter IKK_decay                       = 1 unit #was 0.1   
+parameter NFkb_activation_on              = 10 unit
+parameter NFkb_activation_off             = 0.25 unit #was 0.25
+parameter make_NFkb_sequesterer           = 10 unit #was10    #speed is important relative to other pathway factors for determining extent of exhaustion
+parameter NFkb_sequesterer_decay          = 1 unit
+parameter make_pre_IKK                    = 1 unit #was1
+parameter pre_IKK_decay                   = 0.02 unit #was0.02
+#parameter make_NFkb_reporter              = 100 unit
+#parameter NFkb_reporter_decay             = 2 unit
+parameter NFkb_activator_sequestration    = 200 unit # was 200
+#parameter NFkb_activator_DEsequestration  = 1 unit made irreversible - too close to the gene, too leaky.
+
+parameter make_DEACTIVATE                = make_promoter unit
+parameter DEACTIVATE_decay               = promoter_decay unit
+
+parameter IL-6_off                      = ligand_off_generic units
+parameter IL-6_on                       = IL-6_off/10 units  #was 100units  ##kon=2.1 M^-1.s^1*10^5	koff=2 s^-1 *10^-3	kd=10 nM	http://www.jbc.org/content/271/10/5464.full.pdf
+parameter Jak1_IL-6_on                  = jak_on units
+parameter Jak1_IL-6_off                 = jak_off units
+parameter Jak2_Trans_IL-6_on            = jak_on units
+parameter Jak2_Trans_IL-6_off           = jak_off units
+parameter Trans_IL-6_2_STAT3_on           = stat_on unit
+
+parameter STAT3_IRF1_inactive_on          = promoter_on unit
+parameter STAT3_IRF1_inactive_off         = promoter_off unit
+
+parameter IFNg_off                      = ligand_off_generic units #previously 100 before i started experimenting with scale
+parameter IFNg_on                       = IFNg_off/0.00228 units ##2.28 pM http://www.ncbi.nlm.nih.gov/pubmed/23135926 Parra-Guillen2013
+parameter Jak1_IFNg_on                  = jak_on units
+parameter Jak1_IFNg_off                 = jak_off units
+parameter Jak2_Trans_IFNg1_on           = jak_on units
+parameter Jak2_Trans_IFNg1_off          = jak_off units
+parameter Trans_IFNg2_STAT1_on          = stat_on units
+parameter STAT1_disassociation_rate     = stat_decay units #new
+parameter STAT1_IRF1_inactive_on        = promoter_on units
+parameter STAT1_IRF1_inactive_off       = promoter_off units
+parameter NOS2_on                       = promoter_on units
+parameter NOS2_off                      = promoter_off units
+parameter activation_rate               = promoter_on units
+parameter un_activation_rate            = promoter_off units
+
+parameter IL-4_off                       = ligand_off_generic unit
+parameter IL-4_on                        = IL-4_off/0.382 unit #kon = koff/kd  ## kd=382 (+/- 115) pico Molar	= 0.382 nM			Andrews2006
+parameter Jak1_IL-4_on                   = jak_on unit   #from IL-4
+parameter Jak1_IL-4_off                  = jak_off unit   #from IL-4
+parameter Jak3_Trans_IL-4_on             = jak_on unit   #from IL-4
+parameter Jak3_Trans_IL-4_off            = jak_off unit   #from IL-4
+parameter Trans_IL-4_2_STAT6_on          = stat_on unit   #from IL-4
+parameter STAT6_disassociation_rate      = stat_decay unit #NEWNEW FROM IL-4
+parameter STAT6_4madeupgene_inactive_on  = promoter_on unit   #from IL-4
+parameter STAT6_4madeupgene_inactive_off = promoter_off unit   #from IL-4
+parameter alternative_activation_rate    = promoter_on unit   #from IL-4
+parameter un_alternative_activation_rate = promoter_off unit   #from IL-4
+
+parameter IL-10_off                       = ligand_off_generic unit 
+parameter IL-10_on                        = IL-10_off/0.297 unit  #mean kd=0.297 ##kd 168 to 426 × 10−12 mol/L Jurlander1997 http://www.bloodjournal.org/content/89/11/4146?sso-checked=true
+parameter Jak1_IL-10_on                   = jak_on unit   
+parameter Jak1_IL-10_off                  = jak_off unit 
+parameter Tyk2_Trans_IL-10_on             = jak_on unit   
+parameter Tyk2_Trans_IL-10_off            = jak_off unit 
+parameter Trans_IL-10_2_STAT3_on          = stat_on unit   
+parameter STAT3_disassociation_rate       = stat_decay unit 
+parameter STAT3_10madeupgene_inactive_on  = promoter_on unit  
+parameter STAT3_10madeupgene_inactive_off = promoter_off unit
+parameter deactivation_rate               = promoter_on unit   
+parameter un_deactivation_rate            = promoter_off unit 
+
+parameter make_socs3                    = make_repressor unit   #from IL-4 was 100
+parameter socs3_decay                   = ln(2)/1.6 hour^-1 ##Heinrich2003 Table 1                                #new
+parameter socs3_Jak1_on                 = 100 units
+parameter socs3_Jak1_off                = 0.5 units
+
+parameter make_ALTERNATIVELY_ACTIVATE   = make_promoter unit   #from IL-4 
+parameter ALTERNATIVELY_ACTIVATE_decay  = promoter_decay unit   #from IL-4  NEW NEW
+
+parameter make_socs1                    = make_repressor units # was 100
+parameter socs1_decay                   = ln(2)/1.5 hour^-1 ##Heinrich2003 Table 1
+parameter socs1_Jak1_on                 = 100 units
+parameter socs1_Jak1_off                = 0.5 units
+
+parameter make_NOS2_activator           = make_promoter units
+parameter NOS2_activator_decay          = promoter_decay units                                   #new
+parameter make_ACTIVATE                 = make_promoter units
+parameter ACTIVATE_decay                = promoter_decay units                                   #new
+
+parameter make_IL-1                     = production_of_IL-1 unit #30 units
+parameter make_IL-6                     = production_of_IL-6 unit #0 unit #hack stop autocrine signaling as simulation scales leading too always on#production_of_cytokines unit #30 units
+parameter make_IL-12                    = production_of_IL-12 unit #30 units
+parameter make_TNFa                     = production_of_TNFa unit #30 units
+parameter make_NO                       = production_of_NO units
+parameter make_IL-10                    = production_of_IL-10 unit #30 unit   #from IL-4
+parameter make_TGFb                     = production_of_TGFb unit #30 unit   #from IL-4
+
+##########################new section: decay of constitutional things #########################################
+
+parameter decay_of_constitional_things        = 0.7 units
+
+parameter IFNg_receptor_carrying_capacity     = 10 units #Used for calculation of rates only
+parameter IFNg_receptor_decay                 = decay_of_constitional_things units
+parameter make_IFNg_receptor                  = IFNg_receptor_carrying_capacity*IFNg_receptor_decay units
+parameter IFNg_receptor_bound_decay           = IFNg_receptor_decay units
+parameter Trans_IFNg1_decay                   = IFNg_receptor_decay units
+parameter Trans_IFNg2_decay                   = IFNg_receptor_decay units
+gene constitutional contained redpulp_macrophage modifier make_IFNg_receptor => IFNg_receptor on redpulp_macrophage
+IFNg_receptor      on redpulp_macrophage modifier IFNg_receptor_decay => decay
+IFNg_bound         under redpulp_macrophage modifier IFNg_receptor_bound_decay => decay
+Trans_IFNg1        under redpulp_macrophage modifier Trans_IFNg1_decay => decay
+Trans_IFNg2        under redpulp_macrophage modifier Trans_IFNg2_decay => decay
+
+parameter Jak1_carrying_capacity     = 20 units #Used for calculation of rates only
+parameter Jak1_decay                 = ln(2)/3.2 hour^-1 ##Heinrich2003 Table 1
+parameter make_Jak1                  = Jak1_carrying_capacity*Jak1_decay units
+gene constitutional contained redpulp_macrophage modifier make_Jak1 => Jak1 contained redpulp_macrophage
+Jak1 contained redpulp_macrophage modifier Jak1_decay => decay
+
+parameter socs1_Jak1_decay           = decay_of_constitional_things units
+parameter socs3_Jak1_decay           = decay_of_constitional_things units
+
+socs1_Jak1 contained redpulp_macrophage modifier socs1_Jak1_decay => decay
+socs3_Jak1 contained redpulp_macrophage modifier socs3_Jak1_decay => decay
+
+parameter Jak2_carrying_capacity     = 20 units #Used for calculation of rates only
+parameter Jak2_decay                 = ln(2)/1.9 hour^-1 ##Heinrich2003 Table 1
+parameter make_Jak2                  = Jak2_carrying_capacity*Jak2_decay units
+gene constitutional contained redpulp_macrophage modifier make_Jak2 => Jak2 contained redpulp_macrophage
+Jak2 contained redpulp_macrophage modifier Jak2_decay => decay
+
+parameter STAT1_inactive_carrying_capacity     = 20 units #Used for calculation of rates only
+parameter STAT1_inactive_decay                 = ln(2)/16 hour^-1 ##Heinrich2003 Table 1
+parameter STAT1_decay                          = STAT1_inactive_decay units
+parameter make_STAT1_inactive                  = STAT1_inactive_carrying_capacity*STAT1_inactive_decay units
+gene constitutional contained redpulp_macrophage modifier make_STAT1_inactive => STAT1_inactive contained redpulp_macrophage
+STAT1_inactive contained redpulp_macrophage modifier STAT1_inactive_decay => decay
+STAT1 contained redpulp_macrophage          modifier STAT1_decay => decay
+
+parameter IL-6_receptor_carrying_capacity     = 10 units #Used for calculation of rates only       # hack hack hack hack hack 
+parameter IL-6_receptor_decay                 = ln(2)/2.5 hour^-1 ##Heinrich2003 Table 1 half lives of receptor compoinents: IL-6Ra 2-3 hours, gp130 2.5 hours 
+parameter make_IL-6_receptor                  = IL-6_receptor_carrying_capacity*IL-6_receptor_decay units
+parameter IL-6_bound_decay                    = IL-6_receptor_decay units     
+parameter Trans_IL-6_1_decay                  = IL-6_receptor_decay units     
+parameter Trans_IL-6_2_decay                  = IL-6_receptor_decay units     
+gene constitutional contained redpulp_macrophage modifier make_IL-6_receptor => IL-6_receptor on redpulp_macrophage
+IL-6_receptor on redpulp_macrophage modifier IL-6_receptor_decay => decay
+IL-6_bound        under redpulp_macrophage modifier IL-6_bound_decay => decay
+Trans_IL-6_1      under redpulp_macrophage modifier Trans_IL-6_1_decay => decay
+Trans_IL-6_2      under redpulp_macrophage modifier Trans_IL-6_2_decay => decay
+
+parameter IL-4_receptor_carrying_capacity     = 20 units #Used for calculation of rates only
+parameter IL-4_receptor_decay                 = decay_of_constitional_things units
+parameter make_IL-4_receptor                  = IL-4_receptor_carrying_capacity*IL-4_receptor_decay units
+parameter IL-4_bound_decay                    = IL-4_receptor_decay units     
+parameter Trans_IL-4_1_decay                  = IL-4_receptor_decay units     
+parameter Trans_IL-4_2_decay                  = IL-4_receptor_decay units     
+gene constitutional contained redpulp_macrophage modifier make_IL-4_receptor => IL-4_receptor on redpulp_macrophage
+IL-4_receptor on redpulp_macrophage modifier IL-4_receptor_decay => decay
+IL-4_bound        under redpulp_macrophage modifier IL-4_bound_decay => decay
+Trans_IL-4_1      under redpulp_macrophage modifier Trans_IL-4_1_decay => decay
+Trans_IL-4_2      under redpulp_macrophage modifier Trans_IL-4_2_decay => decay
+
+parameter Jak3_carrying_capacity     = 20 units #Used for calculation of rates only
+parameter Jak3_decay                 = decay_of_constitional_things units
+parameter make_Jak3                  = Jak3_carrying_capacity*Jak3_decay units
+gene constitutional contained redpulp_macrophage modifier make_Jak3 => Jak3 contained redpulp_macrophage
+Jak3 contained redpulp_macrophage modifier Jak3_decay => decay
+
+parameter STAT6_inactive_carrying_capacity     = 20 units #Used for calculation of rates only
+parameter STAT6_inactive_decay                 = decay_of_constitional_things units
+parameter STAT6_decay                          = STAT6_inactive_decay units
+parameter make_STAT6_inactive                  = STAT6_inactive_carrying_capacity*STAT6_inactive_decay units
+gene constitutional contained redpulp_macrophage modifier make_STAT6_inactive => STAT6_inactive contained redpulp_macrophage
+STAT6_inactive contained redpulp_macrophage modifier STAT6_inactive_decay => decay
+STAT6 contained redpulp_macrophage          modifier STAT6_decay => decay
+
+parameter IL-10_receptor_carrying_capacity     = 10 unit #87 units ##between 47 and 127 IL-10 receptor sites per cell ( hack B-cell data) Jurlander1997	http://www.bloodjournal.org/content/89/11/4146?sso-checked=true
+parameter IL-10_receptor_decay                 = decay_of_constitional_things units
+parameter make_IL-10_receptor                  = IL-10_receptor_carrying_capacity*IL-10_receptor_decay units
+parameter IL-10_bound_decay                    = IL-10_receptor_decay units     
+parameter Trans_IL-10_1_decay                  = IL-10_receptor_decay units     
+parameter Trans_IL-10_2_decay                  = IL-10_receptor_decay units     
+gene constitutional contained redpulp_macrophage modifier make_IL-10_receptor => IL-10_receptor on redpulp_macrophage
+IL-10_receptor on redpulp_macrophage modifier IL-10_receptor_decay => decay
+IL-10_bound        under redpulp_macrophage modifier IL-10_bound_decay => decay
+Trans_IL-10_1      under redpulp_macrophage modifier Trans_IL-10_1_decay => decay
+Trans_IL-10_2      under redpulp_macrophage modifier Trans_IL-10_2_decay => decay
+
+parameter Tyk2_carrying_capacity     = 20 units #Used for calculation of rates only
+parameter Tyk2_decay                 = ln(2)/2 hour^-1 ##Heinrich2003 Table 1
+parameter make_Tyk2                  = Tyk2_carrying_capacity*Tyk2_decay units
+gene constitutional contained redpulp_macrophage modifier make_Tyk2 => Tyk2 contained redpulp_macrophage
+Tyk2 contained redpulp_macrophage modifier Tyk2_decay => decay
+
+parameter STAT3_inactive_carrying_capacity     = 20 units #Used for calculation of rates only
+parameter STAT3_inactive_decay                 = ln(2)/8.5 hour^-1 ##Heinrich2003 Table 1 stat3alpha value
+parameter STAT3_decay                          = STAT3_inactive_decay units
+parameter make_STAT3_inactive                  = STAT3_inactive_carrying_capacity*STAT3_inactive_decay units
+gene constitutional contained redpulp_macrophage modifier make_STAT3_inactive => STAT3_inactive contained redpulp_macrophage
+STAT3_inactive contained redpulp_macrophage modifier STAT3_inactive_decay => decay
+STAT3_6 contained redpulp_macrophage          modifier STAT3_decay => decay
+STAT3_10 contained redpulp_macrophage          modifier STAT3_decay => decay
+
+parameter IL-1_receptor_carrying_capacity     = 0 units #Used for calculation of rates only                           # hack hack hack hack hack 
+parameter IL-1_receptor_decay                 = decay_of_constitional_things units                                    # hack hack hack hack hack 
+parameter make_IL-1_receptor                  = IL-1_receptor_carrying_capacity*IL-1_receptor_decay units             # hack hack hack hack hack 
+parameter IL-1_bound_decay                    = IL-1_receptor_decay units                                             # hack hack hack hack hack 
+gene constitutional contained redpulp_macrophage modifier make_IL-1_receptor => IL-1_receptor on redpulp_macrophage   # hack hack hack hack hack 
+IL-1_receptor on redpulp_macrophage modifier IL-1_receptor_decay => decay                                             # hack hack hack hack hack 
+IL-1_bound        under redpulp_macrophage modifier IL-1_bound_decay => decay                                         # hack hack hack hack hack 
+                                                                                                                      # hack hack hack hack hack 
+parameter TNFa_receptor_carrying_capacity     = 10 units #Used for calculation of rates only                           # hack hack hack hack hack 
+parameter TNFa_receptor_decay                 = decay_of_constitional_things units                                    # hack hack hack hack hack 
+parameter make_TNFa_receptor                  = TNFa_receptor_carrying_capacity*TNFa_receptor_decay units             # hack hack hack hack hack 
+parameter TNFa_bound_decay                    = TNFa_receptor_decay units                                             # hack hack hack hack hack 
+gene constitutional contained redpulp_macrophage modifier make_TNFa_receptor => TNFa_receptor on redpulp_macrophage   # hack hack hack hack hack 
+TNFa_receptor on redpulp_macrophage modifier TNFa_receptor_decay => decay                                             # hack hack hack hack hack 
+TNFa_bound        under redpulp_macrophage modifier TNFa_bound_decay => decay                                         # hack hack hack hack hack 
+                                                                                                                      # hack hack hack hack hack 
+parameter LPS_receptor_carrying_capacity     = 0 units #Used for calculation of rates only                            # hack hack hack hack hack 
+parameter LPS_receptor_decay                 = decay_of_constitional_things units                                     # hack hack hack hack hack 
+parameter make_LPS_receptor                  = LPS_receptor_carrying_capacity*LPS_receptor_decay units                # hack hack hack hack hack 
+parameter LPS_bound_decay                    = LPS_receptor_decay units                                               # hack hack hack hack hack 
+gene constitutional contained redpulp_macrophage modifier make_LPS_receptor => LPS_receptor on redpulp_macrophage     # hack hack hack hack hack 
+LPS_receptor on redpulp_macrophage modifier LPS_receptor_decay => decay                                               # hack hack hack hack hack 
+LPS_bound        under redpulp_macrophage modifier LPS_bound_decay => decay                                           # hack hack hack hack hack 
+
+parameter NFkb_activator_sequestered_carrying_capacity     = 20 units #Used for calculation of rates only
+parameter NFkb_activator_sequestered_decay                 = decay_of_constitional_things units
+parameter make_NFkb_activator_sequestered                  = NFkb_activator_sequestered_carrying_capacity*NFkb_activator_sequestered_decay units
+gene constitutional contained redpulp_macrophage modifier make_NFkb_activator_sequestered => NFkb_activator_sequestered contained redpulp_macrophage
+NFkb_activator_sequestered contained redpulp_macrophage modifier NFkb_activator_sequestered_decay => decay
+
+parameter TGFb_receptor_carrying_capacity     = 10 units #350 units ##neutrophils express TGF-beta receptors (350 +/- 20 receptors/cell)	http://www.ncbi.nlm.nih.gov/pubmed/1652608 Brandes1991       
+parameter TGFb_receptor_decay                 = decay_of_constitional_things units
+parameter make_TGFb_receptor                  = TGFb_receptor_carrying_capacity*TGFb_receptor_decay units
+parameter TGFb_bound_decay                    = TGFb_receptor_decay units     
+parameter Trans_TGFb_1_decay                  = TGFb_receptor_decay units     
+parameter Trans_TGFb_2_decay                  = TGFb_receptor_decay units     
+gene constitutional contained redpulp_macrophage modifier make_TGFb_receptor => TGFb_receptor on redpulp_macrophage
+TGFb_receptor on redpulp_macrophage modifier TGFb_receptor_decay => decay
+TGFb_bound        under redpulp_macrophage modifier TGFb_bound_decay => decay
+Trans_TGFb_1      under redpulp_macrophage modifier Trans_TGFb_1_decay => decay
+Trans_TGFb_2      under redpulp_macrophage modifier Trans_TGFb_2_decay => decay
+
+parameter SMAD2_carrying_capacity     = 20 units #Used for calculation of rates only
+parameter SMAD2_decay                 = decay_of_constitional_things units
+parameter make_SMAD2                  = SMAD2_carrying_capacity*SMAD2_decay units
+gene constitutional contained redpulp_macrophage modifier make_SMAD2 => SMAD2 contained redpulp_macrophage
+SMAD2 contained redpulp_macrophage modifier SMAD2_decay => decay
+
+parameter SMAD3_carrying_capacity     = 20 units #Used for calculation of rates only
+parameter SMAD3_decay                 = decay_of_constitional_things units
+parameter make_SMAD3                  = SMAD3_carrying_capacity*SMAD3_decay units
+gene constitutional contained redpulp_macrophage modifier make_SMAD3 => SMAD3 contained redpulp_macrophage
+SMAD3 contained redpulp_macrophage modifier SMAD3_decay => decay
+
+parameter SMAD4_inactive_carrying_capacity     = 20 units #Used for calculation of rates only
+parameter SMAD4_inactive_decay                 = decay_of_constitional_things units
+parameter make_SMAD4_inactive                  = SMAD4_inactive_carrying_capacity*SMAD4_inactive_decay units
+gene constitutional contained redpulp_macrophage modifier make_SMAD4_inactive => SMAD4_inactive contained redpulp_macrophage
+SMAD4_inactive contained redpulp_macrophage modifier SMAD4_inactive_decay => decay
+
+#on surface reaction
+IFNg around redpulp_macrophage binds IFNg_receptor on redpulp_macrophage modifier volcor*IFNg_on <=> IFNg_bound under redpulp_macrophage modifier IFNg_off   
+IL-4 around redpulp_macrophage binds IL-4_receptor on redpulp_macrophage modifier volcor*IL-4_on <=> IL-4_bound under redpulp_macrophage modifier IL-4_off
+IL-6 around redpulp_macrophage binds IL-6_receptor on redpulp_macrophage modifier volcor*IL-6_on <=> IL-6_bound under redpulp_macrophage modifier IL-6_off
+IL-10 around redpulp_macrophage binds IL-10_receptor on redpulp_macrophage modifier volcor*IL-10_on <=> IL-10_bound under redpulp_macrophage modifier IL-10_off
+IL-1 around redpulp_macrophage binds IL-1_receptor on redpulp_macrophage modifier volcor*IL-1_on <=> IL-1_bound under redpulp_macrophage modifier IL-1_off
+TNFa around redpulp_macrophage binds TNFa_receptor on redpulp_macrophage modifier volcor*TNFa_on <=> TNFa_bound under redpulp_macrophage modifier TNFa_off
+LPS around redpulp_macrophage binds LPS_receptor on redpulp_macrophage modifier volcor*LPS_on <=> LPS_bound under redpulp_macrophage modifier LPS_off      #LPS_receptor is TLR 4 change made for consistency of format
+TGFb around redpulp_macrophage binds TGFb_receptor on redpulp_macrophage modifier volcor*TGFb_on <=> TGFb_bound under redpulp_macrophage modifier TGFb_off
+
+#redpulp_macrophage UNDER surface reactions
+
+#Decisions - lets straight line the process for now, multipath can be added later if necessary.
+#IFNg
+IFNg_bound under redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier Jak1_IFNg_on <=> Trans_IFNg1 under redpulp_macrophage modifier Jak1_IFNg_off # once Jak1 binds the ligand is stuck bound to the receptor
+Trans_IFNg1 under redpulp_macrophage binds Jak2 contained redpulp_macrophage modifier Jak2_Trans_IFNg1_on <=> Trans_IFNg2 under redpulp_macrophage modifier Jak2_Trans_IFNg1_off
+Trans_IFNg2 under redpulp_macrophage binds STAT1_inactive contained redpulp_macrophage modifier Trans_IFNg2_STAT1_on => STAT1 contained redpulp_macrophage and IFNg_bound under redpulp_macrophage
+#IL-4
+IL-4_bound under redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier Jak1_IL-4_on <=> Trans_IL-4_1 under redpulp_macrophage modifier Jak1_IL-4_off # once Jak1 binds the ligand is stuck bound to the receptor
+Trans_IL-4_1 under redpulp_macrophage binds Jak3 contained redpulp_macrophage modifier Jak3_Trans_IL-4_on <=> Trans_IL-4_2 under redpulp_macrophage modifier Jak3_Trans_IL-4_off
+Trans_IL-4_2 under redpulp_macrophage binds STAT6_inactive contained redpulp_macrophage modifier Trans_IL-4_2_STAT6_on => STAT6 contained redpulp_macrophage and IL-4_bound under redpulp_macrophage
+#IL-6
+IL-6_bound under redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier Jak1_IL-6_on <=> Trans_IL-6_1 under redpulp_macrophage modifier Jak1_IL-6_off ##JAK1 is primary jak on this pathway Heinrich2003, Taub2004
+Trans_IL-6_1 under redpulp_macrophage binds Jak2 contained redpulp_macrophage modifier Jak2_Trans_IL-6_on <=> Trans_IL-6_2 under redpulp_macrophage modifier Jak2_Trans_IL-6_off ##JAK2 is also associated with this pathway Heinrich2003
+Trans_IL-6_2 under redpulp_macrophage binds STAT3_inactive contained redpulp_macrophage modifier Trans_IL-6_2_STAT3_on => STAT3_6 contained redpulp_macrophage and IL-6_bound under redpulp_macrophage
+#IL-10
+IL-10_bound under redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier Jak1_IL-10_on <=> Trans_IL-10_1 under redpulp_macrophage modifier Jak1_IL-10_off # once Jak1 binds the ligand is stuck bound to the receptor
+Trans_IL-10_1 under redpulp_macrophage binds Tyk2 contained redpulp_macrophage modifier Tyk2_Trans_IL-10_on <=> Trans_IL-10_2 under redpulp_macrophage modifier Tyk2_Trans_IL-10_off
+Trans_IL-10_2 under redpulp_macrophage binds STAT3_inactive contained redpulp_macrophage modifier Trans_IL-10_2_STAT3_on => STAT3_10 contained redpulp_macrophage and IL-10_bound under redpulp_macrophage
+#IL-1, TNFa, LPS pathway merge hack in approach and hack in execution of the approach
+catalyst IL-1_bound under redpulp_macrophage binds pre_IKK contained redpulp_macrophage modifier pre_IKK_IL-1_on => IKK contained redpulp_macrophage #detection of an awkward reverse species drift. Made all 3 equations => and skipped ot the end of the chain popping off IKK with no intermediates. This is a language based choice rather than a modelling based choice.
+catalyst LPS_bound under redpulp_macrophage binds pre_IKK contained redpulp_macrophage modifier pre_IKK_LPS_on => IKK contained redpulp_macrophage #off rates removed as there is no back anymore
+catalyst TNFa_bound under redpulp_macrophage binds pre_IKK contained redpulp_macrophage modifier pre_IKK_TNFa_on => IKK contained redpulp_macrophage # catalysts because there is no need to write the receptor_bound on both sides of the equation.
+#TGFb
+TGFb_bound under redpulp_macrophage binds SMAD2 contained redpulp_macrophage modifier SMAD2_TGFb_on <=> Trans_TGFb_1 under redpulp_macrophage modifier SMAD2_TGFb_off
+Trans_TGFb_1 under redpulp_macrophage binds SMAD3 contained redpulp_macrophage modifier SMAD3_Trans_TGFb_1_on <=> Trans_TGFb_2 under redpulp_macrophage modifier SMAD3_Trans_TGFb_2_off
+Trans_TGFb_2 under redpulp_macrophage binds SMAD4_inactive contained redpulp_macrophage modifier Trans_TGFb_2_SMAD4_on => SMAD4 contained redpulp_macrophage and TGFb_bound under redpulp_macrophage
+
+
+#IFNg pathway to activation
+STAT1 contained redpulp_macrophage modifier STAT1_disassociation_rate => STAT1_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Jak2 contained redpulp_macrophage #new
+STAT1 contained redpulp_macrophage binds IRF1_inactive contained redpulp_macrophage modifier STAT1_IRF1_inactive_on => IRF1 contained redpulp_macrophage
+IRF1 contained redpulp_macrophage modifier STAT1_IRF1_inactive_off => STAT1_inactive contained redpulp_macrophage and IRF1_inactive contained redpulp_macrophage ## Heinrich2003 figure 8. This line implictly models Tc-PTP-ase activity by not allowing activated stats to rebind when they are released. This is achieved by removing their phosphorilation.
+gene IRF1 contained redpulp_macrophage modifier make_socs1 => socs1 contained redpulp_macrophage
+gene IRF1 contained redpulp_macrophage modifier make_NOS2_activator => NOS2_activator contained redpulp_macrophage
+NOS2_activator contained redpulp_macrophage binds NOS2_gene contained redpulp_macrophage modifier NOS2_on => NOS2_producing contained redpulp_macrophage ## Heinrich2003 figure 8. This line implictly models Tc-PTP-ase activity by not allowing activated stats to rebind when they are released. This is achieved by removing their phosphorilation.
+NOS2_producing contained redpulp_macrophage modifier NOS2_off => NOS2_gene contained redpulp_macrophage ## NOS2_activator implicitly destroyed as it has no inactivated state. This is mirroring modelling decisions made on the stats based on Heinrich2003 figure 8
+#NO production  
+gene NOS2_producing contained redpulp_macrophage modifier make_NO => NO contained redpulp_macrophage
+#activation 
+gene NOS2_producing contained redpulp_macrophage modifier make_ACTIVATE => ACTIVATE contained redpulp_macrophage
+gene IRF1 contained redpulp_macrophage modifier make_ACTIVATE => ACTIVATE contained redpulp_macrophage
+gene IRF1 contained redpulp_macrophage modifier make_SMAD7 => SMAD7 contained redpulp_macrophage
+ACTIVATE contained redpulp_macrophage binds activated_inactive contained redpulp_macrophage modifier activation_rate => activated contained redpulp_macrophage
+activated contained redpulp_macrophage modifier un_activation_rate => activated_inactive contained redpulp_macrophage ##activator is destroyed on unbinding mirroring the decision on stats
+#cytokine production from activated hack
+gene activated contained redpulp_macrophage modifier make_IL-1 => IL-1 around redpulp_macrophage
+gene activated contained redpulp_macrophage modifier make_IL-6 => IL-6 around redpulp_macrophage
+gene activated contained redpulp_macrophage modifier make_IL-12 => IL-12 around redpulp_macrophage
+gene activated contained redpulp_macrophage modifier make_TNFa => TNFa around redpulp_macrophage
+
+#IL-6 pathway to activation
+STAT3_6 contained redpulp_macrophage modifier STAT3_disassociation_rate => STAT3_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Jak2 contained redpulp_macrophage
+STAT3_6 contained redpulp_macrophage binds IRF1_inactive contained redpulp_macrophage modifier STAT3_IRF1_inactive_on => IRF1_6 contained redpulp_macrophage
+IRF1_6 contained redpulp_macrophage modifier STAT3_IRF1_inactive_off => STAT3_inactive contained redpulp_macrophage and IRF1_inactive contained redpulp_macrophage ##Heinrich2003 figure 8. This line implictly models Tc-PTP-ase activity by not allowing activated stats to rebind when they are released. This is achieved by removing their phosphorilation.
+gene IRF1_6 contained redpulp_macrophage modifier make_socs1 => socs1 contained redpulp_macrophage
+gene IRF1_6 contained redpulp_macrophage modifier make_NOS2_activator => NOS2_activator contained redpulp_macrophage
+
+#IL-4 pathway to alternatively activated
+STAT6 contained redpulp_macrophage modifier STAT6_disassociation_rate => STAT6_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Jak3 contained redpulp_macrophage #new
+STAT6 contained redpulp_macrophage binds 4madeupgene_inactive contained redpulp_macrophage modifier STAT6_4madeupgene_inactive_on => 4madeupgene contained redpulp_macrophage
+4madeupgene contained redpulp_macrophage modifier STAT6_4madeupgene_inactive_off => STAT6_inactive contained redpulp_macrophage and 4madeupgene_inactive contained redpulp_macrophage ##Heinrich2003 figure 8. This line implictly models Tc-PTP-ase activity by not allowing activated stats to rebind when they are released. This is achieved by removing their phosphorilation.
+gene 4madeupgene contained redpulp_macrophage modifier make_socs3 => socs3 contained redpulp_macrophage 
+gene 4madeupgene contained redpulp_macrophage modifier make_ALTERNATIVELY_ACTIVATE => ALTERNATIVELY_ACTIVATE contained redpulp_macrophage
+ALTERNATIVELY_ACTIVATE contained redpulp_macrophage binds alternatively_activated_inactive contained redpulp_macrophage modifier alternative_activation_rate => alternatively_activated contained redpulp_macrophage
+alternatively_activated contained redpulp_macrophage modifier un_alternative_activation_rate => alternatively_activated_inactive contained redpulp_macrophage ##activator is destroyed on unbinding mirroring the decision on stats
+gene alternatively_activated contained redpulp_macrophage modifier make_IL-10 => IL-10 around redpulp_macrophage #it should be IL-10 not IL-4, so don't change it back again!
+gene alternatively_activated contained redpulp_macrophage modifier make_TGFb => TGFb around redpulp_macrophage
+
+#IL-10 pathway to deactivation
+STAT3_10 contained redpulp_macrophage modifier STAT3_disassociation_rate => STAT3_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Tyk2 contained redpulp_macrophage
+STAT3_10 contained redpulp_macrophage binds 10madeupgene_inactive contained redpulp_macrophage modifier STAT3_10madeupgene_inactive_on => 10madeupgene contained redpulp_macrophage
+10madeupgene contained redpulp_macrophage modifier STAT3_10madeupgene_inactive_off => STAT3_inactive contained redpulp_macrophage and 10madeupgene_inactive contained redpulp_macrophage ##Heinrich2003 figure 8. This line implictly models Tc-PTP-ase activity by not allowing activated stats to rebind when they are released. This is achieved by removing their phosphorilation.
+gene 10madeupgene contained redpulp_macrophage modifier make_socs3 => socs3 contained redpulp_macrophage
+gene 10madeupgene contained redpulp_macrophage modifier make_DEACTIVATE => DEACTIVATE contained redpulp_macrophage
+DEACTIVATE contained redpulp_macrophage binds deactivated_inactive contained redpulp_macrophage modifier deactivation_rate => deactivated contained redpulp_macrophage
+deactivated contained redpulp_macrophage modifier un_deactivation_rate => deactivated_inactive contained redpulp_macrophage ##activator is destroyed on unbinding mirroring the decision on stats
+gene deactivated contained redpulp_macrophage modifier make_IL-10 => IL-10 around redpulp_macrophage
+
+
+#TNFa pathway
+IKK contained redpulp_macrophage and NFkb_activator_sequestered contained redpulp_macrophage modifier IKK_NFkb_release_NFkb => NFkb_activator contained redpulp_macrophage #2 things destroyed, one thing released. Very strange
+#NON-REVERSIBLE FORM BELOW
+NFkb_activator contained redpulp_macrophage binds NFkb_sequesterer contained redpulp_macrophage modifier NFkb_activator_sequestration => NFkb_activator_sequestered contained redpulp_macrophage
+#NFkb_activator contained redpulp_macrophage binds NFkb_sequesterer contained redpulp_macrophage modifier NFkb_activator_sequestration <=> NFkb_activator_sequestered contained redpulp_macrophage modifier NFkb_activator_DEsequestration
+NFkb_activator contained redpulp_macrophage binds NFkb_inactive contained redpulp_macrophage modifier NFkb_activation_on => NFkb contained redpulp_macrophage
+NFkb contained redpulp_macrophage modifier NFkb_activation_off => NFkb_inactive contained redpulp_macrophage ## activator destroyed on unbinding mirroring the decison on stats
+gene NFkb contained redpulp_macrophage modifier make_NOS2_activator => NOS2_activator contained redpulp_macrophage #joins on to the NOS2 - equations in the IFNg pathway
+#gene NFkb contained redpulp_macrophage modifier make_NFkb_reporter => NFkb_reporter contained redpulp_macrophage #joins on to the NOS2 - equations in the IFNg pathway
+gene NFkb contained redpulp_macrophage modifier make_socs3 => socs3 contained redpulp_macrophage ##Heinrich2003 explains that this is one of the mechanisms by which TNFa signalling can regulate IL-6 and IFNg signalling #Should make_socs3 be a metaparameter with the different instances associated with particular pathways
+gene constitutional contained redpulp_macrophage modifier make_NFkb_sequesterer => NFkb_sequesterer contained redpulp_macrophage #
+gene constitutional contained redpulp_macrophage modifier make_pre_IKK => pre_IKK contained redpulp_macrophage
+
+#TGFb pathway (to alternatively activated too)
+SMAD4 contained redpulp_macrophage modifier SMAD4_disassociation_rate => SMAD4_inactive contained redpulp_macrophage and SMAD2 contained redpulp_macrophage and SMAD3 contained redpulp_macrophage #new
+SMAD4 contained redpulp_macrophage binds TGFbmadeupgene_inactive contained redpulp_macrophage modifier SMAD4_TGFbmadeupgene_inactive_on => TGFbmadeupgene contained redpulp_macrophage
+TGFbmadeupgene contained redpulp_macrophage modifier SMAD4_TGFbmadeupgene_inactive_off => TGFbmadeupgene_inactive contained redpulp_macrophage ##activator is destroyed on unbinding mirroring the decision on stats
+gene TGFbmadeupgene contained redpulp_macrophage modifier TGFb_make_SHP1 => SHP1 contained redpulp_macrophage
+gene TGFbmadeupgene contained redpulp_macrophage modifier make_SMAD7 => SMAD7 contained redpulp_macrophage ## hack evidence for this linkage not searched for. Included to give TGFb an "off", Biology would approve, but it may not be done in this manner
+
+
+#Turning off TGFb 
+#mechanisms are hack like. I think SMAD7 might be one of those where some people claim it helps TGFb and some calim it hinders it - probably context dependent.
+#I'm taking the SHP1 approach instead of the socs approach.
+catalyst SMAD7 contained redpulp_macrophage and Trans_TGFb_1 under redpulp_macrophage modifier SMAD7_remove_SMAD2 => TGFb_bound under redpulp_macrophage and SMAD2 contained redpulp_macrophage
+catalyst SMAD7 contained redpulp_macrophage and Trans_TGFb_2 under redpulp_macrophage modifier SMAD7_remove_SMAD3 => Trans_TGFb_1 under redpulp_macrophage and SMAD3 contained redpulp_macrophage
+catalyst SMAD7 contained redpulp_macrophage and SMAD4 contained redpulp_macrophage modifier SMAD7_remove_SMAD4 => SMAD4_inactive contained redpulp_macrophage and SMAD2 contained redpulp_macrophage and SMAD3 contained redpulp_macrophage
+
+
+
+#Decay
+ACTIVATE contained redpulp_macrophage modifier ACTIVATE_decay => decay                    #new
+ALTERNATIVELY_ACTIVATE contained redpulp_macrophage modifier ALTERNATIVELY_ACTIVATE_decay => decay
+DEACTIVATE contained redpulp_macrophage modifier DEACTIVATE_decay => decay                    #new
+socs1 contained redpulp_macrophage modifier socs1_decay => decay                      #new
+socs3 contained redpulp_macrophage modifier socs3_decay => decay                      #new
+NOS2_activator contained redpulp_macrophage modifier NOS2_activator_decay => decay                      #new
+NFkb_sequesterer contained redpulp_macrophage modifier NFkb_sequesterer_decay => decay
+pre_IKK contained redpulp_macrophage modifier pre_IKK_decay => decay
+IKK contained redpulp_macrophage modifier IKK_decay => decay
+#NFkb_reporter contained redpulp_macrophage modifier NFkb_reporter_decay => decay
+SMAD7 contained redpulp_macrophage modifier SMAD7_decay => decay
+#TGFb_reporter contained redpulp_macrophage modifier TGFb_reporter_decay => decay
+
+MHCI on redpulp_macrophage modifier MHCI_decay  => decay
+MHCII on redpulp_macrophage modifier MHCII_decay => decay
+CD1d on redpulp_macrophage modifier CD1d_decay  => decay
+ 
+#Inhibition
+socs1 contained redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier socs1_Jak1_on <=> socs1_Jak1 contained redpulp_macrophage modifier socs1_Jak1_off
+socs3 contained redpulp_macrophage binds Jak1 contained redpulp_macrophage modifier socs3_Jak1_on <=> socs3_Jak1 contained redpulp_macrophage modifier socs3_Jak1_off
+
+#REPRESSION SECTION#
+
+#SHP1 repression
+#Pulling the complexes into their component parts is very powerful. It is however a reasonable approximation to make this process instantaions. 
+#The alternative is to have SHP1 join the complex and then with some modifier pull the components appart. Mean time in the SHP1 complex would no doubt be very short.
+#Undoing the IFNg pathway
+catalyst SHP1 contained redpulp_macrophage and Trans_IFNg1 under redpulp_macrophage modifier SHP1_remove_Jak => IFNg_bound under redpulp_macrophage and Jak1 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and Trans_IFNg2 under redpulp_macrophage modifier SHP1_remove_Jak => Trans_IFNg1 under redpulp_macrophage and Jak2 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and STAT1 contained redpulp_macrophage modifier SHP1_remove_STAT => STAT1_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Jak2 contained redpulp_macrophage
+#Undoing the IL-6 pathway
+catalyst SHP1 contained redpulp_macrophage and Trans_IL-6_1 under redpulp_macrophage modifier SHP1_remove_Jak => IL-6_bound under redpulp_macrophage and Jak1 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and Trans_IL-6_2 under redpulp_macrophage modifier SHP1_remove_Jak => Trans_IL-6_1 under redpulp_macrophage and Jak2 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and STAT3_6 contained redpulp_macrophage modifier SHP1_remove_STAT => STAT3_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Jak2 contained redpulp_macrophage 
+#Undoing the IL-10 pathway
+catalyst SHP1 contained redpulp_macrophage and Trans_IL-10_1 under redpulp_macrophage modifier SHP1_remove_Jak => IL-10_bound under redpulp_macrophage and Jak1 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and Trans_IL-10_2 under redpulp_macrophage modifier SHP1_remove_Jak => Trans_IL-10_1 under redpulp_macrophage and Tyk2 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and STAT3_10 contained redpulp_macrophage modifier SHP1_remove_STAT => STAT3_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Tyk2 contained redpulp_macrophage
+#Undoing the IL-4 pathway
+catalyst SHP1 contained redpulp_macrophage and Trans_IL-4_1 under redpulp_macrophage modifier SHP1_remove_Jak => IL-4_bound under redpulp_macrophage and Jak1 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and Trans_IL-4_2 under redpulp_macrophage modifier SHP1_remove_Jak => Trans_IL-4_1 under redpulp_macrophage and Jak3 contained redpulp_macrophage
+catalyst SHP1 contained redpulp_macrophage and STAT6 contained redpulp_macrophage modifier SHP1_remove_STAT => STAT6_inactive contained redpulp_macrophage and Jak1 contained redpulp_macrophage and Jak3 contained redpulp_macrophage
+
+SHP1 contained redpulp_macrophage modifier SHP1_decay => decay
+#catalyst SHP1 contained redpulp_macrophage and ACTIVATE contained redpulp_macrophage modifier SHP1_unACTIVATE => decay #perhaps this is far too powerful/inaccurate? hack ?
+#Further to this point, it should be unrequired as the pathway, once shut down will eventually have th ACTIVATE decay away etc
+
+
+#amastigote reactions
+#and iron cycle. It takes 1 iron when a amastigote is produced and 1 iron comes when it is dead. Iron effects the reproduction modifier but not the death rates
+#stoichiometry makes a hack where the number should really be a parameter, particularly in this instance where they are clearly hacky numbers
+#death:
+amastigote contained redpulp_macrophage and NO contained redpulp_macrophage modifier active_amastigote_killing => 50 dead_amastigote_antigen contained redpulp_macrophage and iron contained redpulp_macrophage # 10 and 50 are clearly both hack
+amastigote contained redpulp_macrophage modifier passive_amastigote_death => 10 dead_amastigote_antigen contained redpulp_macrophage and iron contained redpulp_macrophage #passive mechanism, sometimes things die
+#reproduction
+#"catalyst" because it is not used up. "and" because bind seems more wrong. iron because something needs to stop this being exponential, so it may as well be the known resource: iron.
+catalyst amastigote contained redpulp_macrophage and iron contained redpulp_macrophage modifier amastigote_reproduction =>  amastigote contained redpulp_macrophage
+#expression. Now it is acting as a gene. It is a quasi jack of all trades
+gene amastigote contained redpulp_macrophage modifier amastigote_make_SHP1 => SHP1 contained redpulp_macrophage
+
+dead_amastigote_antigen contained redpulp_macrophage modifier dead_amastigote_antigen_decay => decay
+
+#iron cycle required to limit the exponential phase of amastigote growth
+#Consider making iron a fixed resource that goes in on amastigote reproduction and comes back out on amastigote death in a conserved manner - bit of a hard limit
+#This doesn't deal with the with the wider implications of the iron cycle where amastigotes stimulate production of blood cells, which presumably then leads to blood cell clearence, or increased iron delivery to redpulp_macrophage and kupffer cells
+
+
+#redpulp_macrophage to ON surface reactions
+#presentation of antigen MHCI MHCII CD1d. In each case we are implicitly considering the receptor to be loaded with amastigote antigen. No other MHC/CD1d are in the model
+gene activated contained redpulp_macrophage and dead_amastigote_antigen contained redpulp_macrophage modifier MHCI_production => MHCI on redpulp_macrophage #This reaction can only proceed when there is some activated gene and some dead amastigotes
+#MHCI requires licencing, so there is no constitutional expression of MHCI. Examining this may explain the CD4 biased nature of the response.
+gene activated contained redpulp_macrophage and dead_amastigote_antigen contained redpulp_macrophage modifier MHCII_production => MHCII on redpulp_macrophage #The upregulation mechanism
+gene constitutional contained redpulp_macrophage and dead_amastigote_antigen contained redpulp_macrophage modifier constitutional_MHCII_production => MHCII on redpulp_macrophage #The constitutional mechanism
+gene activated contained redpulp_macrophage and dead_amastigote_antigen contained redpulp_macrophage modifier CD1d_production => CD1d on redpulp_macrophage #The upregulation mechanism 
+gene constitutional contained redpulp_macrophage and catalyst amastigote contained redpulp_macrophage modifier constitutional_CD1d_production_alive => CD1d on redpulp_macrophage #The constitutional mechanism based on the number of live amastigotes. Shedding of lipid?
+gene constitutional contained redpulp_macrophage and dead_amastigote_antigen contained redpulp_macrophage modifier constitutional_CD1d_production_dead => CD1d on redpulp_macrophage
+
+#######################Version 2 Changes################################
+######################INFLUX AND OUTFLUX################################
+########################################################################
+
+#Nitric Oxide diffusion
+parameter NO_diffuse = 60 hour-1
+
+species NO around redpulp_macrophage = 0 unit [parasite killing extracecellular]
+
+#hack hack this line causes an error at present
+NO contained redpulp_macrophage modifier NO_diffuse <=> NO around redpulp_macrophage modifier NO_diffuse #diffusion into and out off redpulp macrophages
+NO contained spleen modifier volcor*NO_decay*(NO contained spleen) => decay  #decay rate is unchanged outside the cell. Uses parameter for intracellular decay listed above
+NO contained redpulp_macrophage modifier NO_decay*(NO contained redpulp_macrophage) => decay ##For inversely proportional equation see http://www.sciencedirect.com/science/article/pii/S0005272899000201
+
+species THEVOID contained spleen = 0 unitofemptiness [switch flux]
+
+parameter inrate = 0 hour-1
+parameter outrate = inrate/100 hour-1 #carrying_capacity=inrate/outrate
+
+parameter Th0_influx_rate                      = inrate hour-1
+parameter Th0_exp_influx_rate                  = inrate hour-1
+parameter Th1I_influx_rate                     = inrate hour-1
+parameter Th1I_exp_influx_rate                 = inrate hour-1
+parameter Th1II_influx_rate                    = inrate hour-1
+parameter Th1II_exp_influx_rate                = inrate hour-1
+parameter Th1III_influx_rate                   = inrate hour-1
+parameter Th1III_exp_influx_rate               = inrate hour-1
+parameter Th2_influx_rate                      = inrate hour-1
+parameter Th2_exp_influx_rate                  = inrate hour-1
+parameter Tr1_influx_rate                      = inrate hour-1
+parameter Tr1_exp_influx_rate                  = inrate hour-1
+parameter nTreg_exp_influx_rate                = inrate hour-1
+parameter Tc0_influx_rate                      = inrate hour-1
+parameter Tc0_exp_influx_rate                  = inrate hour-1
+parameter Tc1_influx_rate                      = inrate hour-1
+parameter Tc1_exp_influx_rate                  = inrate hour-1
+parameter Tc2_influx_rate                      = inrate hour-1
+parameter Tc2_exp_influx_rate                  = inrate hour-1
+parameter iNKT_influx_rate                     = inrate hour-1
+parameter iNKT_exp_influx_rate                 = inrate hour-1
+parameter NK_influx_rate                       = inrate hour-1
+parameter NK_exp_influx_rate                   = inrate hour-1
+parameter NKIL-10_influx_rate                  = inrate hour-1
+parameter NKIL-10_exp_influx_rate              = inrate hour-1
+parameter Neutrophil_resting_influx_rate       = inrate hour-1
+parameter Neutrophil_Activated_influx_rate     = inrate hour-1
+parameter Neutrophil_Alt_Activated_influx_rate = inrate hour-1
+parameter Neutrophil_Deactivated_influx_rate   = inrate hour-1
+parameter OtherAPC_resting_influx_rate         = inrate hour-1
+parameter OtherAPC_Activated_influx_rate       = inrate hour-1
+parameter OtherAPC_Alt_Activated_influx_rate   = inrate hour-1
+parameter OtherAPC_Deactivated_influx_rate     = inrate hour-1
+parameter Th0_outflux_rate                      = outrate hour-1
+parameter Th0_exp_outflux_rate                  = outrate hour-1
+parameter Th1I_outflux_rate                     = outrate hour-1
+parameter Th1I_exp_outflux_rate                 = outrate hour-1
+parameter Th1II_outflux_rate                    = outrate hour-1
+parameter Th1II_exp_outflux_rate                = outrate hour-1
+parameter Th1III_outflux_rate                   = outrate hour-1
+parameter Th1III_exp_outflux_rate               = outrate hour-1
+parameter Th2_outflux_rate                      = outrate hour-1
+parameter Th2_exp_outflux_rate                  = outrate hour-1
+parameter Tr1_outflux_rate                      = outrate hour-1
+parameter Tr1_exp_outflux_rate                  = outrate hour-1
+parameter nTreg_exp_outflux_rate                = outrate hour-1
+parameter Tc0_outflux_rate                      = outrate hour-1
+parameter Tc0_exp_outflux_rate                  = outrate hour-1
+parameter Tc1_outflux_rate                      = outrate hour-1
+parameter Tc1_exp_outflux_rate                  = outrate hour-1
+parameter Tc2_outflux_rate                      = outrate hour-1
+parameter Tc2_exp_outflux_rate                  = outrate hour-1
+parameter iNKT_outflux_rate                     = outrate hour-1
+parameter iNKT_exp_outflux_rate                 = outrate hour-1
+parameter NK_outflux_rate                       = outrate hour-1
+parameter NK_exp_outflux_rate                   = outrate hour-1
+parameter NKIL-10_outflux_rate                  = outrate hour-1
+parameter NKIL-10_exp_outflux_rate              = outrate hour-1
+parameter Neutrophil_resting_outflux_rate       = outrate hour-1
+parameter Neutrophil_Activated_outflux_rate     = outrate hour-1
+parameter Neutrophil_Alt_Activated_outflux_rate = outrate hour-1
+parameter Neutrophil_Deactivated_outflux_rate   = outrate hour-1
+parameter OtherAPC_resting_outflux_rate         = outrate hour-1
+parameter OtherAPC_Activated_outflux_rate       = outrate hour-1
+parameter OtherAPC_Alt_Activated_outflux_rate   = outrate hour-1
+parameter OtherAPC_Deactivated_outflux_rate     = outrate hour-1
+
+gene THEVOID contained spleen binds Th0 contained spleen                      modifier Th0_outflux_rate                      => decay 
+gene THEVOID contained spleen binds Th0_exp contained spleen                  modifier Th0_exp_outflux_rate                  => decay 
+gene THEVOID contained spleen binds Th1I contained spleen                     modifier Th1I_outflux_rate                     => decay 
+gene THEVOID contained spleen binds Th1I_exp contained spleen                 modifier Th1I_exp_outflux_rate                 => decay 
+gene THEVOID contained spleen binds Th1II contained spleen                    modifier Th1II_outflux_rate                    => decay 
+gene THEVOID contained spleen binds Th1II_exp contained spleen                modifier Th1II_exp_outflux_rate                => decay 
+gene THEVOID contained spleen binds Th1III contained spleen                   modifier Th1III_outflux_rate                   => decay 
+gene THEVOID contained spleen binds Th1III_exp contained spleen               modifier Th1III_exp_outflux_rate               => decay 
+gene THEVOID contained spleen binds Th2 contained spleen                      modifier Th2_outflux_rate                      => decay 
+gene THEVOID contained spleen binds Th2_exp contained spleen                  modifier Th2_exp_outflux_rate                  => decay 
+gene THEVOID contained spleen binds Tr1 contained spleen                      modifier Tr1_outflux_rate                      => decay 
+gene THEVOID contained spleen binds Tr1_exp contained spleen                  modifier Tr1_exp_outflux_rate                  => decay 
+gene THEVOID contained spleen binds nTreg_exp contained spleen                modifier nTreg_exp_outflux_rate                => decay 
+gene THEVOID contained spleen binds Tc0     contained spleen                  modifier Tc0_outflux_rate                      => decay 
+gene THEVOID contained spleen binds Tc0_exp contained spleen                  modifier Tc0_exp_outflux_rate                  => decay 
+gene THEVOID contained spleen binds Tc1     contained spleen                  modifier Tc1_outflux_rate                      => decay 
+gene THEVOID contained spleen binds Tc1_exp contained spleen                  modifier Tc1_exp_outflux_rate                  => decay 
+gene THEVOID contained spleen binds Tc2     contained spleen                  modifier Tc2_outflux_rate                      => decay 
+gene THEVOID contained spleen binds Tc2_exp contained spleen                  modifier Tc2_exp_outflux_rate                  => decay 
+gene THEVOID contained spleen binds iNKT contained spleen                     modifier iNKT_outflux_rate                     => decay 
+gene THEVOID contained spleen binds iNKT_exp contained spleen                 modifier iNKT_exp_outflux_rate                 => decay 
+gene THEVOID contained spleen binds NK contained spleen                       modifier NK_outflux_rate                       => decay 
+gene THEVOID contained spleen binds NK_exp contained spleen                   modifier NK_exp_outflux_rate                   => decay 
+gene THEVOID contained spleen binds NKIL-10 contained spleen                  modifier NKIL-10_outflux_rate                  => decay 
+gene THEVOID contained spleen binds NKIL-10_exp contained spleen              modifier NKIL-10_exp_outflux_rate              => decay 
+gene THEVOID contained spleen binds Neutrophil_resting       contained spleen modifier Neutrophil_resting_outflux_rate       => decay 
+gene THEVOID contained spleen binds Neutrophil_Activated     contained spleen modifier Neutrophil_Activated_outflux_rate     => decay 
+gene THEVOID contained spleen binds Neutrophil_Alt_Activated contained spleen modifier Neutrophil_Alt_Activated_outflux_rate => decay 
+gene THEVOID contained spleen binds Neutrophil_Deactivated   contained spleen modifier Neutrophil_Deactivated_outflux_rate   => decay 
+gene THEVOID contained spleen binds OtherAPC_resting         contained spleen modifier OtherAPC_resting_outflux_rate         => decay 
+gene THEVOID contained spleen binds OtherAPC_Activated       contained spleen modifier OtherAPC_Activated_outflux_rate       => decay 
+gene THEVOID contained spleen binds OtherAPC_Alt_Activated   contained spleen modifier OtherAPC_Alt_Activated_outflux_rate   => decay 
+gene THEVOID contained spleen binds OtherAPC_Deactivated     contained spleen modifier OtherAPC_Deactivated_outflux_rate     => decay 
+
+gene THEVOID contained spleen modifier Th0_influx_rate                      => Th0 contained spleen                      
+gene THEVOID contained spleen modifier Th0_exp_influx_rate                  => Th0_exp contained spleen                  
+gene THEVOID contained spleen modifier Th1I_influx_rate                     => Th1I contained spleen                     
+gene THEVOID contained spleen modifier Th1I_exp_influx_rate                 => Th1I_exp contained spleen                 
+gene THEVOID contained spleen modifier Th1II_influx_rate                    => Th1II contained spleen                    
+gene THEVOID contained spleen modifier Th1II_exp_influx_rate                => Th1II_exp contained spleen                
+gene THEVOID contained spleen modifier Th1III_influx_rate                   => Th1III contained spleen                   
+gene THEVOID contained spleen modifier Th1III_exp_influx_rate               => Th1III_exp contained spleen               
+gene THEVOID contained spleen modifier Th2_influx_rate                      => Th2 contained spleen                      
+gene THEVOID contained spleen modifier Th2_exp_influx_rate                  => Th2_exp contained spleen                  
+gene THEVOID contained spleen modifier Tr1_influx_rate                      => Tr1 contained spleen                      
+gene THEVOID contained spleen modifier Tr1_exp_influx_rate                  => Tr1_exp contained spleen                  
+gene THEVOID contained spleen modifier nTreg_exp_influx_rate                => nTreg_exp contained spleen                
+gene THEVOID contained spleen modifier Tc0_influx_rate                      => Tc0     contained spleen                  
+gene THEVOID contained spleen modifier Tc0_exp_influx_rate                  => Tc0_exp contained spleen                  
+gene THEVOID contained spleen modifier Tc1_influx_rate                      => Tc1     contained spleen                  
+gene THEVOID contained spleen modifier Tc1_exp_influx_rate                  => Tc1_exp contained spleen                  
+gene THEVOID contained spleen modifier Tc2_influx_rate                      => Tc2     contained spleen                  
+gene THEVOID contained spleen modifier Tc2_exp_influx_rate                  => Tc2_exp contained spleen                  
+gene THEVOID contained spleen modifier iNKT_influx_rate                     => iNKT contained spleen                     
+gene THEVOID contained spleen modifier iNKT_exp_influx_rate                 => iNKT_exp contained spleen                 
+gene THEVOID contained spleen modifier NK_influx_rate                       => NK contained spleen                       
+gene THEVOID contained spleen modifier NK_exp_influx_rate                   => NK_exp contained spleen                   
+gene THEVOID contained spleen modifier NKIL-10_influx_rate                  => NKIL-10 contained spleen                  
+gene THEVOID contained spleen modifier NKIL-10_exp_influx_rate              => NKIL-10_exp contained spleen              
+gene THEVOID contained spleen modifier Neutrophil_resting_influx_rate       => Neutrophil_resting       contained spleen 
+gene THEVOID contained spleen modifier Neutrophil_Activated_influx_rate     => Neutrophil_Activated     contained spleen 
+gene THEVOID contained spleen modifier Neutrophil_Alt_Activated_influx_rate => Neutrophil_Alt_Activated contained spleen 
+gene THEVOID contained spleen modifier Neutrophil_Deactivated_influx_rate   => Neutrophil_Deactivated   contained spleen 
+gene THEVOID contained spleen modifier OtherAPC_resting_influx_rate         => OtherAPC_resting         contained spleen 
+gene THEVOID contained spleen modifier OtherAPC_Activated_influx_rate       => OtherAPC_Activated       contained spleen 
+gene THEVOID contained spleen modifier OtherAPC_Alt_Activated_influx_rate   => OtherAPC_Alt_Activated   contained spleen 
+gene THEVOID contained spleen modifier OtherAPC_Deactivated_influx_rate     => OtherAPC_Deactivated     contained spleen 
+
+### Tissue damage model using NO
+
+species organ_healthy contained spleen   = 20 units
+species organ_damaged contained spleen   = 0 units
+parameter damage_rate   = 0.001 units
+parameter recovery_rate = ln(2)/(24*2) hour^-1
+parameter damage_make_TGFb = production_of_TGFb unit
+
+
+organ_healthy contained spleen binds NO contained spleen modifier volcor*damage_rate <=> organ_damaged contained spleen modifier recovery_rate
+#gene organ_damaged contained spleen modifier damage_make_LPS  => LPS contained spleen
+gene organ_damaged contained spleen modifier damage_make_IL-10 => IL-10 contained spleen
+gene organ_damaged contained spleen modifier damage_make_TGFb => TGFb contained spleen
+
+
+#gene THEVOID contained spleen modifier damage_LPS*(((IFNg contained spleen)*IFNg_effectiveness) + ((TNFa contained spleen)*TNFa_effectiveness) + ((IL-6 contained spleen)*IL-6_effectiveness) + ((IL-1 contained spleen)*IL-1_effectiveness) + ((LPS contained spleen)*LPS_effectiveness)) => LPS contained spleen 
+#gene THEVOID contained spleen modifier damage_TGFb*(((IFNg contained spleen)*IFNg_effectiveness) + ((TNFa contained spleen)*TNFa_effectiveness) + ((IL-6 contained spleen)*IL-6_effectiveness) + ((IL-1 contained spleen)*IL-1_effectiveness) + ((LPS contained spleen)*LPS_effectiveness)) => TGFb contained spleen 
+
+
+############Experiments######################
+
+##drug003024
+species drug1 contained spleen                 = 0 unit ['intervention' 'drug'] 
+parameter EXPERIMENTAL_PROTOCOL_drug003024_off = 0.7/50 unit
+parameter make_drug1                       = 800 unit
+parameter drug1_decay                      = 2 unit
+parameter drug1_klilling                   = 0.7/8000 unit
+EXPERIMENTAL_PROTOCOL_drug003024 contained redpulp_macrophage modifier EXPERIMENTAL_PROTOCOL_drug003024_off => decay #ends dose 
+gene EXPERIMENTAL_PROTOCOL_drug003024 contained redpulp_macrophage modifier make_drug1 => drug1 contained redpulp_macrophage ##due to temporary simulator limitations, we will not be diffusing in
+drug1 contained redpulp_macrophage binds amastigote contained redpulp_macrophage modifier drug1_klilling => 50 dead_amastigote_antigen contained redpulp_macrophage
+drug1 contained redpulp_macrophage modifier drug1_decay => decay
+
+##IL-10 knock down
+ species anti_IL-10 contained spleen = 0 units ['IL-10' 'knock down' 'intervention']
+ species anti_IL-10_IL-10 contained spleen     = 0 unit ['IL-10' 'knock down' 'intervention']
+ parameter anti_IL-10_influx_rate = 750 hour-1
+ parameter anti_IL-10_decay = stuff_decay hour-1 #1500/1.5=carrying capacity of 1000
+ parameter anti_IL-10_IL-10_decay = stuff_decay hour-1
+ parameter anti_IL-10_on = 10 units
+ parameter anti_IL-10_off = 0.01 units
+ 
+ gene EXPERIMENTAL_PROTOCOL_anti_IL-10 contained spleen modifier anti_IL-10_influx_rate => anti_IL-10 contained spleen 
+ anti_IL-10 contained spleen binds IL-10 contained spleen modifier volcor*anti_IL-10_on <=> anti_IL-10_IL-10 contained spleen modifier anti_IL-10_off
+ anti_IL-10 contained spleen modifier anti_IL-10_decay => decay
+ anti_IL-10_IL-10 contained spleen modifier anti_IL-10_IL-10_decay => decay
+ 
+ ##TNFa knock down
+ species anti_TNFa contained spleen = 0 units ['TNFa' 'knock down' 'intervention']
+ species anti_TNFa_TNFa   contained spleen     = 0 unit ['TNFa' 'knock down' 'intervention']
+ parameter anti_TNFa_influx_rate = 750 hour-1
+ parameter anti_TNFa_decay = stuff_decay hour-1 #1500/1.5=carrying capacity of 1000
+ parameter anti_TNFa_TNFa_decay = stuff_decay hour-1
+ parameter anti_TNFa_on = 10 units
+ parameter anti_TNFa_off = 0.01 units
+ 
+ gene EXPERIMENTAL_PROTOCOL_anti_TNFa contained spleen modifier anti_TNFa_influx_rate => anti_TNFa contained spleen 
+ anti_TNFa contained spleen binds TNFa contained spleen modifier volcor*anti_TNFa_on <=> anti_TNFa_TNFa contained spleen modifier anti_TNFa_off
+ anti_TNFa contained spleen modifier anti_TNFa_decay => decay
+ anti_TNFa_TNFa contained spleen modifier anti_TNFa_TNFa_decay => decay
+ 
+ ##IFNg knock down
+ species anti_IFNg contained spleen = 0 units ['IFNg' 'knock down' 'intervention']
+ species anti_IFNg_IFNg contained spleen = 0 unit ['IFNg' 'knock down' 'intervention']
+ parameter anti_IFNg_influx_rate = 750 hour-1
+ parameter anti_IFNg_decay = stuff_decay hour-1 #1500/1.5=carrying capacity of 1000
+ parameter anti_IFNg_IFNg_decay = stuff_decay hour-1
+ parameter anti_IFNg_on = 1000000000 units
+ parameter anti_IFNg_off = 0.0000000001 units
+ 
+ gene EXPERIMENTAL_PROTOCOL_anti_IFNg contained spleen modifier anti_IFNg_influx_rate => anti_IFNg contained spleen 
+ anti_IFNg contained spleen binds IFNg contained spleen modifier volcor*anti_IFNg_on <=> anti_IFNg_IFNg contained spleen modifier anti_IFNg_off
+ anti_IFNg contained spleen modifier anti_IFNg_decay => decay
+ anti_IFNg_IFNg contained spleen modifier anti_IFNg_IFNg_decay => decay
+#############################################

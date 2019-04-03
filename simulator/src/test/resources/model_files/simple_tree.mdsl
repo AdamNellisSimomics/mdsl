@@ -1,0 +1,8 @@
+
+# A simple example to test initialising the tree of membranes and species
+
+initial tree {simulation {7 membrane_A {3 membrane_C}} {4 membrane_B {2 membrane_C {1 membrane_D}}}}
+species species_z contained membrane_A = 100 mol.liter^-1
+species species_y contained membrane_A = 50 mol.liter^-1
+species species_x on membrane_A = 20 mol.liter^-1
+species species_w contained membrane_B = 10 mol.liter^-1

@@ -1,0 +1,8 @@
+
+# Tests of initialising parameters
+
+initial tree {simulation}
+
+parameter a = 5 units
+parameter b = a units
+parameter c = 3 * a + 4 units

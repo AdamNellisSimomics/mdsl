@@ -1,0 +1,31 @@
+
+# Settings for IDEs and plugins
+**/__pycache__/
+**/.idea/
+leish_simulator/.sonar/*
+leish_simulator/.settings/*
+leish_simulator/.gradle/
+leish_simulator/coverage.exec
+
+# Build directories
+leish_simulator/bin/*
+leish_simulator/build/*
+leish_simulator/target/generated-sources/
+leish_simulator/generated-src/
+
+# Output files generated when running tests
+leish_simulator/output_*
+leish_simulator/logs/*
+leish_simulator/logs_*
+leish_simulator/test_logs/*
+leish_simulator/test_diagrams/*
+
+# Previous jar files 
+leish_simulator/release/*
+
+# Example outputs
+leish_simulator/example diagrams/*
+leish_simulator/crosstalk_experiment/outputs
+leish_simulator/crosstalk_experiment/simulator_*.jar
+leish_simulator/poster screenshots/*
+/.gradle/

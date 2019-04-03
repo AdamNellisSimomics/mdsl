@@ -1,0 +1,10 @@
+
+initial tree { m }
+
+species a contained m = 0 units
+species b contained m = 0 units
+
+parameter k1 = 1 units
+
+a contained m binds undefined_species_1 contained m modifier k1 <=> b contained m modifier undefined_parameter_1
+undefined_species_2 on m binds b contained m modifier undefined_parameter_1 <=> undefined_species_3 around m modifier undefined_parameter_2

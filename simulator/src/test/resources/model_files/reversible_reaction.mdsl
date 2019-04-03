@@ -1,0 +1,9 @@
+
+# An example of a reversible reaction.
+
+initial tree {simulation}
+
+parameter k = 1 units
+parameter k2 = 1 units
+
+a contained simulation binds b contained simulation modifier k <=> c contained simulation modifier k2

@@ -1,0 +1,16 @@
+
+# Test of the error message given when a location context has been missed out
+
+initial tree { simulation {1 membrane_a} {1 membrane_b}}
+
+species a contained membrane_a = 1 units
+
+parameter k_1 = 2 units
+
+# Missing location context
+	species b = 3 units
+
+species f under membrane_a = 8 units
+
+d contained membrane_b modifier 1 => decay
+e on membrane_a modifier 1 => decay

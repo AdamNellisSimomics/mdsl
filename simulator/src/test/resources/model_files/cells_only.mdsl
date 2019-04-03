@@ -1,0 +1,477 @@
+initial tree {spleen{1 redpulp_macrophage}}
+
+species Th0 contained spleen         = 99 unit #TURN ON 
+species Th0_exp contained spleen     = 0 unit
+species Th1I contained spleen        = 0 unit
+species Th1I_exp contained spleen    = 0 unit
+species Th1II contained spleen       = 0 unit
+species Th1II_exp contained spleen   = 0 unit
+species Th1III contained spleen      = 0 unit
+species Th1III_exp contained spleen  = 0 unit
+species Th2 contained spleen         = 0 unit
+species Th2_exp contained spleen     = 0 unit
+species Tr1 contained spleen         = 0 unit
+species Tr1_exp contained spleen     = 0 unit
+
+species nTreg_exp contained spleen   = 1 unit
+
+species Tc0     contained spleen     = 100 unit #TURN ON
+species Tc0_exp contained spleen     = 0 unit
+species Tc1     contained spleen     = 0 unit
+species Tc1_exp contained spleen     = 0 unit
+species Tc2     contained spleen     = 0 unit
+species Tc2_exp contained spleen     = 0 unit
+
+species iNKT contained spleen        = 100 unit #TURN ON
+species iNKT_exp contained spleen    = 0 unit
+
+species NK contained spleen          = 100 unit #TURN ON
+species NK_exp contained spleen      = 0 unit
+species NKIL-10 contained spleen     = 0 unit
+species NKIL-10_exp contained spleen = 0 unit
+
+species Neutrophil_resting       contained spleen = 100 unit #TURN ON
+species Neutrophil_Activated     contained spleen = 0 unit
+species Neutrophil_Alt_Activated contained spleen = 0 unit
+species Neutrophil_Deactivated   contained spleen = 0 unit
+
+species OtherAPC_resting         contained spleen = 100 unit #TURN ON
+species OtherAPC_Activated       contained spleen = 0 unit
+species OtherAPC_Alt_Activated   contained spleen = 0 unit
+species OtherAPC_Deactivated     contained spleen = 0 unit
+
+
+parameter Neutrophil_resting_activation        = 1 unit #cytokine power is equal #numbers for balanced outcome when all cytokine levels even 1/5 unit 
+parameter Neutrophil_Activated_resting         = 0.7/24 unit #cytokine power is equal #numbers for balanced outcome when all cytokine levels even (1/2)/30 unit 
+parameter Neutrophil_resting_alt_activation    = 1 unit #cytokine power is equal #numbers for balanced outcome when all cytokine levels even 1 unit 
+parameter Neutrophil_Alt_Activated_resting     = 0.7/24 unit #cytokine power is equal #numbers for balanced outcome when all cytokine levels even (1)/30 unit 
+parameter Neutrophil_resting_deactivation      = 1 unit #cytokine power is equal #numbers for balanced outcome when all cytokine levels even 1/2 unit 
+parameter Neutrophil_Deactivated_resting       = 0.7/24 unit #cytokine power is equal #numbers for balanced outcome when all cytokine levels even (2/5)/30 unit 
+
+parameter OtherAPC_resting_activation          = 1 unit #cytokine power is equal #numbers for balanced outcome when all cytokine levels even 1/5 unit 
+parameter OtherAPC_Activated_resting           = 0.7/24 unit #cytokine power is equal #numbers for balanced outcome when all cytokine levels even (1/2)/30 unit 
+parameter OtherAPC_resting_alt_activation      = 1 unit #cytokine power is equal #numbers for balanced outcome when all cytokine levels even 1 unit 
+parameter OtherAPC_Alt_Activated_resting       = 0.7/24 unit #cytokine power is equal #numbers for balanced outcome when all cytokine levels even (1)/30 unit 
+parameter OtherAPC_resting_deactivation        = 1 unit #cytokine power is equal #numbers for balanced outcome when all cytokine levels even 1/2 unit 
+parameter OtherAPC_Deactivated_resting         = 0.7/24 unit #cytokine power is equal #numbers for balanced outcome when all cytokine levels even (2/5)/30 unit 
+
+
+
+#species CD1d  on redpulp_macrophage  = 100 unit
+#species MHCI on redpulp_macrophage   = 100 unit
+#species MHCII on redpulp_macrophage  = 100 unit
+#species IL-2 contained spleen        = 100 unit
+#species IFNg contained spleen        = 100 unit
+#species TNFa contained spleen        = 100 unit
+#species IL-10 contained spleen       = 100 unit
+#species IL-4 contained spleen        = 100 unit
+#species TGFb contained spleen        = 100 unit
+#species IL-12 contained spleen       = 100 unit
+#species IL-1 contained spleen        = 0 unit #APCs only so far
+#species IL-6 contained spleen        = 0 unit #APCs only so far
+#species LPS contained spleen         = 0 unit #APCs only so far
+
+parameter Tc0_Tc0_exp                     = 0.001 unit #must account for MHCI effectiveness
+parameter Tc0_exp_Tc0                     = 0.7/24 unit
+parameter Tc1_Tc1_exp                     = 0.001 unit #must account for MHCI effectiveness
+parameter Tc1_exp_Tc1                     = 0.7/24 unit
+parameter Tc2_Tc2_exp                     = 0.001 unit #must account for MHCI effectiveness
+parameter Tc2_exp_Tc2                     = 0.7/24 unit
+
+
+parameter Tc0_exp_Tc1_rate                = 0.7/24 unit 
+parameter Tc0_exp_Tc2_rate                = 0.7/24 unit
+
+
+parameter NK_exp_NK                       = 0.7/96 unit
+parameter NK_NK_exp                       = (NK_exp_NK)*200 unit
+parameter NKIL-10_exp_NKIL-10             = 0.7/96 unit
+parameter NKIL-10_NKIL-10_exp             = (NKIL-10_exp_NKIL-10)*200 unit
+
+parameter NK_exp_NKIL-10_exp             = 0.7/192 unit
+
+parameter iNKT_iNKT_exp_rate              = 0.001 unit # cd1d and IL-12 dependent MUST account for CD1d effectiveness
+parameter iNKT_iNKT_exp                   = 0.7/24 unit # IL-12 only route
+parameter iNKT_exp_iNKT                   = 0.7/24 unit
+
+parameter Th0_Th0_exp                     = 0.001 unit #must account for MHCII effectiveness
+parameter Th0_exp_Th0                     = 0.7/24 unit
+
+parameter Th0_exp_Th1I_rate               = 0.7/24 unit
+parameter Th0_exp_Th2_rate                = 0.7/24 unit
+parameter Th0_exp_Tr1_rate                = 0.7/24 unit
+parameter Th1I_exp_Th1II_exp              = 0.7/96 unit
+parameter Th1I_Th1II                      = 0.7/96 unit
+parameter Th1II_exp_Th1III                = 0.7/24 unit
+parameter Th1II_Th1III                    = 0.7/24 unit
+
+parameter Th1I_exp_Th1I                   = 100 unit #depends on MHCII
+parameter Th1I_Th1I_exp                   = 4 unit #depends on IFNg and TGFb levels
+parameter Th1II_exp_Th1II                 = 100 unit
+parameter Th1II_Th1II_exp                 = 4 unit
+parameter Th1III_exp_Th1III               = 100 unit
+parameter Th1III_Th1III_exp               = 4 unit
+parameter Th2_exp_Th2                     = 100 unit
+parameter Th2_Th2_exp                     = 4 unit
+parameter Tr1_exp_Tr1                     = 100 unit
+parameter Tr1_Tr1_exp                     = 4 unit
+
+
+
+parameter Th1I_reproduction               = 0 unit
+parameter Th1I_reproduction_IL-2_boost    = 0 unit
+parameter Th1II_reproduction              = 0 unit
+parameter Th1II_reproduction_IL-2_boost   = 0 unit
+
+parameter Th2_reproduction                = 0 unit
+parameter Th2_reproduction_IL-2_boost     = 0 unit
+
+parameter Tr1_reproduction                = 0 unit
+parameter Tr1_reproduction_IL-2_boost     = 0 unit
+
+parameter Tc1_reproduction                = 0 unit
+parameter Tc1_reproduction_IL-2_boost     = 0 unit
+
+parameter Tc2_reproduction                = 0 unit
+parameter Tc2_reproduction_IL-2_boost     = 0 unit
+
+
+
+parameter Th0_exp_make_IL-2               = 0.01 unit
+parameter Th1I_exp_make_IFNg              = 0.01 unit
+parameter Th1I_exp_make_TNFa              = 0.01 unit
+parameter Th1I_exp_make_IL-2              = 0.01 unit
+parameter Th1II_exp_make_IFNg             = 0.01 unit
+parameter Th1II_exp_make_TNFa             = 0.01 unit
+parameter Th1II_exp_make_IL-2             = 0.01 unit
+parameter Th1III_exp_make_IFNg            = 0.01 unit
+parameter Th1III_exp_make_TNFa            = 0.01 unit
+parameter Th1III_exp_make_IL-2            = 0.01 unit
+parameter Th1III_exp_make_IL-10           = 0.01 unit
+parameter Th2_exp_make_IL-4               = 0.01 unit
+parameter Th2_exp_make_IL-10              = 0.01 unit
+parameter Th2_exp_make_IL-2               = 0.01 unit
+parameter Tr1_exp_make_IL-10              = 0.01 unit
+parameter Tr1_exp_make_IL-2               = 0.01 unit
+parameter nTreg_exp_make_IL-10            = 0.01 unit
+parameter nTreg_exp_make_TGFb             = 0.01 unit
+parameter nTreg_exp_make_IL-2             = 0.01 unit
+
+parameter Tc0_exp_make_IL-2               = 0.01 unit
+parameter Tc1_exp_make_IFNg               = 0.01 unit
+parameter Tc1_exp_make_TNFa               = 0.01 unit
+parameter Tc1_exp_make_IL-2               = 0.01 unit
+parameter Tc2_exp_make_IL-4               = 0.01 unit
+parameter Tc2_exp_make_IL-10              = 0.01 unit
+parameter Tc2_exp_make_IL-2               = 0.01 unit
+
+parameter iNKT_exp_make_IFNg              = 0.01 unit
+parameter iNKT_exp_make_IL-4              = 0.01 unit
+
+parameter NKIL-10_exp_make_IFNg           = 0.01 unit
+parameter NKIL-10_exp_make_TNFa           = 0.01 unit
+parameter NKIL-10_exp_make_IL-10          = 0.01 unit
+parameter NK_exp_make_IFNg                = 0.01 unit
+parameter NK_exp_make_TNFa                = 0.01 unit
+
+parameter OtherAPC_make_IFNg              = 0.01 unit
+parameter OtherAPC_make_TNFa              = 0.01 unit
+parameter OtherAPC_make_IL-1              = 0.01 unit
+parameter OtherAPC_make_IL-6              = 0.01 unit
+parameter OtherAPC_make_IL-4              = 0.01 unit
+parameter OtherAPC_make_TGFb              = 0.01 unit
+parameter OtherAPC_make_IL-10             = 0.01 unit
+
+parameter Neutrophil_make_IFNg            = 0.01 unit
+parameter Neutrophil_make_TNFa            = 0.01 unit
+parameter Neutrophil_make_IL-1            = 0.01 unit
+parameter Neutrophil_make_IL-6            = 0.01 unit
+parameter Neutrophil_make_IL-4            = 0.01 unit
+parameter Neutrophil_make_TGFb            = 0.01 unit
+parameter Neutrophil_make_IL-10           = 0.01 unit
+
+
+parameter Neutrophil_death                = 0.7/24 unit
+parameter OtherAPC_death                  = 0.7/192 unit
+parameter NKIL-10_death                   = 0.7/192 unit
+parameter NK_death                        = 0.7/192 unit
+parameter iNKT_death                      = 0.7/192 unit #0.7/48 unit
+parameter Th0_death                       = 0.7/48 unit
+parameter Th1I_death                      = 0.7/48 unit
+parameter Th1II_death                     = 0.7/48 unit
+parameter Th1III_death                    = 0.7/48 unit
+parameter Th2_death                       = 0.7/48 unit
+parameter Tr1_death                       = 0.7/48 unit
+parameter nTreg_death                     = 0.7/48 unit
+parameter Tc0_death                       = 0.7/48 unit
+parameter Tc1_death                       = 0.7/48 unit
+parameter Tc2_death                       = 0.7/48 unit
+
+####new parameters
+parameter stuff_decay                     = 0.0115 unit
+parameter IFNg_effectiveness              = 0.001 unit
+parameter IL-12_effectiveness             = 0.001 unit
+parameter TGFb_effectiveness              = 0.001 unit
+parameter IL-2_effectiveness              = 0.001 unit
+parameter IL-4_effectiveness              = 0.001 unit
+parameter IL-10_effectiveness             = 0.001 unit
+parameter TNFa_effectiveness              = 0.001 unit
+parameter IL-6_effectiveness              = 0.001 unit
+parameter IL-1_effectiveness              = 0.001 unit
+parameter LPS_effectiveness               = 0.001 unit
+
+# MHCII contained spleen  modifier stuff_decay => decay
+# IL-2 contained spleen   modifier stuff_decay => decay
+# IL-12 contained spleen  modifier stuff_decay => decay
+# IFNg contained spleen   modifier stuff_decay => decay
+# TNFa contained spleen   modifier stuff_decay => decay
+# IL-10 contained spleen  modifier stuff_decay => decay
+# IL-4 contained spleen   modifier stuff_decay => decay
+# TGFb contained spleen   modifier stuff_decay => decay
+# LPS contained spleen   modifier stuff_decay => decay
+# IL-1 contained spleen   modifier stuff_decay => decay
+# IL-6 contained spleen   modifier stuff_decay => decay
+ 
+#Th0 differentiations and states
+Th0 contained spleen modifier Th0_Th0_exp => Th0_exp contained spleen
+#partly to avoid duplication only Th0 in the expressing state may differentiate - this is effectively also a 2 step process to activation
+#Returning to a resting Th0 state
+Th0_exp contained spleen modifier Th0_exp_Th0 => Th0 contained spleen 
+#Expression
+#catalyst Th0_exp contained spleen  modifier Th0_exp_make_IL-2 => IL-2 contained spleen
+#Differentiation
+Th0_exp contained spleen  modifier Th0_exp_Th1I_rate => Th1I_exp contained spleen
+#TODO effectiveness
+Th0_exp contained spleen  modifier Th0_exp_Th2_rate => Th2_exp contained spleen
+Th0_exp contained spleen  modifier Th0_exp_Tr1_rate => Tr1_exp contained spleen
+#Death
+Th0 contained spleen modifier Th0_death => decay
+#Reproduction
+#not in this model
+
+
+#Th1I differentiations and states
+#activation and dectivation (valid syntax check. This would be more comfortable the other way around, but the parser is ambidextrous)
+#hack added 1+ to tgfb to stop the fall back rate being 0
+Th1I_exp contained spleen modifier Th1I_exp_Th1I <=> Th1I contained spleen  modifier Th1I_Th1I_exp
+#Differentiation
+Th1I_exp contained spleen modifier Th1I_exp_Th1II_exp => Th1II_exp contained spleen #allowing differentiation from both states
+Th1I contained spleen modifier Th1I_Th1II => Th1II contained spleen  # Th1I_exp_Th1II_exp rates will probably be the same Th1I_Th1II. Parameter can simply relate to number of hours
+#Expression
+#gene  Th1I_exp contained spleen modifier Th1I_exp_make_IFNg => IFNg contained spleen
+#gene  Th1I_exp contained spleen modifier Th1I_exp_make_TNFa => TNFa contained spleen
+#gene  Th1I_exp contained spleen modifier Th1I_exp_make_IL-2 => IL-2 contained spleen
+#Death - judgement call to only let cells in the resting state die, could cause some non-obvious parameter issues as the number of hours does not trivially relate to the time untill death as other cytokine levels will pull the cells to different states that aren't elegible for death
+Th1I contained spleen modifier Th1I_death => decay 
+#Reproduction
+catalyst Th1I contained spleen modifier Th1I_reproduction =>  Th1I contained spleen ##(1 + IL-2) would go hideously wrong and be untuneable without re-scaling IL-2 units and even then it could be tough
+catalyst Th1I_exp contained spleen modifier Th1I_reproduction  =>  Th1I_exp contained spleen ## duplication for states to give reliable expansions
+
+#Th1II differentiations and states
+Th1II contained spleen  modifier Th1II_Th1II_exp <=> Th1II_exp contained spleen modifier Th1II_exp_Th1II
+#Differentiation
+Th1II_exp contained spleen modifier Th1II_exp_Th1III  => Th1III_exp contained spleen #allowing differentiation from both states
+Th1II contained spleen modifier Th1II_Th1III  => Th1III contained spleen  # Th1I_exp_Th1II_exp rates will probably be the same Th1I_Th1II. Parameter can simply relate to number of hours
+#Expression
+#gene  Th1II_exp contained spleen modifier Th1II_exp_make_IFNg => IFNg contained spleen
+#gene  Th1II_exp contained spleen modifier Th1II_exp_make_TNFa => TNFa contained spleen
+#gene  Th1II_exp contained spleen modifier Th1II_exp_make_IL-2 => IL-2 contained spleen
+#Death - judgement call to only let cells in the resting state die, could cause some non-obvious parameter issues as the number of hours does not trivially relate to the time untill death as other cytokine levels will pull the cells to different states that aren't elegible for death
+Th1II contained spleen modifier Th1II_death => decay
+#Reproduction
+catalyst Th1II contained spleen modifier Th1II_reproduction =>  Th1II contained spleen
+catalyst Th1II_exp contained spleen modifier Th1II_reproduction =>  Th1II_exp contained spleen
+
+#Th1III differentiations and states
+Th1III contained spleen  modifier Th1III_Th1III_exp <=> Th1III_exp contained spleen modifier Th1III_exp_Th1III
+#Expression
+#gene  Th1III_exp contained spleen modifier Th1III_exp_make_IFNg => IFNg contained spleen
+#gene  Th1III_exp contained spleen modifier Th1III_exp_make_TNFa => TNFa contained spleen
+#gene  Th1III_exp contained spleen modifier Th1III_exp_make_IL-2 => IL-2 contained spleen
+#gene  Th1III_exp contained spleen modifier Th1III_exp_make_IL-10 => IL-10 contained spleen
+#Death - judgement call to only let cells in the resting state die, could cause some non-obvious parameter issues as the number of hours does not trivially relate to the time untill death as other cytokine levels will pull the cells to different states that aren't elegible for death
+Th1III contained spleen modifier Th1III_death => decay
+#Reproduction
+#not in this model
+ 
+#Th2 differentiations and states
+#hack added 1+ to the tgfb
+Th2_exp contained spleen modifier Th2_exp_Th2 <=> Th2 contained spleen  modifier Th2_Th2_exp
+#Expression
+#gene  Th2_exp contained spleen modifier Th2_exp_make_IL-4 => IL-4 contained spleen
+#gene  Th2_exp contained spleen modifier Th2_exp_make_IL-10 => IL-10 contained spleen
+#gene  Th2_exp contained spleen modifier Th2_exp_make_IL-2 => IL-2 contained spleen
+#Death - judgement call to only let cells in the resting state die, could cause some non-obvious parameter issues as the number of hours does not trivially relate to the time untill death as other cytokine levels will pull the cells to different states that aren't elegible for death
+Th2 contained spleen modifier Th2_death => decay
+#Reproduction
+catalyst Th2 contained spleen modifier (Th2_reproduction +  Th2_reproduction_IL-2_boost) =>  Th2 contained spleen
+catalyst Th2_exp contained spleen modifier (Th2_reproduction +  Th2_reproduction_IL-2_boost) =>  Th2_exp contained spleen
+##Th2, unlike Th1, don't change into III states where there is no more reproduction. In principle this cell line could continue reproduction indefinitely.
+
+#Tr1 differentiations and states
+Tr1_exp contained spleen modifier Tr1_exp_Tr1 <=> Tr1 contained spleen  modifier Tr1_Tr1_exp
+#Expression
+#gene  Tr1_exp contained spleen modifier Tr1_exp_make_IL-10 => IL-10 contained spleen
+#gene  Tr1_exp contained spleen modifier Tr1_exp_make_IL-2 => IL-2 contained spleen
+#Death - judgement call to only let cells in the resting state die, could cause some non-obvious parameter issues as the number of hours does not trivially relate to the time untill death as other cytokine levels will pull the cells to different states that aren't elegible for death
+Tr1 contained spleen modifier Tr1_death => decay
+#Reproduction
+catalyst Tr1 contained spleen modifier (Tr1_reproduction +  Tr1_reproduction_IL-2_boost) =>  Tr1 contained spleen
+catalyst Tr1_exp contained spleen modifier (Tr1_reproduction +  Tr1_reproduction_IL-2_boost) =>  Tr1_exp contained spleen
+
+#nTreg differentiations and states
+#Expression
+#gene  nTreg_exp contained spleen modifier nTreg_exp_make_IL-10*(TGFb contained spleen) => IL-10 contained spleen ##(multiplying factor TGFb is based on Rubtsov2007 figure 1 that reg cells get a boost)
+#gene  nTreg_exp contained spleen modifier nTreg_exp_make_TGFb*(TGFb contained spleen) => TGFb contained spleen ##This multiplying by TGFb does not occur in cell lines where there is an _exp mode as TGFb is already controlling the T:T_exp ratio. Multiplying through would be double counting the effect of TGFb
+#gene  nTreg_exp contained spleen modifier nTreg_exp_make_IL-2*(TGFb contained spleen) => IL-2 contained spleen
+#Death - judgement call to only let cells in the resting state die, could cause some non-obvious parameter issues as the number of hours does not trivially relate to the time untill death as other cytokine levels will pull the cells to different states that aren't elegible for death
+nTreg_exp contained spleen modifier nTreg_death => decay
+#Reproduction
+#not in this model
+
+
+
+#Section CD8 T Cells
+#reactions CONTAINED in the simulation
+
+# TODO influx and outflux needs to go in every cell section
+
+#Tc0 differentiations and states
+Tc0 contained spleen  modifier Tc0_Tc0_exp => Tc0_exp contained spleen
+#partly to avoid duplication only Th0 in the expressing state may differentiate - this is effectively also a 2 step process to activation
+#Returning to a resting Th0 state
+Tc0_exp contained spleen modifier Tc0_exp_Tc0 => Tc0 contained spleen 
+#Expression
+#catalyst Tc0_exp contained spleen  modifier Tc0_exp_make_IL-2 => IL-2 contained spleen
+#Differentiation
+Tc0_exp contained spleen  modifier Tc0_exp_Tc1_rate => Tc1_exp contained spleen
+Tc0_exp contained spleen  modifier Tc0_exp_Tc2_rate => Tc2_exp contained spleen
+#Death
+Tc0 contained spleen modifier Tc0_death => decay
+#Reproduction
+#not in this model
+
+#Tc1 differentiations and states
+Tc1_exp contained spleen modifier Tc1_exp_Tc1 <=> Tc1 contained spleen  modifier Tc1_Tc1_exp
+#Expression
+#gene  Tc1_exp contained spleen modifier Tc1_exp_make_IFNg => IFNg contained spleen
+#gene  Tc1_exp contained spleen modifier Tc1_exp_make_TNFa => TNFa contained spleen
+#gene  Tc1_exp contained spleen modifier Tc1_exp_make_IL-2 => IL-2 contained spleen
+#Death - judgement call to only let cells in the resting state die, could cause some non-obvious parameter issues as the number of hours does not trivially relate to the time untill death as other cytokine levels will pull the cells to different states that aren't elegible for death
+Tc1 contained spleen modifier Tc1_death => decay 
+#Reproduction
+catalyst Tc1 contained spleen modifier (Tc1_reproduction + Tc1_reproduction_IL-2_boost) =>  Tc1 contained spleen ##(1 + IL-2) would go hideously wrong and be untuneable without re-scaling IL-2 units and even then it could be tough
+catalyst Tc1_exp contained spleen modifier (Tc1_reproduction + Tc1_reproduction_IL-2_boost) =>  Tc1_exp contained spleen ## duplication for states to give reliable expansions
+
+
+#Tc2 differentiations and states
+Tc2_exp contained spleen modifier Tc2_exp_Tc2 <=> Tc2 contained spleen  modifier Tc2_Tc2_exp
+#Expression
+#gene  Tc2_exp contained spleen modifier Tc2_exp_make_IL-4 => IL-4 contained spleen
+#gene  Tc2_exp contained spleen modifier Tc2_exp_make_IL-10 => IL-10 contained spleen
+#gene  Tc2_exp contained spleen modifier Tc2_exp_make_IL-2 => IL-2 contained spleen
+#Death - judgement call to only let cells in the resting state die, could cause some non-obvious parameter issues as the number of hours does not trivially relate to the time untill death as other cytokine levels will pull the cells to different states that aren't elegible for death
+Tc2 contained spleen modifier Tc2_death => decay
+#Reproduction
+catalyst Tc2 contained spleen modifier (Tc2_reproduction + Tc2_reproduction_IL-2_boost) =>  Tc2 contained spleen
+catalyst Tc2_exp contained spleen modifier (Tc2_reproduction + Tc2_reproduction_IL-2_boost) =>  Tc2_exp contained spleen
+
+
+#NK differentiations and states
+#activation and dectivation (valid syntax check. This would be more comfortable the other way around, but the parser is ambidextrous)
+NK_exp contained spleen modifier NK_exp_NK <=> NK contained spleen modifier NK_NK_exp
+#Differentiation
+NK_exp contained spleen modifier NK_exp_NKIL-10_exp => NKIL-10_exp contained spleen #only activated NK get to go the IL-10 state. ##Perhaps NKIL-10 should be allowed to come back in the non exp 
+#Expression
+#gene  NK_exp contained spleen modifier NK_exp_make_IFNg => IFNg contained spleen
+#gene  NK_exp contained spleen modifier NK_exp_make_TNFa => TNFa contained spleen
+#Death - judgement call to only let cells in the resting state die, could cause some non-obvious parameter issues as the number of hours does not trivially relate to the time untill death as other cytokine levels will pull the cells to different states that aren't elegible for death
+NK contained spleen modifier NK_death => decay 
+#Reproduction
+#not in this model
+
+#NKIL-10 differentiations and states
+#activation and dectivation (valid syntax check. This would be more comfortable the other way around, but the parser is ambidextrous)
+NKIL-10_exp contained spleen modifier NKIL-10_exp_NKIL-10 <=> NKIL-10 contained spleen modifier NKIL-10_NKIL-10_exp
+#Expression
+#gene  NKIL-10_exp contained spleen modifier NKIL-10_exp_make_IFNg => IFNg contained spleen
+#gene  NKIL-10_exp contained spleen modifier NKIL-10_exp_make_TNFa => TNFa contained spleen
+#gene  NKIL-10_exp contained spleen modifier NKIL-10_exp_make_IL-10 => IL-10 contained spleen
+#Death - judgement call to only let cells in the resting state die, could cause some non-obvious parameter issues as the number of hours does not trivially relate to the time untill death as other cytokine levels will pull the cells to different states that aren't elegible for death
+NKIL-10 contained spleen modifier NKIL-10_death => decay 
+#Reproduction
+#not in this model
+
+
+######################
+#iNKT differentiations and states
+#activation and dectivation (valid syntax check. This would be more comfortable the other way around, but the parser is ambidextrous)
+#Activation by CD1d with an IL-12 component
+iNKT contained spleen  modifier iNKT_iNKT_exp_rate => iNKT_exp contained spleen #Rubtsov2007 lacks info on the iNKT/NKT, but we can extrapolate
+#Activation by cytokine only
+iNKT contained spleen modifier iNKT_iNKT_exp  => iNKT_exp contained spleen
+#Returning to a rest state
+iNKT_exp contained spleen modifier iNKT_exp_iNKT => iNKT contained spleen
+#Expression
+#gene  iNKT_exp contained spleen modifier iNKT_exp_make_IFNg => IFNg contained spleen
+#gene  iNKT_exp contained spleen modifier iNKT_exp_make_IL-4 => IL-4 contained spleen
+#Death - judgement call to only let cells in the resting state die, could cause some non-obvious parameter issues as the number of hours does not trivially relate to the time untill death as other cytokine levels will pull the cells to different states that aren't elegible for death
+iNKT contained spleen modifier iNKT_death => decay 
+#Reproduction
+#not in this model
+######################
+
+#((TGFb contained spleen)*TGFb_effectiveness)
+# ((IL-12 contained spleen)*IL-12_effectiveness)
+# ((IFNg contained spleen)*IFNg_effectiveness)
+# ((IL-10 contained spleen)*IL-10_effectiveness)
+# ((IL-4 contained spleen)*IL-4_effectiveness)
+# ((IL-2 contained spleen)*IL-2_effectiveness)
+# ((TNFa contained spleen)*TNFa_effectiveness)
+#((IL-6 contained spleen)*IL-6_effectiveness) 
+#((IL-1 contained spleen)*IL-1_effectiveness)
+# ((LPS contained spleen)*LPS_effectiveness))
+#(  +   +  +   +  
+#(  +  )
+
+#Neutrophil differentiation and states (in this model Neutrophils and other non-redpulp macrphage APCs are uninfectable. In fact there is no method for infection/transmission at all)
+Neutrophil_resting contained spleen modifier Neutrophil_resting_activation  <=> Neutrophil_Activated contained spleen modifier Neutrophil_Activated_resting
+Neutrophil_resting contained spleen modifier Neutrophil_resting_alt_activation  <=> Neutrophil_Alt_Activated contained spleen modifier Neutrophil_Alt_Activated_resting
+Neutrophil_resting contained spleen modifier Neutrophil_resting_deactivation <=> Neutrophil_Deactivated contained spleen modifier Neutrophil_Deactivated_resting
+#Expression
+#Activated expression
+#gene  Neutrophil_Activated contained spleen modifier Neutrophil_make_IFNg => IFNg contained spleen
+#gene  Neutrophil_Activated contained spleen modifier Neutrophil_make_TNFa => TNFa contained spleen
+#gene  Neutrophil_Activated contained spleen modifier Neutrophil_make_IL-1 => IL-1 contained spleen
+#gene  Neutrophil_Activated contained spleen modifier Neutrophil_make_IL-6 => IL-6 contained spleen
+#Alternatively activated expression
+#gene  Neutrophil_Alt_Activated contained spleen modifier Neutrophil_make_IL-4 => IL-4 contained spleen
+#gene  Neutrophil_Alt_Activated contained spleen modifier Neutrophil_make_TGFb => TGFb contained spleen
+#Deactivated expression
+#gene  Neutrophil_Deactivated contained spleen modifier Neutrophil_make_IL-10 => IL-10 contained spleen
+#Death
+Neutrophil_resting contained spleen modifier Neutrophil_death => decay
+Neutrophil_Activated contained spleen modifier Neutrophil_death => decay
+Neutrophil_Alt_Activated contained spleen modifier Neutrophil_death => decay
+Neutrophil_Deactivated contained spleen modifier Neutrophil_death => decay
+
+#OtherAPC differentiation and states (in this model OtherAPCs and other non-redpulp macrphage APCs are uninfectable. In fact there is no method for infection/transmission at all)
+OtherAPC_resting contained spleen modifier OtherAPC_resting_activation   <=> OtherAPC_Activated contained spleen modifier OtherAPC_Activated_resting
+OtherAPC_resting contained spleen modifier OtherAPC_resting_alt_activation  <=> OtherAPC_Alt_Activated contained spleen modifier OtherAPC_Alt_Activated_resting
+OtherAPC_resting contained spleen modifier OtherAPC_resting_deactivation <=> OtherAPC_Deactivated contained spleen modifier OtherAPC_Deactivated_resting
+#Expression
+#Activated expression
+#gene  OtherAPC_Activated contained spleen modifier OtherAPC_make_IFNg => IFNg contained spleen
+#gene  OtherAPC_Activated contained spleen modifier OtherAPC_make_TNFa => TNFa contained spleen
+#gene  OtherAPC_Activated contained spleen modifier OtherAPC_make_IL-1 => IL-1 contained spleen
+#gene  OtherAPC_Activated contained spleen modifier OtherAPC_make_IL-6 => IL-6 contained spleen
+#Alternatively activated expression
+#gene  OtherAPC_Alt_Activated contained spleen modifier OtherAPC_make_IL-4 => IL-4 contained spleen
+#gene  OtherAPC_Alt_Activated contained spleen modifier OtherAPC_make_TGFb => TGFb contained spleen
+#Deactivated expression
+#gene  OtherAPC_Deactivated contained spleen modifier OtherAPC_make_IL-10 => IL-10 contained spleen
+#Death
+OtherAPC_resting contained spleen modifier OtherAPC_death => decay
+OtherAPC_Activated contained spleen modifier OtherAPC_death => decay
+OtherAPC_Alt_Activated contained spleen modifier OtherAPC_death => decay
+OtherAPC_Deactivated contained spleen modifier OtherAPC_death => decay 

@@ -1,0 +1,17 @@
+
+# Example checking that reaction propensities are recalculated
+#   after delayed reactions complete.
+# Species x reaction is to make sure that the "previous reaction" changes
+#   between the delay reaction starting and completing.
+
+initial tree {simulation}
+
+species a contained simulation = 1 units
+species b contained simulation = 0 units
+species c contained simulation = 0 units
+species x contained simulation = 100 units
+
+a contained simulation modifier 1 delay 10 => b contained simulation
+b contained simulation modifier 1 => c contained simulation
+
+x contained simulation modifier 10 => x contained simulation

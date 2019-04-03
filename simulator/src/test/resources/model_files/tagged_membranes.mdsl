@@ -1,0 +1,17 @@
+
+# Small example of tagging membranes to initialise the same membrane type differently
+#
+# The unfolded tree is in results_initialisation_tags.txt
+
+initial tree { simulation {2 [a_1] membrane_a} 
+                          {1 [a_2] membrane_a} 
+                          {1 membrane_b { 3 membrane_a }
+                                        { 4 [a_2] membrane_a } } }
+
+species x contained a_1 = 10 units
+species y contained a_2 = 20 units
+species z contained membrane_a = 30 units
+
+x contained membrane_a modifier 1 => u around membrane_a
+y contained membrane_a modifier 1 => v around membrane_a
+z contained membrane_a modifier 1 => w around membrane_a

@@ -1,0 +1,9 @@
+
+# Example checking the units on delay reactions.
+# This reaction should complete 10 seconds after it starts.
+
+initial tree {simulation}
+
+species a contained simulation = 1 units
+
+a contained simulation modifier 1 delay 10 => b contained simulation

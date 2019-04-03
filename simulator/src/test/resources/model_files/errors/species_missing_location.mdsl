@@ -1,0 +1,12 @@
+
+# A model file that contains a species definition without a location
+# This should throw an error.
+
+initial tree {simulation}
+
+species a contained simulation = 1 units
+species b
+
+parameter param1 = 1 units
+
+a contained simulation modifier param1 => b contained simulation

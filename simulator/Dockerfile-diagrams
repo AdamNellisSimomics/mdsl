@@ -1,0 +1,23 @@
+
+FROM ubuntu:16.04
+
+# Install graph layout library
+RUN echo deb http://downloads.skewed.de/apt/xenial xenial universe >> /etc/apt/sources.list
+RUN echo deb-src http://downloads.skewed.de/apt/xenial xenial universe >> /etc/apt/sources.list
+RUN apt-get update
+RUN apt-get install -y --allow-unauthenticated python3-graph-tool
+
+# Install other dependencies
+RUN apt-get install -y python3-pip
+RUN pip3 install antlr4-python3-runtime
+RUN apt-get install -y openjdk-8-jre
+
+# Add our code
+COPY ./parse_mdsl.py diagrams/
+COPY ./src/ diagrams/src/
+COPY ./antlr* diagrams/
+
+# Run our code to generate the graphs
+RUN cd diagrams && java -jar antlr-4.5.3-complete.jar -Dlanguage=Python3 -o generated-src/main/python/ src/main/antlr/MembraneModel.g4 
+RUN cd diagrams && cp generated-src/main/python/src/main/antlr/* generated-src/main/python/
+RUN cd diagrams && python3 parse_mdsl.py

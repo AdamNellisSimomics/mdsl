@@ -1,0 +1,13 @@
+
+# An example of implicit and explicit declaration of the species and rates used in a reaction.
+
+initial tree {simulation}
+
+species species_exp_a contained simulation = 1 units
+species species_exp_b contained simulation = 1 units
+species species_exp_d contained simulation = 1 units
+
+parameter rate_exp_k = 1 units
+parameter rate_exp_rate = 1 units
+
+species_exp_a contained simulation binds species_exp_b contained simulation binds species_imp_d contained simulation modifier rate_imp_k <=> species_imp_c contained simulation modifier rate_exp_k

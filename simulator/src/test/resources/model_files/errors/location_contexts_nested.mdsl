@@ -1,0 +1,27 @@
+
+# Nested location contexts are not allowed
+
+initial tree { simulation {1 membrane_a} {1 membrane_b}}
+
+contained membrane_a {
+
+	contained membrane_b {
+
+		species b = 3 units
+		species c contained membrane_a = 5 units
+		species d contained membrane_b = 6 units
+		species e on membrane_a = 7 units
+		
+		parameter k_2 = 4 units
+		
+		a binds 2 b modifier k_1 delay k_2  => c
+		c binds b modifier a + b * c => f under membrane_a
+	
+	}
+	
+}
+
+species f under membrane_a = 8 units
+
+d contained membrane_b modifier 1 => decay
+e on membrane_a modifier 1 => decay

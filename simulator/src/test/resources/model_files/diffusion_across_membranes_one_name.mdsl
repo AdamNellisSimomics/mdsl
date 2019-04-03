@@ -1,0 +1,11 @@
+
+# Example of species diffusing across membranes, both up and down the tree.
+#   Using the name of only one membrane in the reactions.
+
+initial tree {membrane_a {3 membrane_b}}
+
+species x contained membrane_a = 300 units
+species y contained membrane_b = 100 units
+
+x around membrane_b modifier 1 => x_diffused contained membrane_b
+y contained membrane_b modifier 1 => y_diffused around membrane_b

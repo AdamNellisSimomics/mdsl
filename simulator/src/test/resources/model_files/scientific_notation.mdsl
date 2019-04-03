@@ -1,0 +1,12 @@
+
+# Test of scientific notation in floats
+
+initial tree { simulation }
+
+parameter p = 123e-5 units
+parameter q = 456789e+7 units
+parameter r = 123.45E-15 units
+
+species a contained simulation = 5 units
+
+a contained simulation modifier p => b contained simulation

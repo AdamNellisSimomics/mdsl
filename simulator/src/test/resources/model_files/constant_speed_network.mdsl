@@ -1,0 +1,12 @@
+
+# Simple network that doesn't slow down over time.
+# Used for testing very long simulation runs.
+
+initial tree { simulation }
+
+species a contained simulation = 1000 mol.liter^-1
+species b contained simulation = 1000 mol.liter^-1
+
+parameter rate = 0.002 units
+
+a contained simulation modifier rate <=> b contained simulation modifier rate

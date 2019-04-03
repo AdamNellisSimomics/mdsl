@@ -1,0 +1,67 @@
+  simulation
+    membrane_A
+      On: 20 species_x
+      Contained: 100 species_z, 50 species_y
+      membrane_C
+      membrane_C
+      membrane_C
+    membrane_A
+      On: 20 species_x
+      Contained: 100 species_z, 50 species_y
+      membrane_C
+      membrane_C
+      membrane_C
+    membrane_A
+      On: 20 species_x
+      Contained: 100 species_z, 50 species_y
+      membrane_C
+      membrane_C
+      membrane_C
+    membrane_A
+      On: 20 species_x
+      Contained: 100 species_z, 50 species_y
+      membrane_C
+      membrane_C
+      membrane_C
+    membrane_A
+      On: 20 species_x
+      Contained: 100 species_z, 50 species_y
+      membrane_C
+      membrane_C
+      membrane_C
+    membrane_A
+      On: 20 species_x
+      Contained: 100 species_z, 50 species_y
+      membrane_C
+      membrane_C
+      membrane_C
+    membrane_A
+      On: 20 species_x
+      Contained: 100 species_z, 50 species_y
+      membrane_C
+      membrane_C
+      membrane_C
+    membrane_B
+      Contained: 10 species_w
+      membrane_C
+        membrane_D
+      membrane_C
+        membrane_D
+    membrane_B
+      Contained: 10 species_w
+      membrane_C
+        membrane_D
+      membrane_C
+        membrane_D
+    membrane_B
+      Contained: 10 species_w
+      membrane_C
+        membrane_D
+      membrane_C
+        membrane_D
+    membrane_B
+      Contained: 10 species_w
+      membrane_C
+        membrane_D
+      membrane_C
+        membrane_D
