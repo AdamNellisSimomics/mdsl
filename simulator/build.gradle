@@ -75,7 +75,7 @@ jar {
     }
 
     // jar name
-    baseName 'leishsim'
+    baseName 'simulator'
 
 	// include all the dependencies
 	from {
