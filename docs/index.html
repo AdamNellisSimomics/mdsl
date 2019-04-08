@@ -1,0 +1,529 @@
+<html>
+<head>
+    <title>MDSL Documentation</title>
+
+    <!-- Syntax highlighting library -->
+    <script src="prism.js"></script>
+    <script src="prism-mdsl.js"></script>
+    <link href="prism.css" rel="stylesheet" />
+
+    <!-- Page styles -->
+    <style type="text/css">
+        #page {
+            max-width: 1000px;
+            border: 1px solid lightgray;
+            border-radius: 5px;
+            padding: 2em;
+            margin: 0 auto;
+        }
+        hr {
+            border: none;
+            height: 1px;
+            background-color: lightgray;
+        }
+        #table-of-contents {
+            display: inline-block;
+            margin: 1em;
+            padding: 1em;
+            border: 1px solid lightgray;
+            border-radius: 5px;
+        }
+        #table-of-contents h2 {
+            text-align: center;
+        }
+        .toc-1 {
+            margin-left: 1em;
+        }
+        .toc-2 {
+            margin-left: 2em;
+        }
+        .toc-3 {
+            margin-left: 3em;
+        }
+    </style>
+
+    <!-- Table of contents generation -->
+    <script src="jquery-3.3.1.min.js"></script>
+    <script type="text/javascript">
+
+        /**
+         * @return the next index for the given level, for numbering the table of contents
+         */
+        function next_index(level) {
+            var index = indexes[''+level]
+            if (index === undefined) {
+                index = 0
+            }
+            index += 1;
+            indexes[''+level] = index
+            return index;
+        }
+        var indexes = {};
+
+        /**
+         * Add the given element to the table of contents, as the next item at the given level
+         * Also auto-number this element in the document
+         */
+        function make_toc_entry(element, parent_section_number) {
+            var level_index = next_index(parent_section_number);
+            var section_number = parent_section_number + '.' + level_index
+            if (parent_section_number === '') {
+                section_number = '' + level_index
+            }
+            var numbered_title = section_number + '&nbsp;&nbsp;' + element.innerHTML
+            var level_number = (section_number.match(/[.]/g) || []).length // count number of '.' in section_number
+            $('#table-of-contents')
+                .append($('<p>').addClass('toc-' + level_number)
+                    .append($('<a>').attr('href', '#' + section_number)
+                        .append(numbered_title)));
+            $(element).html($('<a>').attr('name', section_number).html(numbered_title));
+            return section_number
+        }
+
+        /**
+         * Generate the table of contents
+         */
+        $(function() {
+            $('h2', $('#content')).each(function() {
+                var section_num_1 = make_toc_entry(this, '');
+                $('h3', $(this).next().next()).each(function() {
+                    var section_num_2 = make_toc_entry(this, section_num_1);
+                    $('h4', $(this).next().next()).each(function() {
+                        make_toc_entry(this, section_num_2);
+                    });
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="page" class="language-mdsl">
+    <h1>MDSL Documentation</h1><hr>
+
+    <div id="table-of-contents">
+        <h2>Table of contents</h2><hr>
+    </div>
+
+    <div id="content">
+
+        <h2>Building the simulator</h2><hr>
+        <div>
+
+            <ul>
+                <li>Clone the repository</li>
+                <li>In the <code>simulator</code> directory, run the gradle task <code>jar</code>
+                    <ul>
+                        <li>This creates the simulator output file <code>simulator/build/libs/simulator.jar</code></li>
+                    </ul>
+                </li>
+                <li>Copy this file to the directory in which you want to run your simulations</li>
+            </ul>
+        </div>
+
+        <h2>Modifying the simulator</h2><hr>
+        <div>
+
+            <p>To modify the simulator code, clone the repository and modify the code in <code>simulator/src</code>.</p>
+            <p>A test suite is provided, which can be run using gradle.</p>
+        </div>
+
+        <h2>Running a simulation</h2><hr>
+        <div>
+
+            <p>To run a simulation, create a new directory and copy the following files into it:</p>
+            <ol>
+                <li><code>simulator.jar</code>, the output of building the code using gradle</li>
+                <li><code>run_simulation.py</code>, from the <code>simulator</code> directory in the repository</li>
+                <li>A file called <code>inputs.txt</code>, containing the following inputs:
+                    <pre><code class="language-none">
+                        --model-file model.mdsl
+                        --print all
+                        --seconds 5000
+                        --seconds-before-print 30
+                    </code></pre>
+                </li>
+                <li>A file called <code>model.mdsl</code>, containing the model, for example:
+                    <pre><code>
+                        # Structure of the cells
+                        initial tree { simulation { 3 cell } }
+
+                        # Initial values of species
+                        species a contained simulation = 100 ng.ml^-1
+                        species r on cell = 10 receptors.cell^-1
+
+                        # Parameter values controlling rates of reactions
+                        parameter k_on = 0.2 ml.ng^-1.cell.receptors^-1.hour^-1
+                        parameter k_d = 0.005 ng.ml^-1
+                        parameter k_off = k_on / k_d cell.receptors^-1.hour^-1
+                        parameter k_signal = 0.8 cell.receptors^-1.hour^-1
+
+                        # Reaction of the ligand binding the receptor
+                        a around cell binds r on cell modifier k_on <=> a_r_complex on cell modifier k_off
+
+                        # Reaction of the signal being transduced into the cell
+                        a_r_complex on cell modifier k_signal => a_r_complex on cell and 2 b contained cell
+                    </code></pre>
+                </li>
+            </ol>
+
+            <p>Then run the following command in this directory:</p>
+            <ul>
+                <li><code style="white-space: pre-line;">python run_simulation.py</code></li>
+            </ul>
+
+
+            <p>This will run the simulation, printing the results to the terminal, and writing the results to files in the <code>logs</code> directory.</p>
+
+            <h3>Analysing simulation results</h3><hr>
+            <div>
+
+                <p>
+                    The file <code>logs/output_Species.csv</code> contains
+                    the concentrations of each species that has been requested for printing (with the <code>--print</code> input),
+                    at each timepoint that has been requested for printing (with the <code>--seconds-before-print</code> or <code>--hours-before-print</code> input).
+                    Its contents will look like the following (the exact numbers may vary for your simulation, as the simulator runs stochastically):
+                </p>
+                <pre><code>
+                    [2019/04/08 16:19:25], a,r,a_r_complex,b,Seconds
+                    [2019/04/08 16:19:25], 100,30,0,0,0
+                    [2019/04/08 16:19:25], 95,25,5,0,30
+                    [2019/04/08 16:19:25], 92,22,8,0,60
+                    [2019/04/08 16:19:25], 94,24,6,0,90
+                    [2019/04/08 16:19:25], 92,22,8,0,120
+                    [2019/04/08 16:19:25], 90,20,10,0,150
+                    [2019/04/08 16:19:25], 89,19,11,0,180
+                    [2019/04/08 16:19:25], 90,20,10,0,210
+                    [2019/04/08 16:19:25], 89,19,11,0,240
+                    [2019/04/08 16:19:25], 90,20,10,0,270
+                    [2019/04/08 16:19:25], 92,22,8,0,300
+                    ...
+                </code></pre>
+
+                <p>
+                    Different output files can be produced by using different log levels (with the <code>--log-level</code> input).
+                </p>
+                <p>
+                    A sample analysis script is provided, to plot the contents of the <code>output_Species.csv</code> file.
+                    This script is called <code>analyse_results.py</code> and can be found in the <code>simulator</code> directory in the repository.
+                </p>
+                <p>
+                    This script can be run in the <code>logs</code> directory after the simulation has finished.
+                    Alternatively, the simulator will run it automatically if the <code>--run-analysis</code> input is provided.
+                    For running the analysis script automatically, two files need to be added to the directory in which the simulation is running:
+                <ol>
+                    <li><code>analyse_results.py</code> copied from the <code>simulator</code> directory</li>
+                    <li>A file called <code>python_command.txt</code>, containing the python command on your system</li>
+                </ol>
+                </p>
+                <p>Running this analysis script will produce a plot at <code>logs/output_Species.png</code>, which will look like the following
+                    (the exact numbers may vary for your simulation, as the simulator runs stochastically):</p>
+                <p><img src="output_Species.png"></p>
+            </div>
+
+            <h3>Simulator inputs</h3><hr>
+            <div>
+
+                <p>These are the inputs that you can pass to the simulator, to control how it runs.</p>
+                <p>This list can be obtained from the simulator by passing the <code>-h</code> or <code>--help</code> inputs.</p>
+
+                <ul>
+                    <li><code>--model-file</code>
+                        <ul>
+                            <li>MDSL file containing the model to simulate</li>
+                            <li>The only required input</li>
+                        </ul>
+                    </li>
+
+                    <li><code>--log-dir</code>
+                        <ul>
+                            <li>The directory into which to write the log files. Any pervious log files in this directory will be deleted.</li>
+                            <li>Default: logs</li>
+                        </ul>
+                    </li>
+                    <li><code>--log-level</code>
+                        <ul>
+                            <li>How much logging to print. Values are: ERROR, WARNING, WARNING_FIX, PROGRESS, PARAMETERS, TAGS, FULL_STATE_AT_END, PRINTED_SPECIES, PRINTED_SPECIES_PER_MEMBRANE, REACTION_NUMBERS, PRINTED_PROPENSITIES, DETAIL, DEBUG, FULL.</li>
+                            <li>Default: PRINTED_SPECIES</li>
+                        </ul>
+                    </li>
+                    <li><code>--print</code>, <code>-p</code>
+                        <ul>
+                            <li>Print this species to the output Default: [LD, INFg, IL10]</li>
+                            <li>Can pass <code>all</code> to print everything</li>
+                        </ul>
+                    </li>
+
+                    <li><code>--hours</code>
+                        <ul>
+                            <li>Number of (simulation) hours for which to run the simulation</li>
+                        </ul>
+                    </li>
+                    <li><code>--hours-before-print</code>
+                        <ul>
+                            <li>Print out the results in chunks of this many hours</li>
+                        </ul>
+                    </li>
+                    <li><code>--seconds</code>
+                        <ul>
+                            <li>Number of (simulation) seconds for which to run the simulation</li>
+                        </ul>
+                    </li>
+                    <li><code>--seconds-before-print</code>
+                        <ul>
+                            <li>Print out the results in chunks of this many seconds</li>
+                        </ul>
+                    </li>
+
+                    <li><code>--random-seed</code>
+                        <ul>
+                            <li>Seed for the random number generator</li>
+                            <li>Set this to run exactly the same simulation again, including the same sequence of random numbers.</li>
+                        </ul>
+                    </li>
+                    <li><code>--run-analysis</code>
+                        <ul>
+                            <li>Whether to run the analysis script after the simulation finishes</li>
+                            <li>Default: false</li>
+                            <li>This is the script <code>analyse_results.py</code></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <h3>Log levels</h3><hr>
+            <div>
+
+                <p>The simulator can output different levels of logging information about the simulation.</p>
+                <p>Logging more information generally makes the simulation run more slowly, but provides more detailed information about the state of the simulation.</p>
+                <p>These are the different log levels and what they output. Each log level also includes all logs from previous levels.</p>
+
+                <p>
+                    Each log writes its output to a file of the format: <code>{log-dir}/output_{log-level}.txt</code>
+                    Where <code>{log-dir}</code> is the <code>--log-dir</code> input parameter to the simulation, and <code>{log-level}</code> is the log level from the list below.
+                </p>
+
+                <ul>
+                    <li><code>ERROR</code>
+                        <ul>
+                            <li>Messages detailing errors that prevent the simulation from running</li>
+                        </ul>
+                    </li>
+                    <li><code>WARNING</code>
+                        <ul>
+                            <li>Messages detailing possible problems with the simulation, that do not prevent it running</li>
+                        </ul>
+                    </li>
+                    <li><code>WARNING_FIX</code>
+                        <ul>
+                            <li>Information about how to fix the warnings from the WARNING log, if possible</li>
+                        </ul>
+                    </li>
+                    <li><code>PROGRESS</code>
+                        <ul>
+                            <li>The precentage of the simulation that has been run</li>
+                        </ul>
+                    </li>
+                    <li><code>PARAMETERS</code>
+                        <ul>
+                            <li>The parameters that this simulation was run using</li>
+                        </ul>
+                    </li>
+                    <li><code>TAGS</code>
+                        <ul>
+                            <li>Information about the tags used in the model</li>
+                        </ul>
+                    </li>
+                    <li><code>FULL_STATE_AT_END</code>
+                        <ul>
+                            <li>The full state of the simulation, just after the simulation has ended</li>
+                        </ul>
+                    </li>
+                    <li><code>PRINTED_SPECIES</code>
+                        <ul>
+                            <li>The levels of each species that has been requested with the "--print" input, aggregated over all membranes</li>
+                        </ul>
+                    </li>
+                    <li><code>PRINTED_SPECIES_PER_MEMBRANE</code>
+                        <ul>
+                            <li>The levels of each species that has been requested with the "--print" input, for each membrane</li>
+                        </ul>
+                    </li>
+                    <li><code>REACTION_NUMBERS</code>
+                        <ul>
+                            <li>The reactions of the model, with unique ID numbers, for linking to the propensities output file below</li>
+                        </ul>
+                    </li>
+                    <li><code>PRINTED_PROPENSITIES</code>
+                        <ul>
+                            <li>Reaction propensities at each timepoint of the simulation</li>
+                        </ul>
+                    </li>
+                    <li><code>DETAIL</code>
+                        <ul>
+                            <li>A higher level of output about which steps the simulator is executing</li>
+                        </ul>
+                    </li>
+                    <li><code>DEBUG</code>
+                        <ul>
+                            <li>Low-level debugging information, used to assist in fixing issues with the simulator</li>
+                        </ul>
+                    </li>
+                    <li><code>FULL</code>
+                        <ul>
+                            <li>Full trace of very low-level steps, making the simulator run extremely slowly, used only for debugging</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <h2>MDSL Language</h2><hr>
+        <div>
+
+            <p>MDSL is a modelling language designed for describing models of chemical reactions that happen within and across membranes.</p>
+            <p>It has been designed to be readable and understandable by biologists who do not have extensive modelling or computer programming experience.</p>
+
+            <h3>Example</h3><hr>
+            <div>
+
+                <p>This is an example MDSL file. It is a very simple example model of signal transduction into a cell.</p>
+
+                <pre><code>
+                    # Structure of the cells
+                    initial tree { simulation { 3 cell } }
+
+                    # Initial values of species
+                    species a contained simulation = 100 ng.ml^-1
+                    species r on cell = 10 receptors.cell^-1
+
+                    # Parameter values controlling rates of reactions
+                    parameter k_on = 0.2 ml.ng^-1.cell.receptors^-1.hour^-1
+                    parameter k_d = 0.005 ng.ml^-1
+                    parameter k_off = k_on / k_d cell.receptors^-1.hour^-1
+                    parameter k_signal = 0.8 cell.receptors^-1.hour^-1
+
+                    # Reaction of the ligand binding the receptor
+                    a around cell binds r on cell modifier k_on <=> a_r_complex on cell modifier k_off
+
+                    # Reaction of the signal being transduced into the cell
+                    a_r_complex on cell modifier k_signal => a_r_complex on cell and 2 b contained cell
+                </code></pre>
+
+                <p>The different parts of the file are described below:</p>
+
+                <h4>Initial tree</h4><hr>
+                <div>
+
+                    <p>The <code>initial tree</code> defines the tree of membranes within which the simulation will run.</p>
+
+                    <pre><code>
+                        # Structure of the cells
+                        initial tree { simulation { 3 cell } }
+                    </code></pre>
+
+                    <p>
+                        The line above defines four membranes: an outer membrane called <code>simulation</code>,
+                        containing three membranes each called <code>cell</code>.
+                    </p>
+                </div>
+
+                <h4>Species definitions</h4><hr>
+                <div>
+
+                    <p>The <code>species</code> lines define initial values of the different species in the simulation.</p>
+
+                    <pre><code>
+                        # Initial values of species
+                        species a contained simulation = 100 ng.ml^-1
+                        species r on cell = 10 receptors.cell^-1
+                    </code></pre>
+
+                    <p>
+                        Each species exists in a location, which is either
+                        <code>contained</code>, <code>around</code>, <code>on</code>, or <code>under</code>
+                        a membrane from the initial tree.
+                    </p>
+                    <p>
+                        Since membranes can be contained within other membranes, the location <code>around</code> one membrane is
+                        the same as the location <code>contained</code> its parent.
+                        In our example, the location <code>contained simulation</code> is the same as the location <code>around cell</code>.
+                    </p>
+                    <p>
+                        Each species definition must specify the units of the number.
+                        Any units can be provided.
+                        Units are not currently checked by the simulator; they are an aid to the writing of the model.
+                    </p>
+                </div>
+
+                <h4>Parameter definitions</h4><hr>
+                <div>
+
+                    <p>The <code>parameter</code> lines define parameters that control the rates of reactions in the model.</p>
+
+                    <pre><code>
+                        # Parameter values controlling rates of reactions
+                        parameter k_on = 0.2 ml.ng^-1.cell.receptors^-1.hour^-1
+                        parameter k_d = 0.005 ng.ml^-1
+                        parameter k_off = k_on / k_d cell.receptors^-1.hour^-1
+                        parameter k_signal = 0.8 cell.receptors^-1.hour^-1
+                    </code></pre>
+
+                    <p>
+                        Parameter values can be simple numbers, or equations referencing other parameters.
+                        In this example the <code>k_off</code> parameter value is calculated from the <code>k_on</code> and <code>k_d</code> values.
+                    </p>
+                    <p>As with initial values of species, each parameter must specify its units.</p>
+                </div>
+
+                <h4>Ligand binding reaction</h4><hr>
+                <div>
+
+                    <p>
+                        The first reaction defines the behaviour of the ligand <code>a</code> around the cell binding with the receptor <code>b</code> on the cell membrane,
+                        to produce a complex, <code>a_r_complex</code>.
+                    </p>
+
+                    <pre><code>
+                        # Reaction of the ligand binding the receptor
+                        a around cell binds r on cell modifier k_on <=> a_r_complex on cell modifier k_off
+                    </code></pre>
+
+                    <p>This reaction is reversible, as indicated by the double arrow <code> <=> </code>.</p>
+                    <p>
+                        The reaction rate constant for the forward reaction is the value of the parameter <code>k_on</code>, as indicated by the <code>modifier</code> keyword on the left hand side of the reaction.
+                        The rate constant for the reverse reaction is <code>k_off</code>, specified on the right hand side of the reaction.
+                    </p>
+                    <p>
+                        When simulating the forward reaction, the rate of the reaction will be calculated by counting the number of <code>a around cell</code>,
+                        multiplying this by the number of <code>r on cell</code> and multiplying it by <code>k_on</code>.
+                        Thus this reaction will have a different rate for each cell in the simulation (of which we have 3 in this example).
+                    </p>
+                </div>
+
+                <h4>Signal transduction reaction</h4><hr>
+                <div>
+
+                    <p>The second reaction models the activated receptor causing a signal molecule to be produced within the cell.</p>
+
+                    <pre><code>
+                        # Reaction of the signal being transduced into the cell
+                        a_r_complex on cell modifier k_signal => a_r_complex on cell and 2 b contained cell
+                    </code></pre>
+
+                    <p>
+                        This is a very high level model of signal transduction, which abstracts a lot of the biological steps into one process.
+                        While the ligand is bound to the receptor, this reaction creates signal molecules, named <code>b</code>, within the cell.
+                        The rate of signal production is determined by the number of bound receptors and by the <code>k_signal</code> parameter.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
