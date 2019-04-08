@@ -3,8 +3,6 @@
 
 import numpy
 import matplotlib.pyplot as plt
-import requests
-import os, os.path
 
 def makeGraph():
     print('Creating graph...')
@@ -43,33 +41,6 @@ def makeGraph():
         # Save plot as a png file
         plt.savefig('output_Species.png', bbox_extra_artists=(legend,), bbox_inches='tight')
         print('Graph saved.')
-        
-def sendFile(fileName):
-    print('Sending file: ' + fileName)
-    # The URL to POST the file to
-    postURL = 'http://leishsim.simomics.com/post-result/'
-    
-    # The URL on which to do a GET to obtain a CSRF cookie
-    cookieURL = 'http://leishsim.simomics.com/'
-    
-    # Get a CSRF cookie
-    session = requests.Session()
-    cookieResponse = session.get(cookieURL)
-    csrftoken = cookieResponse.cookies['csrftoken']
-    #csrfCookies = cookieResponse.cookies
-    headers = {"X-CSRFToken" : csrftoken}
-    
-    # Get the name of the log directory we are running from
-    logDir = os.path.basename(os.path.normpath(os.getcwd()))
-    
-    # Send the file
-    files = {'simulation_results': ('output_Species_%s.csv' % (logDir, ), open(fileName, 'rb'))}
-    postResponse = session.post(postURL, files=files, headers=headers)
-    print('File sent. Response: ')
-    print(postResponse.text)
 
 if __name__ == '__main__':
     makeGraph()
-    #sendFile('output_Progress.txt')
-    #sendFile('output_Species.csv')
-    #sendFile('output_Species.png')
