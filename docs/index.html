@@ -90,7 +90,10 @@
                 $('h3', $(this).next().next()).each(function() {
                     var section_num_2 = make_toc_entry(this, section_num_1);
                     $('h4', $(this).next().next()).each(function() {
-                        make_toc_entry(this, section_num_2);
+                        var section_num_3 = make_toc_entry(this, section_num_2);
+                        $('h5', $(this).next().next()).each(function() {
+                            var section_num_4 = make_toc_entry(this, section_num_3);
+                        });
                     });
                 });
             });
@@ -517,6 +520,187 @@
                         While the ligand is bound to the receptor, this reaction creates signal molecules, named <code>b</code>, within the cell.
                         The rate of signal production is determined by the number of bound receptors and by the <code>k_signal</code> parameter.
                     </p>
+                </div>
+
+            </div>
+
+            <h3>MDSL language concepts</h3><hr>
+            <div>
+                <p>This section describes in detail each concept in the MDSL language.</p>
+
+                <h4>Membranes</h4><hr>
+                <div>
+
+                    <p>Everything in MDSL happens in relation to a membrane.</p>
+                    <p>Each membrane defines four locations in which species can exist and reactions can happen:</p>
+                    <ol>
+                        <li>the space <code>around</code> the membrane;</li>
+                        <li>the space <code>contained</code> within the membrane;</li>
+                        <li>the space of species bound <code>on</code> the membrane;</li>
+                        <li>the space of species bound <code>under</code> the membrane.</li>
+                    </ol>
+
+                    <p>
+                        The <code>initial tree</code> defines the structure of the membranes for the simulation.
+                        The simplest valid <code>initial tree</code> is:
+                    </p>
+                    <pre><code>
+                        initial tree { simulation }
+                    </code></pre>
+                    <p>
+                        This defines a single membrane, called <code>simulation</code>.
+                        All species and reaction in this model will be <code>contained</code> within this membrane.
+                    </p>
+                    <p>A more complex example of an <code>initial tree</code> is:</p>
+                    <pre><code>
+                        initial tree { A { 2 B { C } } { D } }
+                    </code></pre>
+                    <p>
+                        This defines six membranes: the outer membrane, <code>A</code>, containing two <code>B</code>s and one <code>D</code>,
+                        with each <code>B</code> containing one <code>C</code>.
+                        The following diagram shows this structure:
+                    </p>
+                    <svg width="50%" version="1.1" viewBox="125.0 145.0 505.0 318.0" fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><clipPath id="p.0"><path d="m0 0l960.0 0l0 540.0l-960.0 0l0 -540.0z" clip-rule="nonzero"/></clipPath><g clip-path="url(#p.0)"><path fill="#ffffff" d="m0 0l960.0 0l0 540.0l-960.0 0z" fill-rule="evenodd"/><path fill="#000000" fill-opacity="0.0" d="m130.04987 201.7753l0 0c0 -28.296097 22.938522 -51.23462 51.23462 -51.23462l393.2788 0c13.588257 0 26.619995 5.3979187 36.228333 15.006271c9.608337 9.608353 15.006287 22.64009 15.006287 36.228348l0 204.93234c0 28.296082 -22.938538 51.23462 -51.23462 51.23462l-393.2788 0c-28.296097 0 -51.23462 -22.938538 -51.23462 -51.23462z" fill-rule="evenodd"/><path stroke="#595959" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m130.04987 201.7753l0 0c0 -28.296097 22.938522 -51.23462 51.23462 -51.23462l393.2788 0c13.588257 0 26.619995 5.3979187 36.228333 15.006271c9.608337 9.608353 15.006287 22.64009 15.006287 36.228348l0 204.93234c0 28.296082 -22.938538 51.23462 -51.23462 51.23462l-393.2788 0c-28.296097 0 -51.23462 -22.938538 -51.23462 -51.23462z" fill-rule="evenodd"/><path fill="#000000" fill-opacity="0.0" d="m141.08661 156.06036l55.968506 0l0 65.41733l-55.968506 0z" fill-rule="evenodd"/><path fill="#000000" d="m150.02411 203.46036l11.0 -28.640625l4.078125 0l11.71875 28.640625l-4.3125 0l-3.34375 -8.671875l-11.96875 0l-3.140625 8.671875l-4.03125 0zm8.265625 -11.765625l9.703125 0l-2.984375 -7.921875q-1.359375 -3.609375 -2.03125 -5.9375q-0.546875 2.75 -1.546875 5.46875l-3.140625 8.390625z" fill-rule="nonzero"/><path fill="#000000" fill-opacity="0.0" d="m160.1181 306.5359l0 0c0 -12.8927 10.451599 -23.3443 23.3443 -23.3443l162.72873 0c6.191284 0 12.128998 2.4595032 16.506927 6.8374023c4.377899 4.377899 6.837372 10.315613 6.837372 16.506897l0 93.37442c0 12.8927 -10.451599 23.3443 -23.3443 23.3443l-162.72873 0c-12.8927 0 -23.3443 -10.451599 -23.3443 -23.3443z" fill-rule="evenodd"/><path stroke="#595959" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m160.1181 306.5359l0 0c0 -12.8927 10.451599 -23.3443 23.3443 -23.3443l162.72873 0c6.191284 0 12.128998 2.4595032 16.506927 6.8374023c4.377899 4.377899 6.837372 10.315613 6.837372 16.506897l0 93.37442c0 12.8927 -10.451599 23.3443 -23.3443 23.3443l-162.72873 0c-12.8927 0 -23.3443 -10.451599 -23.3443 -23.3443z" fill-rule="evenodd"/><path fill="#000000" fill-opacity="0.0" d="m386.67978 208.25244l0 0c0 -12.8927 10.451599 -23.3443 23.3443 -23.3443l162.72873 0c6.191284 0 12.129028 2.4594727 16.506897 6.837387c4.3779297 4.377899 6.8374023 10.315613 6.8374023 16.506912l0 93.37439c0 12.8927 -10.451599 23.3443 -23.3443 23.3443l-162.72873 0c-12.8927 0 -23.3443 -10.451599 -23.3443 -23.3443z" fill-rule="evenodd"/><path stroke="#595959" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m386.67978 208.25244l0 0c0 -12.8927 10.451599 -23.3443 23.3443 -23.3443l162.72873 0c6.191284 0 12.129028 2.4594727 16.506897 6.837387c4.3779297 4.377899 6.8374023 10.315613 6.8374023 16.506912l0 93.37439c0 12.8927 -10.451599 23.3443 -23.3443 23.3443l-162.72873 0c-12.8927 0 -23.3443 -10.451599 -23.3443 -23.3443z" fill-rule="evenodd"/><path fill="#000000" fill-opacity="0.0" d="m160.1181 283.1916l55.968506 0l0 65.41733l-55.968506 0z" fill-rule="evenodd"/><path fill="#000000" d="m171.46185 322.9116l0 -22.90625l8.59375 0q2.625 0 4.203125 0.703125q1.59375 0.6875 2.484375 2.140625q0.90625 1.4375 0.90625 3.015625q0 1.46875 -0.796875 2.765625q-0.796875 1.296875 -2.40625 2.09375q2.078125 0.609375 3.1875 2.078125q1.125 1.46875 1.125 3.46875q0 1.609375 -0.6875 3.0q-0.671875 1.375 -1.671875 2.125q-1.0 0.75 -2.515625 1.140625q-1.5 0.375 -3.6875 0.375l-8.734375 0zm3.03125 -13.28125l4.953125 0q2.015625 0 2.890625 -0.265625q1.15625 -0.34375 1.734375 -1.140625q0.59375 -0.796875 0.59375 -2.0q0 -1.140625 -0.546875 -2.0q-0.546875 -0.875 -1.5625 -1.1875q-1.015625 -0.328125 -3.484375 -0.328125l-4.578125 0l0 6.921875zm0 10.578125l5.703125 0q1.46875 0 2.0625 -0.109375q1.046875 -0.1875 1.75 -0.625q0.703125 -0.4375 1.15625 -1.265625q0.453125 -0.84375 0.453125 -1.9375q0 -1.28125 -0.65625 -2.21875q-0.65625 -0.953125 -1.828125 -1.328125q-1.15625 -0.390625 -3.34375 -0.390625l-5.296875 0l0 7.875z" fill-rule="nonzero"/><path fill="#000000" fill-opacity="0.0" d="m390.61942 184.90814l55.968506 0l0 65.41731l-55.968506 0z" fill-rule="evenodd"/><path fill="#000000" d="m401.96317 224.62814l0 -22.90625l8.59375 0q2.625 0 4.203125 0.703125q1.59375 0.6875 2.484375 2.140625q0.90625 1.4375 0.90625 3.015625q0 1.46875 -0.796875 2.765625q-0.796875 1.296875 -2.40625 2.09375q2.078125 0.609375 3.1875 2.078125q1.125 1.46875 1.125 3.46875q0 1.609375 -0.6875 3.0q-0.671875 1.375 -1.671875 2.125q-1.0 0.75 -2.515625 1.140625q-1.5 0.375 -3.6875 0.375l-8.734375 0zm3.03125 -13.28125l4.953125 0q2.015625 0 2.890625 -0.265625q1.15625 -0.34375 1.734375 -1.140625q0.59375 -0.796875 0.59375 -2.0q0 -1.140625 -0.546875 -2.0q-0.546875 -0.875 -1.5625 -1.1875q-1.015625 -0.328125 -3.484375 -0.328125l-4.578125 0l0 6.921875zm0 10.578125l5.703125 0q1.46875 0 2.0625 -0.109375q1.046875 -0.1875 1.75 -0.625q0.703125 -0.4375 1.15625 -1.265625q0.453125 -0.84375 0.453125 -1.9375q0 -1.28125 -0.65625 -2.21875q-0.65625 -0.953125 -1.828125 -1.328125q-1.15625 -0.390625 -3.34375 -0.390625l-5.296875 0l0 7.875z" fill-rule="nonzero"/><path fill="#000000" fill-opacity="0.0" d="m243.23097 337.22858l0 0c0 -6.7695923 5.487854 -12.257446 12.257462 -12.257446l71.95752 0c3.250885 0 6.368622 1.2914124 8.667328 3.5901184c2.2987366 2.2987366 3.5901184 5.4164734 3.5901184 8.667328l0 49.02838c0 6.769623 -5.487854 12.257477 -12.257446 12.257477l-71.95752 0l0 0c-6.7696075 0 -12.257462 -5.487854 -12.257462 -12.257477z" fill-rule="evenodd"/><path stroke="#595959" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m243.23097 337.22858l0 0c0 -6.7695923 5.487854 -12.257446 12.257462 -12.257446l71.95752 0c3.250885 0 6.368622 1.2914124 8.667328 3.5901184c2.2987366 2.2987366 3.5901184 5.4164734 3.5901184 8.667328l0 49.02838c0 6.769623 -5.487854 12.257477 -12.257446 12.257477l-71.95752 0l0 0c-6.7696075 0 -12.257462 -5.487854 -12.257462 -12.257477z" fill-rule="evenodd"/><path fill="#000000" fill-opacity="0.0" d="m473.61417 241.30733l0 0c0 -6.7696075 5.487854 -12.257462 12.257477 -12.257462l71.95752 0c3.2508545 0 6.3685913 1.2914124 8.667297 3.5901337c2.298767 2.2987213 3.590149 5.416458 3.590149 8.667328l0 49.028397c0 6.7695923 -5.487854 12.257446 -12.257446 12.257446l-71.95752 0l0 0c-6.769623 0 -12.257477 -5.487854 -12.257477 -12.257446z" fill-rule="evenodd"/><path stroke="#595959" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m473.61417 241.30733l0 0c0 -6.7696075 5.487854 -12.257462 12.257477 -12.257462l71.95752 0c3.2508545 0 6.3685913 1.2914124 8.667297 3.5901337c2.298767 2.2987213 3.590149 5.416458 3.590149 8.667328l0 49.028397c0 6.7695923 -5.487854 12.257446 -12.257446 12.257446l-71.95752 0l0 0c-6.769623 0 -12.257477 -5.487854 -12.257477 -12.257446z" fill-rule="evenodd"/><path fill="#000000" fill-opacity="0.0" d="m480.0 229.04987l55.968506 0l0 65.41733l-55.968506 0z" fill-rule="evenodd"/><path fill="#000000" d="m503.10938 255.05862l2.28125 0.578125q-0.71875 2.796875 -2.578125 4.28125q-1.859375 1.46875 -4.546875 1.46875q-2.765625 0 -4.515625 -1.125q-1.734375 -1.140625 -2.640625 -3.28125q-0.90625 -2.15625 -0.90625 -4.609375q0 -2.6875 1.015625 -4.6875q1.03125 -2.0 2.921875 -3.03125q1.890625 -1.03125 4.171875 -1.03125q2.578125 0 4.328125 1.3125q1.765625 1.3125 2.453125 3.6875l-2.234375 0.53125q-0.609375 -1.875 -1.75 -2.734375q-1.125 -0.859375 -2.84375 -0.859375q-1.984375 0 -3.3125 0.953125q-1.328125 0.953125 -1.875 2.546875q-0.53125 1.59375 -0.53125 3.296875q0 2.1875 0.625 3.828125q0.640625 1.640625 1.984375 2.453125q1.359375 0.796875 2.921875 0.796875q1.921875 0 3.234375 -1.09375q1.328125 -1.109375 1.796875 -3.28125z" fill-rule="nonzero"/><path fill="#000000" fill-opacity="0.0" d="m243.23097 324.97113l55.96849 0l0 65.41733l-55.96849 0z" fill-rule="evenodd"/><path fill="#000000" d="m266.34033 350.9799l2.28125 0.578125q-0.71875 2.796875 -2.578125 4.28125q-1.859375 1.46875 -4.546875 1.46875q-2.765625 0 -4.515625 -1.125q-1.7343597 -1.140625 -2.6406097 -3.28125q-0.90625 -2.15625 -0.90625 -4.609375q0 -2.6875 1.015625 -4.6875q1.03125 -2.0 2.9218597 -3.03125q1.890625 -1.03125 4.171875 -1.03125q2.578125 0 4.328125 1.3125q1.765625 1.3125 2.453125 3.6875l-2.234375 0.53125q-0.609375 -1.875 -1.75 -2.734375q-1.125 -0.859375 -2.84375 -0.859375q-1.984375 0 -3.3125 0.953125q-1.328125 0.953125 -1.875 2.546875q-0.53123474 1.59375 -0.53123474 3.296875q0 2.1875 0.62498474 3.828125q0.640625 1.640625 1.984375 2.453125q1.359375 0.796875 2.921875 0.796875q1.921875 0 3.234375 -1.09375q1.328125 -1.109375 1.796875 -3.28125z" fill-rule="nonzero"/><path fill="#000000" fill-opacity="0.0" d="m443.15222 360.8664l0 0c0 -6.769623 5.487854 -12.257477 12.257477 -12.257477l71.95749 0c3.2509155 0 6.3686523 1.2914124 8.667358 3.590149c2.298706 2.298706 3.590149 5.416443 3.590149 8.667328l0 49.02838c0 6.7695923 -5.487854 12.257446 -12.257507 12.257446l-71.95749 0l0 0c-6.769623 0 -12.257477 -5.487854 -12.257477 -12.257446z" fill-rule="evenodd"/><path stroke="#595959" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m443.15222 360.8664l0 0c0 -6.769623 5.487854 -12.257477 12.257477 -12.257477l71.95749 0c3.2509155 0 6.3686523 1.2914124 8.667358 3.590149c2.298706 2.298706 3.590149 5.416443 3.590149 8.667328l0 49.02838c0 6.7695923 -5.487854 12.257446 -12.257507 12.257446l-71.95749 0l0 0c-6.769623 0 -12.257477 -5.487854 -12.257477 -12.257446z" fill-rule="evenodd"/><path fill="#000000" fill-opacity="0.0" d="m443.15222 348.60892l55.968506 0l0 65.41733l-55.968506 0z" fill-rule="evenodd"/><path fill="#000000" d="m454.0116 380.64893l0 -17.1875l5.90625 0q2.015625 0 3.0625 0.25q1.484375 0.34375 2.515625 1.234375q1.359375 1.140625 2.03125 2.9375q0.6875 1.78125 0.6875 4.078125q0 1.953125 -0.46875 3.46875q-0.453125 1.515625 -1.171875 2.515625q-0.703125 0.984375 -1.5625 1.546875q-0.84375 0.5625 -2.046875 0.859375q-1.203125 0.296875 -2.765625 0.296875l-6.1875 0zm2.265625 -2.03125l3.671875 0q1.703125 0 2.65625 -0.3125q0.96875 -0.3125 1.546875 -0.890625q0.8125 -0.8125 1.265625 -2.171875q0.453125 -1.375 0.453125 -3.3125q0 -2.703125 -0.890625 -4.140625q-0.890625 -1.453125 -2.15625 -1.9375q-0.90625 -0.359375 -2.9375 -0.359375l-3.609375 0l0 13.125z" fill-rule="nonzero"/></g></svg>
+                    <p>
+                        In this model there are 21 different locations:
+                        the four spaces <code>around</code>, <code>contained</code>, <code>on</code>, and <code>under</code> each of the six membranes,
+                        except the outermost membrane does not have the <code>around</code>, <code>on</code>, or <code>under</code> locations.
+                    </p>
+                    <p>Line breaks can be used when defining the initial tree, to increase readability, so this tree could be written as:</p>
+                    <pre><code>
+                        initial tree { A
+                                       { 2 B
+                                         { C }
+                                       }
+                                       { D }
+                                     }
+                    </code></pre>
+
+                </div>
+
+                <h4>Species</h4><hr>
+                <div>
+
+                    <p>
+                        Species are the parts of the model that change over time.
+                        Species exist within locations relative to membranes.
+                        Reactions modify the number of species in each location.
+                    </p>
+                    <p>
+                        Species names are never used on their own.
+                        They are always accompanied by a location relative to a membrane, in the following pattern:
+                    </p>
+                    <pre><code>species_name location membrane</code></pre>
+                    <p>For example:</p>
+                    <pre><code>receptor on cell</code></pre>
+                    <p>where <code>receptor</code> is the name of a species, and <code>cell</code> is the name of a membrane.</p>
+
+
+
+                    <p>The state of the simulation at each time point is the number of each species present in each location in the model.</p>
+
+                    <p>Species can appear in three different contexts in MDSL files:</p>
+                    <ol>
+                        <li>species definitions,</li>
+                        <li>reactants and products of reactions,</li>
+                        <li>reaction modifiers.</li>
+                    </ol>
+
+
+                    <h5>Species definitions</h5><hr>
+                    <div>
+
+                        <pre><code>
+                            species r on cell = 10 receptors.cell^-1
+                        </code></pre>
+                        <p>Species definitions set the initial number of each species present at the start of the simulation.</p>
+
+                        <p>
+                            The units must be specified in each species definition, but these units are not used or checked during the simulation.
+                        </p>
+
+                        <p>
+                            If a species definition references a membrane that there are multiple copies of in the <code>initial tree</code>,
+                            then that number of the species is added to each membrane.
+                            For example, the following code creates three copies of membrane <code>A</code>, each with five copies of
+                            species <code>x</code> inside.
+                            Thus there will be 15 species <code>x</code> in the whole simulation.
+                        </p>
+                        <pre><code>
+                            initial tree {simulation {3 A}}
+                            species x contained A = 5 units  # 15 copies of species x created
+                        </code></pre>
+                        <p>
+                            NB: for species definitions that are specified with an <code>around</code> location,
+                            the <code>around</code> will resolve to the parent membrane before the decision of how many species to add.
+                            So the following code will create only three of species <code>x</code>.
+                        </p>
+                        <pre><code>
+                            initial tree {simulation {3 A}}
+                            species x around A = 5 units  # 3 copies of species x created
+                        </code></pre>
+
+                    </div>
+
+                    <h5>Reactants and products of reactions</h5><hr>
+                    <div>
+
+                        <pre><code>
+                            a_r_complex on cell modifier k_signal => a_r_complex on cell and 2 b contained cell
+                        </code></pre>
+                        <p>The left hand side (reactants) and right hand side (products) of reactions are species in locations.</p>
+
+                    </div>
+
+                    <h5>Reaction modifiers</h5><hr>
+                    <div>
+
+                        <pre><code>
+                            a contained A modifier 3 * (x contained A + y contained A) => b contained A
+                        </code></pre>
+                        <p>Reaction modifiers are equations, which can contain located species as terms in the equation.</p>
+                        <p>
+                            When used as terms in a modifier equation, the species numbers will not be modified when the reaction fires,
+                            but they will influence the rate of the reaction.
+                            This can be used to create rate equations that would not be possible by just including these species in the stoichiometry of the reaction,
+                            for example the reaction above, with modifier <code>3 * (x contained A + y contained A)</code>.
+                        </p>
+
+                    </div>
+
+                    <h5>Location context blocks</h5><hr>
+                    <div>
+                        <p>It can be cumbersome to write the locations for each species all the time, particularly when species are used in reaction modifiers.</p>
+                        <p>If multiple species are referenced within the same location, then a location context block can be used to simplify the MDSL.</p>
+                        <p>For example, the following two snippets of code define the same model:</p>
+                        <pre><code>
+                            species a contained M = 1 units
+                            species b contained M = 2 units
+                            species c on M = 3 units
+
+                            parameter k = 4 units
+
+                            a contained M binds b contained M modifier k => b contained M
+                            c on M modifier (a contained M + b contained M) / b contained M => d under M
+                        </code></pre>
+                        <pre><code>
+                            contained M {
+                              species a = 1 units
+                              species b = 2 units
+                              species c on M = 3 units
+
+                              parameter k = 4 units
+
+                              a binds b modifier k => b
+                              c on M modifier (a + b) / b => d under M
+                            }
+                        </code></pre>
+                        <p>
+                            Location context blocks automatically insert a given location into any species names that are used without a location inside the block.
+                            Other locations can be used inside the block (for example <code>on M</code> and <code>under M</code> above), as long as they are specified explicitly.
+                        </p>
+                    </div>
+
                 </div>
 
             </div>
