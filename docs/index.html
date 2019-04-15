@@ -72,11 +72,12 @@
             }
             var numbered_title = section_number + '&nbsp;&nbsp;' + element.innerHTML
             var level_number = (section_number.match(/[.]/g) || []).length // count number of '.' in section_number
+            var href = encodeURIComponent(section_number + '_' + element.innerHTML.replace(/ /g, '_'))
             $('#table-of-contents')
                 .append($('<p>').addClass('toc-' + level_number)
-                    .append($('<a>').attr('href', '#' + section_number)
+                    .append($('<a>').attr('href', '#' + href)
                         .append(numbered_title)));
-            $(element).html($('<a>').attr('name', section_number).html(numbered_title));
+            $(element).html($('<a>').attr('name', href).html(numbered_title));
             return section_number
         }
 
