@@ -703,6 +703,229 @@
 
                 </div>
 
+                <h4>Parameters</h4><hr>
+                <div>
+
+                    <p>
+                        Parameters are numbers used to define the rates of reactions.
+                        They are evaluated before the simulation runs, and their value does not change during the simulation.
+                    </p>
+                    <p>Some examples of parameter definitions are:</p>
+                    <pre><code>
+                        parameter k_on = 0.2 ml.ng^-1.cell.receptors^-1.hour^-1
+                        parameter k_d = 0.005 ng.ml^-1
+                        parameter k_off = k_on / k_d cell.receptors^-1.hour^-1
+                    </code></pre>
+                    <p>
+                        Parameters can be simple numbers, or equations referencing other parameters.
+                        Because parameters do not change as the simulation runs, they cannot reference species numbers (in contrast to modifier equations in reactions).
+                    </p>
+                    <p>The full list of what can be specified in parameter equations is:</p>
+                    <ul>
+                        <li>Numbers
+                            <ul>
+                                <li><code>52</code>, <code>3</code>, <code>42.6</code></li>
+                                <li>Scientific notation: <code>1.2e+6</code>, <code>5E-2</code></li>
+                            </ul>
+                        </li>
+                        <li>Arithmetic operations
+                            <ul>
+                                <li><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code></li>
+                                <li>Also unary minus: <code>-k2</code>, <code>-(k1 + k2)</code></li>
+                            </ul>
+                        </li>
+                        <li>Other parameters
+                            <ul>
+                                <li><code>k_on / k_d</code></li>
+                                <li>As long as they are defined earlier in the file than when they are used</li>
+                            </ul>
+                        </li>
+                        <li>Brackets
+                            <ul>
+                                <li><code>(a + b) / b</code></li>
+                            </ul>
+                        </li>
+                        <li>Ln function
+                            <ul>
+                                <li><code>ln(2)</code>, <code>ln(k + 7)</code></li>
+                                <li>The natural logarithm function</li>
+                            </ul>
+                        </li>
+                        <li>Round function
+                            <ul>
+                                <li><code>round(k / 3)</code></li>
+                                <li>Rounds its input to the nearest whole number</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h5>Parameters output file</h5><hr>
+                    <div>
+                        <p>
+                            To aid in checking that parameter equations have been written correctly,
+                            the simulator outputs a file named <code>output_Parameters.txt</code>,
+                            containing all the parameter definitions, along with the numbers that they evaluate to.
+                            An example of this file is shown below:
+                        </p>
+                        <pre><code>
+                            Parameters equations defined in the model file:
+                            parameter k_on = (0.2) ml.ng^-1.cell.receptors^-1.hour^-1
+                            parameter k_d = (0.005) ng.ml^-1
+                            parameter k_off = ((k_on) / (k_d)) cell.receptors^-1.hour^-1
+
+                            Parameter values computed:
+                            parameter k_on = 0.2 ml.ng^-1.cell.receptors^-1.hour^-1
+                            parameter k_d = 0.005 ng.ml^-1
+                            parameter k_off = 40.0 cell.receptors^-1.hour^-1
+                        </code></pre>
+                        <p>
+                            The first part of this file shows the parameter equations with all their implicit brackets added.
+                            This makes clear the order of precedence of the operators in the equations.
+                        </p>
+                        <p>
+                            The second part of this file shows the actual numbers that the equations evaluate to.
+                        </p>
+                    </div>
+
+                </div>
+
+                <h4>Reactions</h4><hr>
+                <div>
+
+                    <p>
+                        Reactions are what make the simulation run.
+                        When a reaction fires, the reactant species are removed and the product species are added.
+                        This causes the propensities of other reactions to change.
+                    </p>
+                    <pre><code>
+                        a contained M binds 2 b contained M modifier k => c contained M
+                    </code></pre>
+
+                    <h5>Modifiers and propensities</h5><hr>
+                    <div>
+                        <p>The reaction modifier is the equation that comes immediately after the <code>modifier</code> keyword.</p>
+                        <p>
+                            This can be a simple rate constant: a number or a parameter (in the above example, it is the parameter <code>k</code>).
+                            Or it can be a complex equation, potentially involving multiple parameters and species concentrations.
+                        </p>
+                        <p>The propensity of each reaction is calculated as follows:</p>
+                        <ul>
+                            <li>propensity = <code>k</code>
+                                               * <sup><code>[r(1)]</code></sup>C<sub><code>s(1)</code></sub>
+                                               * <sup><code>[r(2)]</code></sup>C<sub><code>s(2)</code></sub>
+                                               * ...
+                                               * <sup><code>[r(n)]</code></sup>C<sub><code>s(n)</code></sub>
+                            </li>
+                        </ul>
+                        <p>where:</p>
+                        <ul>
+                            <li>the modifier is <code>k</code></li>
+                            <li>the reactant species are named <code>r(1)</code>, <code>r(2)</code>, ..., <code>r(n)</code></li>
+                            <li>the stoichiometries of each reactant are <code>s(1)</code>, <code>s(2)</code>, ..., <code>s(n)</code></li>
+                            <li>the concentrations of each species in the relevant space are <code>[r(1)]</code>, <code>[r(2)]</code>, ..., <code>[r(n)]</code></li>
+                            <li><sup>n</sup>C<sub>r</sub> is the combinatoric function <code>n! / r!(n - r)!</code>,
+                                the number of ways of choosing <code>r</code> objects from a collection of <code>n</code> identical objects without replacement</li>
+                        </ul>
+                        <p>This models the likelihood that all the reactants of the reaction will come close enough to react.</p>
+                    </div>
+
+                    <h5>Reversible reactions</h5><hr>
+                    <div>
+                        <p>TODO: Two-way reactions</p>
+                    </div>
+
+                    <h5>Combiners</h5><hr>
+                    <div>
+                        <p>TODO: Two combiners: <code>binds</code>, <code>and</code></p>
+                    </div>
+
+                    <h5>Genes and catalysts</h5><hr>
+                    <div>
+                        <p>TODO: Gene/catalyst reactants not removed, but are checked for stoichiometry 1 when calculating rate. Same as including on both sides.</p>
+                    </div>
+
+                    <h5>Delays</h5><hr>
+                    <div>
+                        <p>TODO: Delays</p>
+                    </div>
+
+                </div>
+
+                <h4>Gillespie simulation algorithm</h4><hr>
+                <div>
+
+                    <p>
+                        The MDSL simulator implements a modified version of Gillespie's algorithm for simulating networks of chemical reactions.
+                        <br>
+                        Reference:
+                        <cite>
+                            Exact stochastic simulation of coupled chemical reactions,
+                            Daniel T. Gillespie,
+                            J. Phys. Chem., 1977, 81 (25), pp 2340–2361,
+                            DOI: <a href="https://doi.org/10.1021%2Fj100540a008" target="_blank">10.1021/j100540a008</a>
+                        </cite>
+                    </p>
+
+                    <h5>Algorithm</h5><hr>
+                    <div>
+                        <p>The basic premise of the algorithm is as follows:</p>
+                        <ul>
+                            <li>while simulation time has not elapsed
+                                <ol>
+                                    <li>Calculate the propensities of each reaction in each membrane</li>
+                                    <li>Randomly choose the time at which the next reaction fires, using the reaction propensities
+                                        <ul>
+                                            <li>Using Equation 21a in Gillespie's paper</li>
+                                            <li>time to next reaction = (1.0 / (sum of propensities)) * log(1.0 / (random number between 0 and 1))</li>
+                                        </ul>
+                                    </li>
+                                    <li>Choose a reaction randomly, weighted by propensity</li>
+                                    <li>Fire this reaction
+                                        <ul>
+                                            <li>Increase the simulation time by the time chosen in step 2 above</li>
+                                            <li>Remove the reaction's reactants from the simulation</li>
+                                            <li>Add the reaction's products to the simulation</li>
+                                        </ul>
+                                    </li>
+                                </ol>
+                            </li>
+                        </ul>
+                        <p>
+                            Reactions are randomly chosen and fired, with faster reactions more likely to be chosen over slower ones,
+                            with time advancing using a non-uniform timestep.
+                        </p>
+                    </div>
+
+                    <h5>Optimisations</h5><hr>
+                    <div>
+                        <p>Our implementation of Gillespie's algorithm is an optimised version of the above algorithm.</p>
+                        <p>
+                            For example, we do not recalculate the propensities of every reaction in every membrane at each step.
+                            We only recalculate the propensities of reactions that depend on species that were changed by the previous reaction,
+                            and we only recalculate propensities in membranes that could have had their species changed by the previous reaction.
+                        </p>
+                    </div>
+
+                    <h5>Additional features</h5><hr>
+                    <div>
+                        <p>The MDSL simulator has two features that are not present in the original Gillespie algorithm: membranes and delays.</p>
+                        <p>
+                            Membranes allow different species to exist in different concentration in different spaces in the same simulation.
+                            And they allow reactions to happen differently in different spaces.
+                            The original Gillespie algorithm simulates a single space.
+                            MDSL allows you to define as many spaces as required for your simulation, and have reactions move species between these spaces.
+                        </p>
+                        <p>
+                            Delays allow a reaction to fire at a certain time, removing its reactants from the simulation,
+                            but waiting for a fixed time to elapse before adding its products to the simulation.
+                            The original Gillespie algorithm has reaction products added to the simulation instantaneously (delay 0 on every reaction).
+                            This is the default in MDSL, but in MDSL delays can be specified if desired.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
             </div>
 
             <h3>Full MDSL grammar</h3><hr>
