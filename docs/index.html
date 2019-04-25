@@ -40,6 +40,12 @@
         .toc-3 {
             margin-left: 3em;
         }
+        code {
+            white-space: nowrap !important; /* don't line break inline code sections */
+        }
+        pre > code {
+            white-space: pre !important; /* undo above rule for non-inline code sections */
+        }
     </style>
 
     <!-- Table of contents generation -->

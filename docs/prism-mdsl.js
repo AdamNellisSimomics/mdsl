@@ -5,10 +5,10 @@
 
 	Prism.languages.mdsl = {
         'comment': /#.*/,
-        'keyword': /(\b(initial tree|parameter|species|modifier|delay|binds|and)\b)|(\s(<=>|<=|=>)\s)/,
+        'keyword': /(\b(initial tree|parameter|species|modifier|delay|binds|and)\b)|(\s(<=>|=>)\s)|(^<?=>$)/,
         'function': /\b(on|under|contained|around)\b/,
         'number': {
-            pattern: /(\s|[(])(\d+([.]\d+)?((e|E)([+]|[-])\d+)?)(?=\s|[)])/,
+            pattern: /(\s|[(]|^)(\d+([.]\d+)?((e|E)([+]|[-])\d+)?)(?=\s|[)]|$)|(\b(gene|catalyst)\b)/,
             lookbehind: true,
         },
 	};
