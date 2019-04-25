@@ -804,8 +804,20 @@
                         This causes the propensities of other reactions to change.
                     </p>
                     <pre><code>
-                        a contained M binds 2 b contained M modifier k => c contained M
+                        a on M binds 2 b contained M modifier k => c contained M
                     </code></pre>
+                    <p>
+                        When the reaction above fires, the numbers of each species change in the following ways:
+                    </p>
+                    <ul>
+                        <li>One <code>a</code> is removed from the <code>on M</code> space</li>
+                        <li>Two <code>b</code> are removed from the <code>contained M</code> space</li>
+                        <li>One <code>c</code> is added to the <code>contained M</code> space</li>
+                    </ul>
+                    <p>
+                        This changes the propensities of any reactions that depend on the numbers of
+                        <code>a on M</code>, <code>b contained M</code>, or <code>c contained M</code>.
+                    </p>
 
                     <h5>Modifiers and propensities</h5><hr>
                     <div>
@@ -825,34 +837,188 @@
                         </ul>
                         <p>where:</p>
                         <ul>
-                            <li>the modifier is <code>k</code></li>
-                            <li>the reactant species are named <code>r(1)</code>, <code>r(2)</code>, ..., <code>r(n)</code></li>
-                            <li>the stoichiometries of each reactant are <code>s(1)</code>, <code>s(2)</code>, ..., <code>s(n)</code></li>
-                            <li>the concentrations of each species in the relevant space are <code>[r(1)]</code>, <code>[r(2)]</code>, ..., <code>[r(n)]</code></li>
+                            <li>the modifier is <code>k</code>
+                                <ul>
+                                    <li>Either a simple rate constant or a complex equation</li>
+                                </ul>
+                            </li>
+                            <li>the reactant species for this reaction are named <code>r(1)</code>, <code>r(2)</code>, ..., <code>r(n)</code>
+                                <ul>
+                                    <li>Technically, species with a location, e.g. <code>a contained M</code></li>
+                                </ul>
+                            </li>
+                            <li>the stoichiometries of each reactant are <code>s(1)</code>, <code>s(2)</code>, ..., <code>s(n)</code>
+                                <ul>
+                                    <li>Positive, whole numbers</li>
+                                </ul>
+                            </li>
+                            <li>the concentrations of each species in the relevant space are <code>[r(1)]</code>, <code>[r(2)]</code>, ..., <code>[r(n)]</code>
+                                <ul>
+                                    <li>Positive, whole numbers</li>
+                                </ul>
+                            </li>
                             <li><sup>n</sup>C<sub>r</sub> is the combinatoric function <code>n! / r!(n - r)!</code>,
                                 the number of ways of choosing <code>r</code> objects from a collection of <code>n</code> identical objects without replacement</li>
                         </ul>
+                        <p>
+                            If any of the reactants are not present in large enough numbers to satisfy the stoichiometry for the reaction
+                            (i.e. <code>[r(i)] < s(i)</code> for some <code>i</code>),
+                            then this equation is skipped and the propensity of this reaction in this location is set to zero.
+                        </p>
                         <p>This models the likelihood that all the reactants of the reaction will come close enough to react.</p>
+                    </div>
+
+                    <h5>Membranes</h5><hr>
+                    <div>
+
+                        <p>
+                            Each reaction takes place with respect to one membrane.
+                            All the reactant and product species must be located either
+                            <code>around</code>, <code>contained</code>, <code>on</code>, or <code>under</code> the same membrane.
+                        </p>
+                        <p>For example, the following reaction is valid</p>
+                        <pre><code>
+                            a around M binds b on M modifier k => c contained M
+                        </code></pre>
+                        <p>But the following reaction is invalid</p>
+                        <pre><code>
+                            # Invalid MDSL
+                            a around M binds b on X modifier k => c contained Y
+                        </code></pre>
+
+                        <p>
+                            If the <code>initial tree</code> defines more than one instance of the same membrane type,
+                            then each individual membrane of this type will have its own set of reactions.
+                            Each of these reactions with have their own propensities and might proceed at different rates.
+                        </p>
+                        <p>For example, consider the following very simple signal transduction model</p>
+                        <pre><code>
+                            initial tree {simulation {20 cell}}
+                            signal around cell binds receptor on cell modifier k => reporter contained cell
+                        </code></pre>
+                        <p>
+                            In this model there are 20 different <code>cell</code> membranes.
+                            Each cell might have a different number of <code>receptor</code> species <code>on</code> it.
+                            In an environment containing a lot of <code>signal</code>,
+                            this reaction will have a higher propensity for those cells that have more receptors on them,
+                            so these cells will end up with more <code>reporter</code> inside them.
+                        </p>
+
                     </div>
 
                     <h5>Reversible reactions</h5><hr>
                     <div>
-                        <p>TODO: Two-way reactions</p>
+                        <p>A common modelling pattern is reversible reactions.</p>
+                        <p>
+                            In a reversible reaction, the reactants of the forward reaction are the products of the reverse reaction,
+                            and the products of the forward reaction are the reactants of the reverse reaction.
+                        </p>
+                        <p>
+                            Reversible reactions are specified by using the <code><=></code> arrow symbol, rather than <code>=></code>,
+                            and by including the modifier equation for the reverse reaction on the right hand side of the reaction.
+                        </p>
+                        <p>For example, the following two code snippets define the same reactions:</p>
+                        <pre><code>
+                            a around cell binds r on cell modifier k_on => a_r_complex on cell
+                            a_r_complex on cell modifier k_off => a around cell and r on cell
+                        </code></pre>
+                        <pre><code>
+                            a around cell binds r on cell modifier k_on <=> a_r_complex on cell modifier k_off
+                        </code></pre>
+                        <p>
+                            Any reversible reaction could be written out as two non-reversible reactions,
+                            but using reversible reactions removes redundant MDSL code and thus reduces the chance of errors.
+                        </p>
                     </div>
 
                     <h5>Combiners</h5><hr>
                     <div>
-                        <p>TODO: Two combiners: <code>binds</code>, <code>and</code></p>
+                        <p>
+                            When specifying the list of reactants or products for a reaction, two different words can be used to combine them:
+                            <code>binds</code> and <code>and</code>.
+                        </p>
+                        <p>
+                            These two words are synonyms; they are both provided so that
+                            the modeller can choose the word that best matches the biological meaning of each reaction.
+                        </p>
+                        <p>For example, the following two code snippets define the same reactions:</p>
+                        <pre><code>
+                            a around cell binds r on cell modifier k_on => a_r_complex on cell
+                        </code></pre>
+                        <pre><code>
+                            a around cell and r on cell modifier k_on => a_r_complex on cell
+                        </code></pre>
                     </div>
 
                     <h5>Genes and catalysts</h5><hr>
                     <div>
-                        <p>TODO: Gene/catalyst reactants not removed, but are checked for stoichiometry 1 when calculating rate. Same as including on both sides.</p>
+                        <p>
+                            The stoichiometry of each species in a reaction is specified as a positive whole number.
+                            For example: <code>2 a around cell</code>, <code>1 b on cell</code>, <code>6 a contained cell</code>.
+                        </p>
+                        <p>
+                            If the number is not specified, then it defaults to 1.
+                            So <code>a around cell</code> is the same as <code>1 a around cell</code>.
+                        </p>
+                        <p>
+                            There are two keywords that can be used to specify a special type of stoichiometry:
+                            <code>gene</code> and <code>catalyst</code>.
+                            These are convenience keywords to say that this species should be used for
+                            calculating the propensity of the reaction (at stoichiometry 1),
+                            but this species should not be consumed by the reaction.
+                        </p>
+                        <p>
+                            The two keywords <code>gene</code> and <code>catalyst</code> are synonyms.
+                            They are both provided so that the modeller can choose the word that best matches the biological meaning of each reaction.
+                        </p>
+                        <p>
+                            Using one of these keywords is the same as including the species in both the reactants and products of the reaction.
+                            So the following two code snippets define the same reaction:
+                        </p>
+                        <pre><code>
+                            c contained cell binds x contained cell modifier k => c contained cell and y contained cell
+                        </code></pre>
+                        <pre><code>
+                            catalyst c contained cell binds x contained cell modifier k => y contained cell
+                        </code></pre>
                     </div>
 
                     <h5>Delays</h5><hr>
                     <div>
-                        <p>TODO: Delays</p>
+                        <p>
+                            Some processes can be modelled by reactions that take time to complete.
+                            For example, consider the following very simple model of gene expression:
+                        </p>
+                        <pre><code>
+                            gene g contained cell binds promoter contained cell modifier k => enzyme contained cell
+                        </code></pre>
+                        <p>
+                            In this model, increases in the concentration of <code>promoter</code> will cause <code>enzyme</code> to be expressed.
+                            However, the enzymes will enter the simulation as soon as the promoter binds to the gene.
+                            If timings are important in this model, then it may be desirable for the process of gene expression to take some time.
+                            i.e. the enzymes are ready to participate in other reactions a certain time after the promoter has bound the gene.
+                        </p>
+                        <p>
+                            The <code>delay</code> keyword inserts a time delay between
+                            the reaction's reactants being removed from the simulation and its products being added to the simulation.
+                            During this time delay, other reactions can fire and the state of the simulation can change.
+                        </p>
+                        <pre><code>
+                            gene g contained cell binds promoter contained cell modifier k delay 5 => enzyme contained cell
+                        </code></pre>
+                        <p>
+                            The delay is in units of simulation hours.
+                            Like the modifier, it can be a number, a parameter, or a complex equation.
+                        </p>
+                        <p>
+                            Each reaction's <code>modifier</code> and <code>delay</code> both control the rate at which the reaction produces its products,
+                            but they control it in very different ways.
+                            The difference between the modifier and delay is as follows:
+                        </p>
+                        <ul>
+                            <li>The modifier controls how likely the reaction is to happen at each time point.</li>
+                            <li>The delay controls how much time elapses between the reactants being consumed and the products being produced.</li>
+                        </ul>
                     </div>
 
                 </div>
