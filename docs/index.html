@@ -99,6 +99,9 @@
                         var section_num_3 = make_toc_entry(this, section_num_2);
                         $('h5', $(this).next().next()).each(function() {
                             var section_num_4 = make_toc_entry(this, section_num_3);
+                            $('h6', $(this).next().next()).each(function() {
+                                var section_num_5 = make_toc_entry(this, section_num_4);
+                            });
                         });
                     });
                 });
@@ -581,6 +584,61 @@
                                        { D }
                                      }
                     </code></pre>
+
+                    <h5>Membrane tags</h5><hr>
+                    <div>
+                        <p>
+                            Membrane tags are defined in square brackets before the membrane type but after the number.
+                        </p>
+                        <p>
+                            There are two different ways to refer to a membrane within an MDSL file: by its type name and by one of its tags.
+                            The purposes of these two ways are:
+                        </p>
+                        <ul>
+                            <li>Types allow different reactions to happen in different membrane types</li>
+                            <li>Tags allow species to be initialised differently in different membranes of the same type</li>
+                        </ul>
+                        <p>
+                            There are two different ways in which tags can be used:
+                        </p>
+                        <ol>
+                            <li>To initialise different instances of the same membrane type differently</li>
+                            <li>To initialise membranes of different types the same</li>
+                        </ol>
+
+                        <h6>Initialising different instances of the same membrane type differently</h6><hr>
+                        <div>
+                            <pre><code>
+                                initial tree { simulation { 19 [not-infected] cell } { 1 [infected] cell } }
+                                species pathogen contained infected = 100 units
+                            </code></pre>
+                            <p>In this model there are 20 cells, one of which is infected with a pathogen.</p>
+                            <p>
+                                Membrane tags make it easy to initialise one cell with a pathogen,
+                                by using the location <code>contained infected</code> to refer to one of the cells.
+                                But later in the model, the location <code>contained cell</code> can be used
+                                to allow all infected and non-infected cells to have the same reactions.
+                            </p>
+                            <p>Using tags in this way avoids having to write duplicate reactions in membranes that differ only in their initial species.</p>
+                        </div>
+
+                        <h6>Initialising membranes of different types the same</h6><hr>
+                        <div>
+                            <pre><code>
+                                initial tree { simulation {3 [t] A} {4 B} {2 [t] C} }
+                                species x contained t = 30 units
+                                species y contained t = 12 units
+                                species z contained t = 136 units
+                            </code></pre>
+                            <p>
+                                In this example there are three different types of membrane:
+                                <code>A</code>, <code>B</code>, and <code>C</code>.
+                                Both membrane types <code>A</code> and <code>C</code> require the same complicated collection of initial species.
+                                To achieve this, they are tagged with the same tag, <code>t</code>.
+                            </p>
+                            <p>Using tags in this way avoids having to write duplicate species initialisations that are the same in different membrane types.</p>
+                        </div>
+                    </div>
 
                 </div>
 
