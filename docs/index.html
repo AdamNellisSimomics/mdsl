@@ -40,6 +40,9 @@
         .toc-3 {
             margin-left: 3em;
         }
+        .toc-4 {
+            margin-left: 4em;
+        }
         code {
             white-space: nowrap !important; /* don't line break inline code sections */
         }
@@ -541,13 +544,14 @@
                 <div>
 
                     <p>Everything in MDSL happens in relation to a membrane.</p>
-                    <p>Each membrane defines four locations in which species can exist and reactions can happen:</p>
+                    <p>Each membrane defines four locations in which species and membranes can exist and reactions can happen:</p>
                     <ol>
                         <li>the space <code>around</code> the membrane;</li>
                         <li>the space <code>contained</code> within the membrane;</li>
                         <li>the space of species bound <code>on</code> the membrane;</li>
                         <li>the space of species bound <code>under</code> the membrane.</li>
                     </ol>
+                    <p>The space <code>around</code> a membrane is the same space as the one <code>contained</code> its parent.</p>
 
                     <p>
                         The <code>initial tree</code> defines the structure of the membranes for the simulation.
@@ -558,7 +562,12 @@
                     </code></pre>
                     <p>
                         This defines a single membrane, called <code>simulation</code>.
-                        All species and reaction in this model will be <code>contained</code> within this membrane.
+                        All species and reactions in this model will be <code>contained</code> within the <code>simulation</code> membrane.
+                    </p>
+                    <p>
+                        All models must have a single top-level membrane.
+                        This top-level membrane only has a <code>contained</code> space.
+                        Nothing can be <code>around</code>, <code>on</code>, or <code>under</code> the top-level membrane.
                     </p>
                     <p>A more complex example of an <code>initial tree</code> is:</p>
                     <pre><code>
@@ -575,7 +584,10 @@
                         the four spaces <code>around</code>, <code>contained</code>, <code>on</code>, and <code>under</code> each of the six membranes,
                         except the outermost membrane does not have the <code>around</code>, <code>on</code>, or <code>under</code> locations.
                     </p>
-                    <p>Line breaks can be used when defining the initial tree, to increase readability, so this tree could be written as:</p>
+                    <p>
+                        Line breaks can be used when defining the initial tree, to increase readability.
+                        So, for example, this tree could be written as:
+                    </p>
                     <pre><code>
                         initial tree { A
                                        { 2 B
@@ -1140,14 +1152,14 @@
                     <div>
                         <p>The MDSL simulator has two features that are not present in the original Gillespie algorithm: membranes and delays.</p>
                         <p>
-                            Membranes allow different species to exist in different concentration in different spaces in the same simulation.
+                            Membranes allow different species to exist in different concentrations in different spaces in the same simulation.
                             And they allow reactions to happen differently in different spaces.
                             The original Gillespie algorithm simulates a single space.
                             MDSL allows you to define as many spaces as required for your simulation, and have reactions move species between these spaces.
                         </p>
                         <p>
                             Delays allow a reaction to fire at a certain time, removing its reactants from the simulation,
-                            but waiting for a fixed time to elapse before adding its products to the simulation.
+                            but waiting for a fixed time to elapse before adding its products into the simulation.
                             The original Gillespie algorithm has reaction products added to the simulation instantaneously (delay 0 on every reaction).
                             This is the default in MDSL, but in MDSL delays can be specified if desired.
                         </p>
