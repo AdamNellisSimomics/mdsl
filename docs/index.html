@@ -1103,7 +1103,7 @@
                         <cite>
                             Exact stochastic simulation of coupled chemical reactions,
                             Daniel T. Gillespie,
-                            J. Phys. Chem., 1977, 81 (25), pp 2340–2361,
+                            J. Phys. Chem., 1977, 81 (25), pp 2340-2361,
                             DOI: <a href="https://doi.org/10.1021%2Fj100540a008" target="_blank">10.1021/j100540a008</a>
                         </cite>
                     </p>
@@ -1111,27 +1111,18 @@
                     <h5>Algorithm</h5><hr>
                     <div>
                         <p>The basic premise of the algorithm is as follows:</p>
-                        <ul>
-                            <li>while simulation time has not elapsed
-                                <ol>
-                                    <li>Calculate the propensities of each reaction in each membrane</li>
-                                    <li>Randomly choose the time at which the next reaction fires, using the reaction propensities
-                                        <ul>
-                                            <li>Using Equation 21a in Gillespie's paper</li>
-                                            <li>time to next reaction = (1.0 / (sum of propensities)) * log(1.0 / (random number between 0 and 1))</li>
-                                        </ul>
-                                    </li>
-                                    <li>Choose a reaction randomly, weighted by propensity</li>
-                                    <li>Fire this reaction
-                                        <ul>
-                                            <li>Increase the simulation time by the time chosen in step 2 above</li>
-                                            <li>Remove the reaction's reactants from the simulation</li>
-                                            <li>Add the reaction's products to the simulation</li>
-                                        </ul>
-                                    </li>
-                                </ol>
-                            </li>
-                        </ul>
+                        <pre><code class="language-pseudocode">
+                            while simulation time has not elapsed
+                                1. Calculate the propensities of each reaction in each membrane
+                                2. Randomly choose the time at which the next reaction fires, using the reaction propensities
+                                       Using Equation 21a in Gillespie's paper
+                                       time to next reaction = (1.0 / (sum of propensities)) * ln(1.0 / (random number between 0 and 1))
+                                3. Choose a reaction randomly, weighted by propensity
+                                4. Fire this reaction
+                                       Increase the simulation time by the time chosen in step 2 above
+                                       Remove the reaction's reactants from the simulation
+                                       Add the reaction's products to the simulation
+                        </code></pre>
                         <p>
                             Reactions are randomly chosen and fired, with faster reactions more likely to be chosen over slower ones,
                             with time advancing using a non-uniform timestep.
@@ -1140,7 +1131,7 @@
 
                     <h5>Optimisations</h5><hr>
                     <div>
-                        <p>Our implementation of Gillespie's algorithm is an optimised version of the above algorithm.</p>
+                        <p>Our simulation algorithm is an optimised version of Gillespie's algorithm above.</p>
                         <p>
                             For example, we do not recalculate the propensities of every reaction in every membrane at each step.
                             We only recalculate the propensities of reactions that depend on species that were changed by the previous reaction,
@@ -1167,7 +1158,6 @@
 
                 </div>
 
-            </div>
             </div>
 
             <h3>Full MDSL grammar</h3><hr>
