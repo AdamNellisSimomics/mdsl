@@ -1,4 +1,4 @@
 # MDSL
 MDSL language for simulating biological models
 
-For documentation, see the [/docs/](https://adamnellissimomics.github.io/mdsl/) directory.
+For documentation, see the [/docs/](https://simomics.github.io/mdsl/) directory.
